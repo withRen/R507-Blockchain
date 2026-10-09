@@ -11,7 +11,7 @@
 | Groupe | Rahim Tamhaev (@withRen), Nicolas Rapuzzi (@hextravagance) |
 | Semaine | 1 |
 | Dates couvertes | 1er octobre au 9 octobre 2026 |
-| Membres présents | Rahim Tamhaev (Nicolas Rapuzzi : à confirmer) |
+| Membres présents | Rahim Tamhaev, Nicolas Rapuzzi |
 | Lien dépôt / GitHub Projects | https://github.com/withRen/R507-Blockchain / https://github.com/users/withRen/projects/3 |
 | Lien démo (si disponible) | Pas encore disponible |
 
@@ -25,13 +25,13 @@
 | Création des 4 milestones (Cadrage, Livraison du projet, Répétition finale, Soutenance) | Aucune (cadrage) | Fonctionnel | https://github.com/withRen/R507-Blockchain/milestones |
 | Création de 22 issues, réparties par milestone et par label | Les 7 notions (une issue par notion) | Fonctionnel | https://github.com/withRen/R507-Blockchain/issues |
 | Rédaction du README | Aucune (cadrage) | Fonctionnel | https://github.com/withRen/R507-Blockchain/blob/main/README.md |
-| Invitation de Nicolas Rapuzzi sur le dépôt et le Project | Aucune (cadrage) | En cours | Invitation envoyée, en attente d'acceptation |
+| Ajout de Nicolas Rapuzzi sur le dépôt et le Project (issue #1) | Aucune (cadrage) | Fonctionnel | Invitation acceptée, issue #1 fermée |
 
 ### 1.2 Prévu mais non réalisé
 | Tâche | Cause | Report |
 |:---|:---|:---|
 | Choix du fil rouge narratif (issue #3) | Pas encore décidé | Semaine 2 |
-| Assignation des issues aux deux membres | Invitation de Nicolas pas encore acceptée | Semaine 2 |
+| Assignation des issues aux deux membres | Répartition à décider ensemble | Semaine 2 |
 | Initialisation Vite + Three.js | Le cadrage a pris la priorité | Semaine 2 |
 
 ### 1.3 État des 7 notions
@@ -50,16 +50,16 @@
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| Rahim Tamhaev | Dépôt, Project, milestones, issues, README | 0 fermée | 7 |
-| Nicolas Rapuzzi | Pas encore de tâche assignée (invitation en attente) | 0 | 0 |
+| Rahim Tamhaev | Dépôt, Project, milestones, issues, README | 1 fermée | 9 |
+| Nicolas Rapuzzi | Relecture du dépôt, du Project et des issues ; tâches à assigner en semaine 2 | 0 | 0 |
 
 ## 3. GitHub Projects
 
 | Question | Réponse |
 |:---|:---|
 | Issues créées | 22 |
-| Issues fermées | 0 |
-| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 17 / 5 / 0 / 0 / 0 |
+| Issues fermées | 1 (#1) |
+| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 17 / 5 / 0 / 0 / 0 (le statut de #1 est à passer en Terminé) |
 | Board mis à jour pendant la semaine ? | Non : le board a été créé et rempli le 9 octobre |
 | Milestone concerné et état | Cadrage (échéance 9 octobre 17h) : en cours |
 
@@ -85,7 +85,7 @@
 |:---|:---|
 | Usage de l'IA et vérifications effectuées | Claude (Claude Code) a servi à rédiger le README, créer les milestones, issues et le Project via la CLI GitHub. Résultat relu et vérifié dans l'interface GitHub. |
 | Blocage technique | Aucun |
-| Blocage pédagogique ou organisationnel | Nicolas n'a pas encore accepté l'invitation, donc les issues ne sont pas assignées |
+| Blocage pédagogique ou organisationnel | Issues pas encore assignées entre les deux membres |
 | Besoin d'un point enseignant | Non |
 
 ## 7. Objectifs de la semaine suivante
@@ -111,6 +111,6 @@
 
 | Élément | Réponse |
 |:---|:---|
-| Fiche relue par tous | Non (à faire avec Nicolas) |
+| Fiche relue par tous | Oui |
 | Date d'envoi | 9 octobre 2026 |
 | Noms des membres | Rahim Tamhaev, Nicolas Rapuzzi |
