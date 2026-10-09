@@ -5,25 +5,25 @@ Expérience web interactive en **Three.js** qui explique le fonctionnement d'une
 > Projet de médiation scientifique réalisé dans le cadre de la ressource **R507**, BUT MMI 3ᵉ année (2026).
 > Le projet ne code pas une vraie blockchain : il en **représente** les concepts dans l'espace, avec des animations et des interactions.
 
-🔗 **Démo en ligne :** _à venir (GitHub Pages)_
-📋 **GitHub Projects :** [R507-Blockchain](https://github.com/users/withRen/projects/3)
+**Démo en ligne :** _à venir (GitHub Pages)_
+**GitHub Projects :** [R507-Blockchain](https://github.com/users/withRen/projects/3)
 
 ---
 
-## 👥 Équipe
+## Équipe
 
 | Membre | Rôle principal |
 |---|---|
 | Rahim Tamhaev ([@withRen](https://github.com/withRen)) | _à définir_ |
 | Nicolas Rapuzzi ([@hextravagance](https://github.com/hextravagance)) | _à définir_ |
 
-## 🎯 Public et objectif
+## Public et objectif
 
 - **Public visé :** des personnes qui n'ont jamais étudié la blockchain, sans explication orale préalable.
 - **Objectif :** qu'à la fin du parcours l'utilisateur comprenne ce qu'est un bloc, comment les blocs sont reliés, pourquoi une falsification se repère, et comment un réseau décentralisé se met d'accord.
 - **Fil rouge narratif :** _à définir (ex. suivre le parcours d'une transaction depuis l'envoi jusqu'à sa confirmation)_
 
-## 🧱 Notions abordées
+## Notions abordées
 
 Chaque notion est associée à une animation ou une interaction visible, pas seulement à du texte.
 
@@ -39,13 +39,13 @@ Chaque notion est associée à une animation ou une interaction visible, pas seu
 
 Les choix de représentation sont justifiés dans [`docs/MMI-R507-projet-blockchain-CHOIX-MODELISATION.md`](docs/MMI-R507-projet-blockchain-CHOIX-MODELISATION.md).
 
-## 🛠️ Stack technique
+## Stack technique
 
 - [Three.js](https://threejs.org/)
 - [Vite](https://vitejs.dev/) (serveur de développement et build)
 - Déploiement sur **GitHub Pages**
 
-## 🚀 Lancer le projet
+## Lancer le projet
 
 ```bash
 git clone https://github.com/withRen/R507-Blockchain.git
@@ -60,7 +60,7 @@ Build de production :
 npm run build
 ```
 
-## 📁 Structure du dépôt
+## Structure du dépôt
 
 ```
 R507-Blockchain/
@@ -75,7 +75,7 @@ R507-Blockchain/
 └── README.md
 ```
 
-## 📅 Jalons
+## Jalons
 
 | Jalon | Date | Attendu |
 |---|---|---|
@@ -84,7 +84,7 @@ R507-Blockchain/
 | Répétition finale | 19 novembre 2026, 9h30 | Répétition entre groupes |
 | Soutenance | 19 novembre 2026, 11h | 20 minutes par groupe |
 
-## 🗂️ Gestion de projet
+## Gestion de projet
 
 Le suivi se fait dans **GitHub Projects**, avec les colonnes :
 `Backlog` → `À faire` → `En cours` → `À vérifier` → `Terminé`
@@ -93,13 +93,13 @@ Le suivi se fait dans **GitHub Projects**, avec les colonnes :
 - Les milestones correspondent aux jalons du calendrier.
 - Une fiche de suivi est rédigée chaque semaine dans `docs/suivi/`.
 
-## ✅ Critères de qualité
+## Critères de qualité
 
 - Parcours principal à **30 FPS ou plus** sur un poste de TP standard.
 - **Tests utilisateurs** avec au moins 2 personnes extérieures au groupe. Leurs retours sont notés et transformés en issues si besoin.
 - Textes lisibles, légendes, retours visuels et navigation claire.
 
-## 🤖 Usage de l'IA générative
+## Usage de l'IA générative
 
 Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code généré a été relu, compris et vérifié par l'équipe.
 
@@ -107,6 +107,6 @@ Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code géné
 |---|---|
 | _ex. Claude / ChatGPT / Copilot_ | _ex. rédaction de la base du README, aide sur les shaders…_ |
 
-## 📚 Sources
+## Sources
 
 _À compléter : sources fiables utilisées pour la recherche (whitepaper Bitcoin, documentation Ethereum, etc.)_
