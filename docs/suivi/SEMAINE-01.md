@@ -31,7 +31,6 @@
 | Tâche | Cause | Report |
 |:---|:---|:---|
 | Choix du fil rouge narratif (issue #3) | Pas encore décidé | Semaine 2 |
-| Assignation des issues aux deux membres | Répartition à décider ensemble | Semaine 2 |
 | Initialisation Vite + Three.js | Le cadrage a pris la priorité | Semaine 2 |
 
 ### 1.3 État des 7 notions
@@ -50,16 +49,16 @@
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| Rahim Tamhaev | Dépôt, Project, milestones, issues, README | 1 fermée | 9 |
-| Nicolas Rapuzzi | Relecture du dépôt, du Project et des issues ; tâches à assigner en semaine 2 | 0 | 0 |
+| Rahim Tamhaev | Dépôt, Project, milestones, issues, README, vues et champ Semaine du Project | 2 fermées | 11 |
+| Nicolas Rapuzzi | Relecture du dépôt, du Project et des issues | 0 | 0 |
 
 ## 3. GitHub Projects
 
 | Question | Réponse |
 |:---|:---|
-| Issues créées | 22 |
-| Issues fermées | 1 (#1) |
-| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 17 / 5 / 0 / 0 / 0 (le statut de #1 est à passer en Terminé) |
+| Issues créées | 28 (22 de départ + 6 issues de recherche) |
+| Issues fermées | 2 (#1, #2) |
+| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 14 / 12 / 0 / 0 / 2 |
 | Board mis à jour pendant la semaine ? | Non : le board a été créé et rempli le 9 octobre |
 | Milestone concerné et état | Cadrage (échéance 9 octobre 17h) : en cours |
 
@@ -77,7 +76,7 @@
 |:---|:---|
 | Nombre de testeurs extérieurs cette semaine | 0 |
 | Compréhension ou problème observé | Sans objet |
-| Issue corrective | Issue #20 (tests utilisateurs) |
+| Issue corrective | Issue #19 (tests utilisateurs) |
 
 ## 6. IA, difficultés et besoins
 
@@ -85,17 +84,23 @@
 |:---|:---|
 | Usage de l'IA et vérifications effectuées | Claude (Claude Code) a servi à rédiger le README, créer les milestones, issues et le Project via la CLI GitHub. Résultat relu et vérifié dans l'interface GitHub. |
 | Blocage technique | Aucun |
-| Blocage pédagogique ou organisationnel | Issues pas encore assignées entre les deux membres |
+| Blocage pédagogique ou organisationnel | Aucun |
 | Besoin d'un point enseignant | Non |
 
 ## 7. Objectifs de la semaine suivante
 
+Nous connaissons peu la blockchain : la semaine 2 est consacrée à la recherche d'informations avant de modéliser. Les 28 issues sont assignées et la répartition est équilibrée (la création 3D et UX est partagée 50/50).
+
 | Objectif | Responsable | Issue |
 |:---|:---|:---|
+| Recherche : structure d'un bloc, hash et chaînage | Nicolas | #23 |
+| Recherche : immutabilité et détection de falsification | Nicolas | #24 |
+| Recherche : mécanismes de consensus PoW, PoS, PoA | Nicolas | #27 |
+| Recherche : réseau et décentralisation | Rahim | #25 |
+| Recherche : validation et minage (PoW) | Rahim | #26 |
+| Recherche : cycle de vie d'une transaction et double dépense | Rahim | #28 |
 | Choisir le fil rouge narratif | Rahim et Nicolas | #3 |
-| Initialiser Vite + Three.js | À répartir | #6 |
-| Déployer sur GitHub Pages | À répartir | #7 |
-| Commencer le storyboard | À répartir | #9 |
+| Initialiser Vite + Three.js et déployer sur GitHub Pages | Rahim | #6, #7 |
 
 ## 8. Signaux d'alerte
 
