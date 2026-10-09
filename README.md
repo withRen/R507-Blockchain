@@ -14,8 +14,8 @@ Expérience web interactive en **Three.js** qui explique le fonctionnement d'une
 
 | Membre | Rôle principal |
 |---|---|
-| Rahim Tamhaev ([@withRen](https://github.com/withRen)) | _à définir_ |
-| Nicolas Rapuzzi ([@hextravagance](https://github.com/hextravagance)) | _à définir_ |
+| Rahim Tamhaev ([@withRen](https://github.com/withRen)) |
+| Nicolas Rapuzzi ([@hextravagance](https://github.com/hextravagance)) |
 
 ## Public et objectif
 
