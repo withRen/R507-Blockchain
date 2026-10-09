@@ -12,8 +12,8 @@ Expérience web interactive en **Three.js** qui explique le fonctionnement d'une
 
 ## Équipe
 
-| Membre | Rôle principal |
-|---|---|
+| Membre |
+|---|
 | Rahim Tamhaev ([@withRen](https://github.com/withRen)) |
 | Nicolas Rapuzzi ([@hextravagance](https://github.com/hextravagance)) |
 
