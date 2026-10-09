@@ -1,13 +1,4 @@
 # R507 — Blockchain en 3D
-
-Expérience web interactive en **Three.js** qui explique le fonctionnement d'une blockchain à une personne qui n'y connaît rien.
-
-> Projet de médiation scientifique réalisé dans le cadre de la ressource **R507**, BUT MMI 3ᵉ année (2026).
-> Le projet ne code pas une vraie blockchain : il en **représente** les concepts dans l'espace, avec des animations et des interactions.
-
-**Démo en ligne :** _à venir (GitHub Pages)_
-**GitHub Projects :** [R507-Blockchain](https://github.com/users/withRen/projects/3)
-
 ---
 
 ## Équipe
