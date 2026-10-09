@@ -99,9 +99,9 @@
 
 ## 8. Signaux d'alerte
 
-- [x] Le board n'a été mis à jour qu'aujourd'hui.
-- [x] La répartition est fortement déséquilibrée et non expliquée. (Nicolas a été invité le 9 octobre et n'a pas encore accepté.)
-- [x] Nous n'avons pas encore atteint les 2 testeurs extérieurs requis.
+- [ ] Le board n'a été mis à jour qu'aujourd'hui.
+- [ ] La répartition est fortement déséquilibrée et non expliquée.
+- [ ] Nous n'avons pas encore atteint les 2 testeurs extérieurs requis.
 - [ ] Un choix de modélisation important n'est pas justifié.
 - [ ] Une notion n'a pas avancé depuis 2 semaines.
 
