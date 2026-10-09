@@ -6,7 +6,7 @@ Expérience web interactive en **Three.js** qui explique le fonctionnement d'une
 > Le projet ne code pas une vraie blockchain : il en **représente** les concepts dans l'espace, avec des animations et des interactions.
 
 🔗 **Démo en ligne :** _à venir (GitHub Pages)_
-📋 **GitHub Projects :** _lien à ajouter_
+📋 **GitHub Projects :** [R507-Blockchain](https://github.com/users/withRen/projects/3)
 
 ---
 
@@ -14,9 +14,8 @@ Expérience web interactive en **Three.js** qui explique le fonctionnement d'une
 
 | Membre | Rôle principal |
 |---|---|
-| _Prénom Nom_ ([@withRen](https://github.com/withRen)) | _à définir_ |
-| _Prénom Nom_ (@pseudo) | _à définir_ |
-| _Prénom Nom_ (@pseudo) | _à définir_ |
+| Rahim Tamhaev ([@withRen](https://github.com/withRen)) | _à définir_ |
+| Nicolas Rapuzzi ([@hextravagance](https://github.com/hextravagance)) | _à définir_ |
 
 ## 🎯 Public et objectif
 
