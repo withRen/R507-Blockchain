@@ -119,4 +119,10 @@ Sources primaires, ouvertes et lues le 13 octobre 2026. La fiche de recherche d�
 - [ethereum.org, Accounts](https://ethereum.org/developers/docs/accounts/) : modèle par comptes, nonce de compte
 - [ethereum.org, Transactions](https://ethereum.org/developers/docs/transactions/) : transaction pool, frais
 
+**Autres systèmes (consensus à vote, réseau à autorisation)**
+
+- [CometBFT, spécification du consensus](https://docs.cosmos.network/cometbft/v0.37/spec/consensus/consensus) : rounds Propose, Prevote, Precommit, seuil de deux tiers, tolérance d'un tiers de validateurs byzantins
+- [CometBFT, présentation](https://docs.cosmos.network/cometbft/latest/docs/README.md) : réplication de machine d'état tolérante aux fautes byzantines
+- [Hyperledger Fabric, ordering service](https://hyperledger-fabric.readthedocs.io/en/latest/orderer/ordering_service.html) : Raft, réseau à autorisation, finalité des blocs
+
 **Limites** : les montants de récompense cités dans la documentation Bitcoin datent de 2017 et ne sont pas repris. L'origine historique du mot "mempool" n'a pas été vérifiée. Les valeurs de la table de probabilités d'attaque (z) sont recalculées à partir de la formule du whitepaper (approximation de Poisson).

@@ -4,7 +4,7 @@ Rahim, 13 octobre 2026
 
 ## Comment lire cette fiche
 
-Cette fiche explique les 7 notions de votre projet avec **Bitcoin comme modèle de référence** (notions 1 à 5 et 7) et **Ethereum pour comparer PoS et PoA** (notion 6), car ce sont les deux systèmes les mieux documentés. Chaque affirmation a été vérifiée dans une source primaire listée en fin de document.
+Cette fiche explique les 7 notions de votre projet avec **Bitcoin comme modèle de référence** (notions 1 à 5 et 7) et **Ethereum pour comparer PoS et PoA** (notion 6), complétés par la famille des consensus à vote (CometBFT) et un réseau à autorisation (Hyperledger Fabric) pour élargir la comparaison. Bitcoin sert de fil rouge parce que ses sources primaires sont les plus complètes. Chaque affirmation a été vérifiée dans une source primaire listée en fin de document.
 
 **L'idée centrale en une phrase :** le hash relie les blocs entre eux, la preuve de travail rend leur réécriture très coûteuse, le réseau retient la chaîne qui représente le plus de travail, et chaque nouveau bloc rend l'annulation d'une transaction de moins en moins probable.
 
@@ -155,6 +155,8 @@ Dans le whitepaper, "nœud" désigne un nœud qui mine ; aujourd'hui, les nœuds
 
 **Pourquoi pas un nœud, un vote ?** Parce qu'une personne pourrait créer des milliers de nœuds pour peser davantage. La preuve de travail ramène le vote à "un processeur, un vote" : le poids vient de la puissance de calcul dépensée, pas du nombre d'identités.
 
+**Réseau ouvert ou à autorisation ?** Dans Bitcoin et Ethereum, n'importe quel nœud peut participer au consensus. Dans un réseau à autorisation comme Hyperledger Fabric, les administrateurs choisissent les nœuds d'ordonnancement de chaque canal. Source : [Hyperledger Fabric, ordering service](https://hyperledger-fabric.readthedocs.io/en/latest/orderer/ordering_service.html).
+
 ### À comprendre
 
 - Il n'y a pas de serveur central : des milliers de copies indépendantes se vérifient mutuellement.
@@ -226,24 +228,30 @@ Complément sur l'extra nonce : [Bitcoin Developer Guide, Mining](https://develo
 
 ## 6. Comparaison des mécanismes de consensus
 
-Les trois mécanismes répondent à la même question, "qui a le droit d'écrire le prochain bloc ?", avec trois ressources différentes : du **calcul**, de l'**argent bloqué en garantie**, ou une **identité reconnue**.
+Les mécanismes ci-dessous répondent à la même question, "qui a le droit d'écrire le prochain bloc ?", avec des ressources différentes : du **calcul**, de l'**argent bloqué en garantie**, ou une **identité reconnue**.
 
-| Critère | Preuve de travail (PoW), Bitcoin | Preuve d'enjeu (PoS), Ethereum | Preuve d'autorité (PoA), Clique |
-|---|---|---|---|
-| Qui propose le bloc | Le mineur qui trouve un nonce valide, par loterie de calcul | Un validateur tiré au hasard à chaque créneau de 12 secondes | Un signataire autorisé, à tour de rôle |
-| Ressource engagée | Puissance de calcul et électricité | ETH déposés en garantie (32 ETH pour devenir validateur) | Réputation et identité connue |
-| Qui contrôle | Tous les nœuds, avec un seul hash | Des comités de validateurs qui votent (attestations) | Les signataires autorisés |
-| Sanction de la triche | Travail et électricité gaspillés, bloc rejeté | Destruction d'une partie ou de la totalité de la mise (slashing) | Retrait de l'autorisation par vote des autres signataires |
-| Fork : quelle branche suivre | Celle qui a le plus de travail cumulé | Celle qui a le plus de poids d'attestations | Celle qui a le plus de blocs signés "à son tour" |
-| Annuler un bloc ancien | De plus en plus improbable avec les confirmations | Bloc "finalisé" quand les deux tiers de la mise totale valident ; l'annuler détruirait au moins un tiers de la mise totale | Possible si des signataires malveillants s'entendent, atténué mais pas supprimé |
-| Énergie | Élevée | Faible | Faible |
-| Nombre de participants | Ouvert à tous | Ouvert à tous, un validateur peut tourner sur un ordinateur ordinaire | Petit groupe fermé |
-| Usage typique | Bitcoin | Ethereum depuis septembre 2022 | Réseaux privés, réseaux de test |
-| Limite principale | Coût énergétique | Plus récent et plus complexe à mettre en oeuvre | Plus centralisé, il faut faire confiance aux signataires |
+| Critère | Preuve de travail (PoW), Bitcoin | Preuve d'enjeu (PoS), Ethereum | Preuve d'autorité (PoA), Clique | Vote BFT, CometBFT |
+|---|---|---|---|---|
+| Qui propose le bloc | Le mineur qui trouve un nonce valide, par loterie de calcul | Un validateur tiré au hasard à chaque créneau de 12 secondes | Un signataire autorisé, à tour de rôle | Un proposeur désigné à tour de rôle, proportionnellement à son pouvoir de vote |
+| Ressource engagée | Puissance de calcul et électricité | ETH déposés en garantie (32 ETH pour devenir validateur) | Réputation et identité connue | Pouvoir de vote attribué aux validateurs |
+| Qui contrôle | Tous les nœuds, avec un seul hash | Des comités de validateurs qui votent (attestations) | Les signataires autorisés | Tous les validateurs, en deux tours de vote (prevote puis precommit) |
+| Sanction de la triche | Travail et électricité gaspillés, bloc rejeté | Destruction d'une partie ou de la totalité de la mise (slashing) | Retrait de l'autorisation par vote des autres signataires | Un conflit prouve qu'au moins un tiers des validateurs a signé de façon contradictoire (preuve de responsabilité) |
+| Fork : quelle branche suivre | Celle qui a le plus de travail cumulé | Celle qui a le plus de poids d'attestations | Celle qui a le plus de blocs signés "à son tour" | Pas de branche à choisir : un bloc n'est validé qu'avec plus de deux tiers de precommits |
+| Annuler un bloc ancien | De plus en plus improbable avec les confirmations | Bloc "finalisé" quand les deux tiers de la mise totale valident ; l'annuler détruirait au moins un tiers de la mise totale | Possible si des signataires malveillants s'entendent, atténué mais pas supprimé | Un bloc validé est définitif ; en annuler un exigerait au moins un tiers de validateurs fautifs |
+| Énergie | Élevée | Faible | Faible | Faible (pas de minage) |
+| Nombre de participants | Ouvert à tous | Ouvert à tous, un validateur peut tourner sur un ordinateur ordinaire | Petit groupe fermé | Ensemble de validateurs défini |
+| Usage typique | Bitcoin | Ethereum depuis septembre 2022 | Réseaux privés, réseaux de test | Applications blockchain construites sur la plateforme CometBFT |
+| Limite principale | Coût énergétique | Plus récent et plus complexe à mettre en oeuvre | Plus centralisé, il faut faire confiance aux signataires | Une coalition d'au moins un tiers des validateurs peut bloquer la chaîne en ne votant pas |
 
 **En PoS**, le temps est découpé en créneaux (slots) de 12 secondes, regroupés en périodes (epochs) de 32 créneaux. À chaque créneau, un validateur est choisi au hasard pour proposer un bloc, et un comité d'autres validateurs vote pour dire s'il est valide. Un validateur qui propose deux blocs au même créneau ou vote de façon contradictoire s'expose à perdre une partie de sa mise.
 
 **En PoA**, les signataires sont désignés à l'avance et se relaient. Ils peuvent voter pour ajouter ou retirer un signataire. Le réseau est très rapide et peu coûteux, mais il repose sur la confiance dans ces quelques acteurs.
+
+**En vote BFT (CometBFT)**, les validateurs se mettent d'accord par tours de vote. Un round suit la séquence Propose, Prevote, Precommit : le proposeur désigné propose un bloc, puis les validateurs votent deux fois. Il faut plus de deux tiers du pouvoir de vote à chaque étape pour avancer, et le modèle suppose qu'au plus un tiers des validateurs est byzantin (malveillant ou défaillant). Si le consensus n'est pas atteint, un nouveau round commence. Limite citée par la documentation : des attaques par censure restent possibles et peuvent ralentir ou arrêter la chaîne.
+
+**Cas d'un réseau à autorisation (Hyperledger Fabric)** : les nœuds d'ordonnancement rassemblent les transactions en blocs sans les exécuter, et les administrateurs choisissent qui participe. Avec Raft, un leader est élu et réplique ses décisions ; le service reste disponible tant qu'une majorité de nœuds fonctionne (3 nœuds supportent la perte d'un seul). Raft tolère les pannes, pas les nœuds malveillants, contrairement au BFT. Les blocs validés sont définitifs, donc pas de forks, à la différence de Bitcoin et d'Ethereum dont les algorithmes sont décrits comme probabilistes.
+
+Sources : [CometBFT, spécification du consensus](https://docs.cosmos.network/cometbft/v0.37/spec/consensus/consensus) ; [CometBFT, présentation](https://docs.cosmos.network/cometbft/latest/docs/README.md) ; [Hyperledger Fabric, ordering service](https://hyperledger-fabric.readthedocs.io/en/latest/orderer/ordering_service.html).
 
 ### À comprendre
 
@@ -254,6 +262,7 @@ Les trois mécanismes répondent à la même question, "qui a le droit d'écrire
 ### À ne pas comprendre
 
 - Qu'il existe un "meilleur" mécanisme absolu : les sources présentent des avantages et des limites pour chacun.
+- Que tous les consensus produisent des forks temporaires : en vote BFT et dans Fabric, un bloc validé est définitif.
 - Qu'en PoS, il suffit d'être riche pour tout contrôler : une attaque à 51 % de la mise reste possible mais coûteuse, et la communauté peut réagir en détruisant la mise de l'attaquant.
 - Que PoS et PoA sont de simples variantes du minage : il n'y a ni nonce ni calcul à trouver.
 - Que PoA est une blockchain publique comme Bitcoin : elle est surtout utilisée dans des réseaux privés ou de test.
@@ -261,6 +270,8 @@ Les trois mécanismes répondent à la même question, "qui a le droit d'écrire
 ### Suggestion pour le projet
 
 PoW et PoS se comparent très bien visuellement (calcul contre mise), car leur ressource est facile à matérialiser. PoA peut servir de troisième cas court pour montrer le cas "quelques acteurs de confiance".
+
+Le vote BFT se montre bien en animation de rounds : un bloc proposé, des validateurs qui votent, un seuil de deux tiers à franchir. C'est le contrepoint visuel naturel du minage.
 
 ### Fidélité
 
@@ -380,9 +391,12 @@ Ajouté après relecture critique : [Bitcoin Developer Guide, Mining](https://de
 
 Définition d'une confirmation : [Bitcoin Developer Guide, Payment Processing](https://developer.bitcoin.org/devguide/payment_processing.html), section Verifying Payment.
 
+Ajouté pour élargir la comparaison des consensus : [CometBFT, spécification du consensus](https://docs.cosmos.network/cometbft/v0.37/spec/consensus/consensus) (rounds, seuil de deux tiers, tolérance d'un tiers de validateurs byzantins), [CometBFT, présentation](https://docs.cosmos.network/cometbft/latest/docs/README.md) (réplication de machine d'état tolérante aux fautes byzantines) et [Hyperledger Fabric, ordering service](https://hyperledger-fabric.readthedocs.io/en/latest/orderer/ordering_service.html) (Raft, réseau à autorisation, finalité).
+
 **Limites de cette fiche**
 
 - Les chiffres de la documentation Bitcoin (2 016 blocs, 80 octets, 210 000 blocs entre deux réductions de récompense) sont des paramètres du protocole ; ne reprenez pas les montants de récompense cités dans cette documentation, qui datent de 2017.
 - Le mot mempool n'apparaît pas dans la documentation développeur Bitcoin consultée ; ethereum.org l'emploie dans sa page sur la preuve d'enjeu et parle de transaction pool dans sa page sur les transactions. Le concept existe dans les deux systèmes, mais l'origine historique du terme n'a pas été vérifiée ici.
 - La première fiche de révision reçue citait surtout des articles arXiv et une revue peu connue (ijnrd.org). Je ne les ai pas rouverts et je ne les reprends pas ici : pour le livrable, citez de préférence les sources de ce tableau.
 - Pour la section 6 du livrable, indiquez l'usage d'un outil d'IA pour la collecte de ces sources, et la vérification que vous en avez faite vous-mêmes.
+- Périmètre : la fiche couvre Bitcoin (référence), Ethereum (PoS, PoA), CometBFT (vote BFT) et Hyperledger Fabric (Raft). Je n'ai pas lu en détail l'article fondateur du PBFT (seul le résumé était accessible), ni les documentations d'autres chaînes (Solana, Algorand, Cardano), donc elles ne sont pas traitées. La mention "faible" énergie pour le vote BFT est déduite de l'absence de minage, pas d'une mesure citée.
