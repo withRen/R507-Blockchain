@@ -101,4 +101,22 @@ Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code géné
 
 ## Sources
 
-_À compléter : sources fiables utilisées pour la recherche (whitepaper Bitcoin, documentation Ethereum, etc.)_
+Sources primaires, ouvertes et lues le 13 octobre 2026. La fiche de recherche détaillée (affirmation par affirmation, avec limites) est dans [docs/MMI-R507-projet-blockchain-FICHE-RECHERCHE.md](docs/MMI-R507-projet-blockchain-FICHE-RECHERCHE.md).
+
+**Bitcoin**
+
+- [Nakamoto, Bitcoin: A Peer-to-Peer Electronic Cash System (whitepaper)](https://bitcoin.org/bitcoin.pdf) : chaînage, preuve de travail, règle de la chaîne la plus lourde, réseau, Merkle, probabilités d'attaque (section 11)
+- [Bitcoin Developer Reference, Block Chain](https://developer.bitcoin.org/reference/block_chain.html) : en-tête de 80 octets, nBits, coinbase
+- [Bitcoin Developer Guide, Block Chain](https://developer.bitcoin.org/devguide/block_chain.html) : preuve de travail, ajustement de difficulté, forks, double dépense, UTXO, attaque à 51 %
+- [Bitcoin Developer Guide, Mining](https://developer.bitcoin.org/devguide/mining.html) : extra nonce, champ coinbase
+- [Bitcoin Developer Guide, Payment Processing](https://developer.bitcoin.org/devguide/payment_processing.html) : définition d'une confirmation
+- [Bitcoin Developer Glossary](https://developer.bitcoin.org/glossary.html) : coinbase, nœud complet, mineur
+
+**Ethereum**
+
+- [ethereum.org, Proof-of-stake](https://ethereum.org/developers/docs/consensus-mechanisms/pos/) : validateurs, 32 ETH, slots et epochs, slashing, finalité
+- [ethereum.org, Proof-of-authority](https://ethereum.org/developers/docs/consensus-mechanisms/poa/) : signataires autorisés, tour de rôle, limites
+- [ethereum.org, Accounts](https://ethereum.org/developers/docs/accounts/) : modèle par comptes, nonce de compte
+- [ethereum.org, Transactions](https://ethereum.org/developers/docs/transactions/) : transaction pool, frais
+
+**Limites** : les montants de récompense cités dans la documentation Bitcoin datent de 2017 et ne sont pas repris. L'origine historique du mot "mempool" n'a pas été vérifiée. Les valeurs de la table de probabilités d'attaque (z) sont recalculées à partir de la formule du whitepaper (approximation de Poisson).
