@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Visualisation pédagogique et interactive de la blockchain en 3D avec Three.js">
+  <title>R507 - Blockchain 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="webgl-canvas"></canvas>
+
+    <header class="ui-header">
+      <div class="brand">
+        <span class="badge">MMI R507</span>
+        <h1 class="title">Visualisation Blockchain 3D</h1>
+      </div>
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span class="status-text">WebGL Actif</span>
+      </div>
+    </header>
+
+    <main class="ui-overlay">
+      <section class="info-card">
+        <div class="card-header">
+          <span class="card-tag">Bloc Genesis #0</span>
+          <span class="card-status verified">Valide</span>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <span class="field-label">Hash :</span>
+            <code class="field-value">0000a4f8...9b2c</code>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Hash parent :</span>
+            <code class="field-value">00000000...0000</code>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Nonce :</span>
+            <code class="field-value">48291</code>
+          </div>
+        </div>
+      </section>
+
+      <aside class="controls-guide">
+        <h2 class="guide-title">Navigation 3D</h2>
+        <ul class="guide-list">
+          <li><span class="key-hint">Clic gauche + Glisser</span> Pivoter la vue</li>
+          <li><span class="key-hint">Molette</span> Zoom avant / arriere</li>
+          <li><span class="key-hint">Clic droit + Glisser</span> Deplacer la camera</li>
+        </ul>
+      </aside>
+    </main>
+
+    <footer class="ui-footer">
+      <p class="footer-meta">Rahim Tamhaev &amp; Nicolas Rapuzzi &bull; BUT MMI 3</p>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

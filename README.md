@@ -96,7 +96,8 @@ Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code géné
 
 | Outil | Usage |
 |---|---|
-| _ex. Claude / ChatGPT / Copilot_ | _ex. rédaction de la base du README, aide sur les shaders…_ |
+| Claude (Claude Code) | Cadrage initial, rédaction de la structure du README, génération des jalons et issues GitHub |
+| Antigravity | Initialisation du projet Vite + Three.js, scène 3D minimale, intégration UI WebGL (issue #6) |
 
 ## Sources
 
