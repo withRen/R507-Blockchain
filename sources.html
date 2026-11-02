@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Les sources utilisées pour chaque chapitre du parcours « Le grand registre ».">
+  <title>Sources · Le grand registre</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/sources.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">Le grand registre</a>
+    <a class="back" href="index.html">← Retour au parcours</a>
+  </header>
+
+  <main class="page">
+    <p class="kicker">Sources</p>
+    <h1>D’où viennent <em>ces informations&nbsp;?</em></h1>
+    <p class="intro">Chaque chiffre et chaque affirmation du parcours s’appuie sur des sources reconnues&nbsp;: le texte fondateur de Bitcoin, des organismes publics (NIST, CNIL), la documentation officielle d’Ethereum et des travaux universitaires (Cambridge, MIT…).</p>
+
+    <section id="ch1" class="chapter">
+      <h2><span>1</span>Ce qu’il y a dans un bloc</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin: A Peer-to-Peer Electronic Cash System</a><span class="meta">Satoshi Nakamoto, 2008 · le texte fondateur, sections 3 et 4</span></li>
+        <li><a href="https://csrc.nist.gov/pubs/fips/180-4/upd1/final" target="_blank" rel="noopener">FIPS 180-4, Secure Hash Standard</a><span class="meta">NIST, 2015 · la définition officielle de la formule d’empreinte SHA-256</span></li>
+        <li><a href="https://developer.bitcoin.org/reference/block_chain.html" target="_blank" rel="noopener">Block Headers</a><span class="meta">Bitcoin Developer Reference · ce que contient réellement un bloc</span></li>
+        <li><a href="https://www.initc3.org/files/Scaling2016.pdf" target="_blank" rel="noopener">On Scaling Decentralized Blockchains</a><span class="meta">Croman et al., 2016 · le chiffre de ~7 transactions par seconde</span></li>
+      </ul>
+      <p class="note">Simplification&nbsp;: dans le parcours, un bloc contient seulement des données, un lien et un nonce. Un vrai bloc contient aussi une date, une version et un résumé des transactions.</p>
+    </section>
+
+    <section id="ch2" class="chapter">
+      <h2><span>2</span>Des blocs enchaînés</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin: A Peer-to-Peer Electronic Cash System</a><span class="meta">Nakamoto, 2008 · section 3 «&nbsp;Timestamp Server&nbsp;»</span></li>
+        <li><a href="https://developer.bitcoin.org/devguide/block_chain.html" target="_blank" rel="noopener">Block Chain Overview</a><span class="meta">Bitcoin Developer Guide · le chaînage et les bifurcations</span></li>
+        <li><a href="https://nvlpubs.nist.gov/nistpubs/ir/2018/NIST.IR.8202.pdf" target="_blank" rel="noopener">NIST IR 8202, Blockchain Technology Overview</a><span class="meta">Yaga et al., NIST, 2018 · une vue d’ensemble accessible</span></li>
+      </ul>
+    </section>
+
+    <section id="ch3" class="chapter">
+      <h2><span>3</span>Impossible de tricher en silence</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin: A Peer-to-Peer Electronic Cash System</a><span class="meta">Nakamoto, 2008 · sections 4 et 11</span></li>
+        <li><a href="https://ethereum.org/en/history/" target="_blank" rel="noopener">History of Ethereum</a><span class="meta">ethereum.org · le piratage de «&nbsp;The DAO&nbsp;» et la scission de juillet 2016</span></li>
+        <li><a href="https://www.cnil.fr/fr/blockchain-et-rgpd-quelles-solutions-pour-un-usage-responsable-en-presence-de-donnees-personnelles" target="_blank" rel="noopener">Blockchain et RGPD</a><span class="meta">CNIL, 2018 · données personnelles et droit à l’effacement</span></li>
+        <li><a href="https://andersbrownworth.com/blockchain/" target="_blank" rel="noopener">Blockchain Demo</a><span class="meta">Anders Brownworth · inspiration de l’expérience «&nbsp;falsifier un bloc&nbsp;»</span></li>
+      </ul>
+    </section>
+
+    <section id="ch4" class="chapter">
+      <h2><span>4</span>Un registre, des milliers de copies</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin: A Peer-to-Peer Electronic Cash System</a><span class="meta">Nakamoto, 2008 · section 5 «&nbsp;Network&nbsp;»</span></li>
+        <li><a href="https://developer.bitcoin.org/devguide/p2p_network.html" target="_blank" rel="noopener">P2P Network</a><span class="meta">Bitcoin Developer Guide · comment les nœuds communiquent</span></li>
+        <li><a href="https://eprint.iacr.org/2016/555" target="_blank" rel="noopener">On the Security and Performance of Proof of Work Blockchains</a><span class="meta">Gervais et al., ACM CCS 2016 · délais de propagation</span></li>
+        <li><a href="https://nvlpubs.nist.gov/nistpubs/ir/2018/NIST.IR.8202.pdf" target="_blank" rel="noopener">NIST IR 8202</a><span class="meta">NIST, 2018 · section 9, limites et idées reçues</span></li>
+      </ul>
+    </section>
+
+    <section id="ch5" class="chapter">
+      <h2><span>5</span>Le minage</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin: A Peer-to-Peer Electronic Cash System</a><span class="meta">Nakamoto, 2008 · section 4 «&nbsp;Proof-of-Work&nbsp;»</span></li>
+        <li><a href="https://developer.bitcoin.org/devguide/block_chain.html#proof-of-work" target="_blank" rel="noopener">Proof of Work</a><span class="meta">Bitcoin Developer Guide · réglage de la difficulté (tous les 2&nbsp;016 blocs)</span></li>
+        <li><a href="https://www.jbs.cam.ac.uk/2025/cambridge-study-sustainable-energy-rising-in-bitcoin-mining/" target="_blank" rel="noopener">Cambridge study: sustainable energy rising in Bitcoin mining</a><span class="meta">Université de Cambridge, 2025 · ~138 TWh par an, ~0,5&nbsp;% de l’électricité mondiale</span></li>
+        <li><a href="https://ccaf.io/cbnsi/cbeci" target="_blank" rel="noopener">Cambridge Bitcoin Electricity Consumption Index</a><span class="meta">Cambridge Centre for Alternative Finance · estimation mise à jour en continu</span></li>
+        <li><a href="https://ethereum.org/fr/developers/docs/consensus-mechanisms/pow/" target="_blank" rel="noopener">Preuve de travail</a><span class="meta">ethereum.org</span></li>
+      </ul>
+    </section>
+
+    <section id="ch6" class="chapter">
+      <h2><span>6</span>Qui a le droit d’écrire&nbsp;?</h2>
+      <ul>
+        <li><a href="https://ethereum.org/fr/developers/docs/consensus-mechanisms/" target="_blank" rel="noopener">Mécanismes de consensus</a><span class="meta">ethereum.org · présentation générale</span></li>
+        <li><a href="https://ethereum.org/fr/developers/docs/consensus-mechanisms/pos/" target="_blank" rel="noopener">Preuve d’enjeu</a><span class="meta">ethereum.org · mise de 32&nbsp;ETH, sanctions des tricheurs</span></li>
+        <li><a href="https://ethereum.org/en/developers/docs/consensus-mechanisms/poa/" target="_blank" rel="noopener">Proof-of-authority</a><span class="meta">ethereum.org · avantages et inconvénients de la preuve d’autorité</span></li>
+        <li><a href="https://ethereum.org/en/energy-consumption/" target="_blank" rel="noopener">Ethereum energy consumption</a><span class="meta">ethereum.org · plus de 99,9&nbsp;% d’énergie en moins après le passage à la preuve d’enjeu</span></li>
+      </ul>
+      <p class="note">Les parts des participants (40&nbsp;%, 25&nbsp;%…) dans la démonstration sont des valeurs d’exemple.</p>
+    </section>
+
+    <section id="ch7" class="chapter">
+      <h2><span>7</span>Le voyage d’un paiement, et une attaque</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin: A Peer-to-Peer Electronic Cash System</a><span class="meta">Nakamoto, 2008 · section 11, la formule des chances de réussite d’un attaquant</span></li>
+        <li><a href="https://developer.bitcoin.org/devguide/transactions.html" target="_blank" rel="noopener">Transactions</a><span class="meta">Bitcoin Developer Guide · signature et vérification d’un paiement</span></li>
+        <li><a href="https://developer.bitcoin.org/devguide/p2p_network.html#memory-pool" target="_blank" rel="noopener">Memory Pool</a><span class="meta">Bitcoin Developer Guide · la «&nbsp;salle d’attente&nbsp;» des paiements</span></li>
+        <li><a href="https://www.dci.mit.edu/projects/51-percent-attacks" target="_blank" rel="noopener">51% Attacks</a><span class="meta">MIT Digital Currency Initiative · attaques réelles recensées en 2019-2020</span></li>
+        <li><a href="https://arxiv.org/abs/1311.0243" target="_blank" rel="noopener">Majority is not Enough</a><span class="meta">Eyal &amp; Sirer, 2014 · une attaque est possible même sous 50&nbsp;%</span></li>
+      </ul>
+    </section>
+
+    <footer class="credits">
+      <p>Projet R507 · BUT MMI 3 · Rahim Tamhaev &amp; Nicolas Rapuzzi</p>
+      <a class="btn" href="index.html">Revenir au parcours</a>
+    </footer>
+  </main>
+</body>
+</html>
