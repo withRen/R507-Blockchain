@@ -88,6 +88,7 @@ Le suivi se fait dans **GitHub Projects**, avec les colonnes :
 
 - Parcours principal à **30 FPS ou plus** sur un poste de TP standard.
 - **Tests utilisateurs** avec au moins 2 personnes extérieures au groupe. Leurs retours sont notés et transformés en issues si besoin.
+  Questionnaire à leur faire remplir : [formulaire de retours testeurs](https://docs.google.com/forms/d/e/1FAIpQLSdWOe5Z6wL2r4mvUCPZjamTJZX2sr3akOwpV4yEK9PuOTuHjA/viewform).
 - Textes lisibles, légendes, retours visuels et navigation claire.
 
 ## Usage de l'IA générative
@@ -126,3 +127,4 @@ Sources primaires, ouvertes et lues le 13 octobre 2026. La fiche de recherche d�
 - [Hyperledger Fabric, ordering service](https://hyperledger-fabric.readthedocs.io/en/latest/orderer/ordering_service.html) : Raft, réseau à autorisation, finalité des blocs
 
 **Limites** : les montants de récompense cités dans la documentation Bitcoin datent de 2017 et ne sont pas repris. L'origine historique du mot "mempool" n'a pas été vérifiée. Les valeurs de la table de probabilités d'attaque (z) sont recalculées à partir de la formule du whitepaper (approximation de Poisson).
+
