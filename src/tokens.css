@@ -1,0 +1,33 @@
+﻿/* ============================================================
+   Palette : un fond papier chaud, une encre bleue pour l'information,
+   et trois couleurs d'etat utilisees de la meme facon partout.
+   ============================================================ */
+:root {
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --surface-2: #faf8f4;
+  --line: #e7e3da;
+  --ink: #17161c;
+  --ink-2: #4a4854;
+  --muted: #8a8794;
+
+  --primary: #3346d3;
+  --primary-soft: #e8ebfb;
+  --ok: #1e9e6a;
+  --ok-soft: #e1f3ea;
+  --danger: #e0473e;
+  --danger-soft: #fce8e6;
+  --mining: #e89a2c;
+  --mining-soft: #fcf0dc;
+  --stake: #1a9aa0;
+  --authority: #7357d6;
+
+  --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius: 20px;
+  --radius-sm: 12px;
+  --card-width: 420px;
+  --shadow: 0 1px 2px rgba(23, 22, 28, 0.04), 0 12px 40px rgba(23, 22, 28, 0.08);
+}
