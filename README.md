@@ -1,6 +1,8 @@
 # R507 — Blockchain en 3D
 ---
 
+> **Branche `test-alternate`** : version alternative du parcours, un récit 3D dans un quartier d'affaires de nuit. Démo : https://withren.github.io/R507-Blockchain/ . L'ancien parcours reste sur `ancien-parcours.html`.
+
 ## Équipe
 
 | Membre |
@@ -107,6 +109,7 @@ Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code géné
 | Claude (Claude Code) | Cadrage initial, rédaction de la structure du README, génération des jalons et issues GitHub |
 | Antigravity | Initialisation du projet Vite + Three.js, scène 3D minimale, intégration UI WebGL (issue #6) |
 | Claude (Claude Code) | Première version du parcours scénarisé en 7 chapitres (scènes Three.js, textes, inconvénients, recherche et vérification des sources) |
+| Claude (Claude Code) | Branche `test-alternate` : scénario « Le Registre » et récit 3D en 9 séquences (`src/recit/`), intégration des assets Poly Haven (voir `docs/ASSETS.md`) |
 | Antigravity | Rédaction des livrables (`CHOIX-MODELISATION.md`, `GRILLE-AUTOEVAL.md`, fiches de suivi hebdomadaire `SEMAINE-02` à `SEMAINE-04`) et synchronisation avec la fiche de recherche |
 
 ## Sources
