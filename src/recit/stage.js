@@ -103,7 +103,7 @@ export function filament(a, b, hex = COLORS.ok) {
 }
 
 // Salle fermee : sol, plafond et murs, plus bandeaux de plafond
-export function closedRoom(group, { W, D, CEIL, wall = 0x8a8d93, floor = 0x8a8d93, ceil = 0x5a5d63, floorTex = 'concrete_floor_worn_001', wallTex = 'concrete_wall_006', tileFloor = 3, tileWall = 3, strips = [], stripLen, stripColor = [0.9, 0.96, 1.1] }) {
+export function closedRoom(group, { W, D, CEIL, wall = 0x8a8d93, floor = 0x8a8d93, ceil = 0x5a5d63, floorTex = 'concrete_floor_worn_001', wallTex = 'concrete_wall_006', tileFloor = 3, tileWall = 3, floorRough = 1, floorNormal = 0.8, floorOpacity = 1, wallNormal = 0.8, strips = [], stripLen, stripColor = [0.9, 0.96, 1.1] }) {
   const f = new Kit();
   f.box(W * 2, 0.1, D * 2, floor, { p: [0, -0.05, 0] });
   const k = new Kit();
@@ -112,8 +112,8 @@ export function closedRoom(group, { W, D, CEIL, wall = 0x8a8d93, floor = 0x8a8d9
   k.box(0.2, CEIL, D * 2, wall, { p: [W, CEIL / 2, 0] });
   k.box(W * 2, CEIL, 0.2, wall, { p: [0, CEIL / 2, -D] });
   k.box(W * 2, CEIL, 0.2, wall, { p: [0, CEIL / 2, D] });
-  group.add(textured(f, surface(floorTex, { normalScale: 0.8 }), tileFloor));
-  group.add(textured(k, surface(wallTex, { normalScale: 0.8 }), tileWall));
+  group.add(textured(f, surface(floorTex, { normalScale: floorNormal, roughness: floorRough, opacity: floorOpacity }), tileFloor));
+  group.add(textured(k, surface(wallTex, { normalScale: wallNormal }), tileWall));
   if (strips.length) {
     const s = new Kit();
     strips.forEach((x) => s.box(0.14, 0.03, stripLen ?? D * 1.7, 0xffffff, { p: [x, CEIL - 0.02, 0] }));
@@ -158,13 +158,14 @@ function rackTexture(accent, second) {
 export function rackFaces(group, spots, { accent = '#7c93ff', second = '#62d6a0', w = 2.3, h = 3.5, gain = 1.5 } = {}) {
   const mesh = new THREE.InstancedMesh(
     new THREE.PlaneGeometry(w, h),
-    new THREE.MeshBasicMaterial({ map: rackTexture(accent, second), color: new THREE.Color(gain, gain, gain) }),
+    new THREE.MeshBasicMaterial({ map: rackTexture(accent, second), color: new THREE.Color(gain, gain, gain), side: THREE.DoubleSide }),
     spots.length
   );
   const d = new THREE.Object3D();
-  spots.forEach(({ p, r }, i) => {
+  spots.forEach(({ p, r, flip }, i) => {
     d.position.set(...p);
     d.rotation.set(0, r, 0);
+    d.scale.set(1, flip ? -1 : 1, 1);
     d.updateMatrix();
     mesh.setMatrixAt(i, d.matrix);
   });

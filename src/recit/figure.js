@@ -2,10 +2,11 @@
 // 9 articulations (hanches, genoux, epaules, coudes, tete), chacune un seul maillage.
 import * as THREE from 'three';
 import { Kit } from './kit.js';
-import { surface, textured } from './assets.js';
+import { addRim, surface, textured } from './assets.js';
 
-const skinMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.52, metalness: 0, envMapIntensity: 0.55 });
-const cloth = (kit) => textured(kit, surface('poly_wool_herringbone', { map: false, normalScale: 0.75, roughness: 1, envMapIntensity: 0.45 }), 0.2);
+const skinMaterial = addRim(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.58, metalness: 0, envMapIntensity: 0.4, color: new THREE.Color(0.72, 0.72, 0.72) }), [0.05, 0.065, 0.11], 3.6);
+const clothMaterial = addRim(surface('poly_wool_herringbone', { map: false, normalScale: 0.75, roughness: 1, envMapIntensity: 0.45 }));
+const cloth = (kit) => textured(kit, clothMaterial, 0.2);
 
 const sphere = new THREE.SphereGeometry(1, 24, 18);
 const small = new THREE.SphereGeometry(1, 10, 8);
@@ -170,7 +171,7 @@ export const CAST = {
       head(k, { hair }) {
         k.add(sphere, hair, { p: [0, 0.2, -0.018], s: [0.1, 0.11, 0.108] });
         k.add(sphere, hair, { p: [0, 0.13, -0.052], s: [0.095, 0.092, 0.07] });
-        const ring = new THREE.TorusGeometry(0.03, 0.005, 6, 16);
+        const ring = new THREE.TorusGeometry(0.025, 0.0028, 6, 18);
         k.add(ring, 0x0a0a0c, { p: [0.038, 0.186, 0.103] });
         k.add(ring, 0x0a0a0c, { p: [-0.038, 0.186, 0.103] });
       }

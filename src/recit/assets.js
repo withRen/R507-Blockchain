@@ -37,8 +37,8 @@ function fetchTexture(t) {
   });
 }
 
-export function surface(name, { map = true, normalScale = 1, metalness = 0, roughness = 1, envMapIntensity = 1 } = {}) {
-  const key = `${name}|${map}|${normalScale}|${metalness}|${roughness}|${envMapIntensity}`;
+export function surface(name, { map = true, normalScale = 1, metalness = 0, roughness = 1, envMapIntensity = 1, opacity = 1 } = {}) {
+  const key = `${name}|${map}|${normalScale}|${metalness}|${roughness}|${envMapIntensity}|${opacity}`;
   if (cache.has(key)) return cache.get(key);
   const m = new THREE.MeshStandardMaterial({
     vertexColors: true,
@@ -47,7 +47,9 @@ export function surface(name, { map = true, normalScale = 1, metalness = 0, roug
     envMapIntensity,
     normalMap: lazyTexture(`pbr/${name}/nor.jpg`),
     roughnessMap: lazyTexture(`pbr/${name}/rough.jpg`),
-    normalScale: new THREE.Vector2(normalScale, normalScale)
+    normalScale: new THREE.Vector2(normalScale, normalScale),
+    transparent: opacity < 1,
+    opacity
   });
   if (map) {
     m.map = lazyTexture(`pbr/${name}/diff.jpg`, true);
@@ -78,6 +80,20 @@ export function boxUV(geometry, size = 1) {
   }
   geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   return geometry;
+}
+
+// Liseré de lumiere sur les contours : detache les silhouettes du fond, comme au cinema
+export function addRim(material, color = [0.07, 0.095, 0.17], power = 3.6) {
+  material.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <dithering_fragment>',
+      `#include <dithering_fragment>
+       float rimF = pow(1.0 - clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0), ${power.toFixed(1)});
+       gl_FragColor.rgb += vec3(${color.map((c) => c.toFixed(3)).join(',')}) * rimF;`
+    );
+  };
+  material.customProgramCacheKey = () => `rim${color.join()}${power}`;
+  return material;
 }
 
 export function textured(kit, material, size = 1) {

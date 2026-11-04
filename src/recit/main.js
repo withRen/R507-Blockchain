@@ -3,6 +3,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { loadEnvironment, setWarmup, syncAssets } from './assets.js';
 import { createCity } from './city.js';
 import { createOffice } from './office.js';
@@ -80,6 +81,26 @@ async function init() {
   const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.34, 0.55, 0.92);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
+  // Etalonnage de cinema : ombres froides, hautes lumieres chaudes, vignette et grain
+  const grade = new ShaderPass({
+    uniforms: { tDiffuse: { value: null }, uTime: { value: 0 } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+    fragmentShader: `
+      uniform sampler2D tDiffuse; uniform float uTime; varying vec2 vUv;
+      float n(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233)) + uTime) * 43758.5453); }
+      void main(){
+        vec3 c = texture2D(tDiffuse, vUv).rgb;
+        float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+        c = mix(c * vec3(0.9, 0.97, 1.1), c * vec3(1.05, 1.0, 0.93), smoothstep(0.08, 0.65, l));
+        c = mix(vec3(l), c, 1.08);
+        c = smoothstep(-0.015, 1.03, c);
+        vec2 q = vUv - 0.5;
+        c *= 1.0 - dot(q, q) * 0.62;
+        c += (n(vUv * 913.0) - 0.5) * 0.016;
+        gl_FragColor = vec4(c, 1.0);
+      }`
+  });
+  composer.addPass(grade);
   let useBloom = !params.has('nobloom') && window.innerWidth > 700;
 
   function resize() {
@@ -423,8 +444,9 @@ async function init() {
     elHint.classList.toggle('off', shown > 0.002);
     bar.style.transform = `scaleX(${shown.toFixed(4)})`;
 
-    if (useBloom) composer.render(dt);
-    else renderer.render(scene, camera);
+    grade.uniforms.uTime.value = time % 10;
+    bloom.enabled = useBloom;
+    composer.render(dt);
     window.__recitStats = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs.length };
 
     frames++;

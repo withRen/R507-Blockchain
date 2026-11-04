@@ -34,7 +34,7 @@ export function createServerRoom(scene) {
   const W = 11;
   const D = 13;
   const CEIL = 5.4;
-  closedRoom(group, { W, D, CEIL, wall: 0x50545c, floor: 0x777b83, ceil: 0x3c3f46, floorTex: 'metal_plate_02', wallTex: 'grey_plaster', tileFloor: 1.2, tileWall: 2.2 });
+  closedRoom(group, { W, D, CEIL, wall: 0x3e4148, floor: 0x5c6068, ceil: 0x25272c, floorTex: 'large_grey_tiles', wallTex: 'grey_plaster', tileFloor: 1.2, tileWall: 3, floorRough: 0.55, floorNormal: 0.35, floorOpacity: 0.78, wallNormal: 0.3 });
   const k = new Kit();
   // Baies de serveurs, en rangees de part et d'autre
   const faces = [];
@@ -46,6 +46,18 @@ export function createServerRoom(scene) {
     }
   });
   rackFaces(group, faces);
+  // Reflet des baies dans le sol poli
+  rackFaces(group, faces.map((f) => ({ p: [f.p[0], -f.p[1], f.p[2]], r: f.r, flip: true })), { gain: 0.8 });
+  // Chemins de cables au plafond et porte du fond
+  const hw = new Kit();
+  [-7, 7].forEach((x) => {
+    hw.box(1.3, 0.1, D * 2 - 0.4, 0x3a3e46, { p: [x, CEIL - 0.45, 0] });
+    for (let z = -11; z <= 11; z += 2.75) hw.box(0.05, 0.42, 0.05, 0x3a3e46, { p: [x - 0.6, CEIL - 0.21, z] });
+    for (let z = -11; z <= 11; z += 2.75) hw.box(0.05, 0.42, 0.05, 0x3a3e46, { p: [x + 0.6, CEIL - 0.21, z] });
+  });
+  hw.box(1.9, 2.5, 0.08, 0x5a5e66, { p: [0, 1.25, -D + 0.14] });
+  hw.box(2.2, 0.14, 0.14, 0x4a4e56, { p: [0, 2.57, -D + 0.14] });
+  group.add(textured(hw, metalSurface(), 1.3));
   // Socle du bloc
   k.add(new THREE.CylinderGeometry(1.95, 2.1, 0.28, 48), 0x5b606a, { p: [0, 0.14, 0] });
   group.add(textured(k, metalSurface(), 1.3));
@@ -54,6 +66,9 @@ export function createServerRoom(scene) {
   ring.rotation.x = Math.PI / 2;
   ring.position.y = 0.29;
   group.add(ring);
+  const ringMirror = ring.clone();
+  ringMirror.position.y = -0.29;
+  group.add(ringMirror);
 
   const strips = new Kit();
   [-7, 7].forEach((x) => strips.box(0.14, 0.03, 22, 0xffffff, { p: [x, CEIL - 0.02, 0] }));
