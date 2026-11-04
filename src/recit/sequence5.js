@@ -37,14 +37,10 @@ export function createSequence5(ctx) {
   group.add(textured(m, metalSurface(), 1.3));
   place(group, 'worn_metal_rack', [-8, -5, -2, 1, 4, 7].map((x) => ({ p: [x, 0, -14.6], r: 0, s: 1.25 })));
   place(group, 'plastic_crate_01', [
-    { p: [9, 0, -7.4], r: 0.3, s: 1.6 }, { p: [9.7, 0, -6.7], r: -0.2, s: 1.6 }, { p: [9.2, 0.42, -7], r: 0.9, s: 1.6 },
-    { p: [-9, 0, -8], r: 0.1, s: 1.6 }, { p: [-8.4, 0, -7.2], r: 1, s: 1.6 }
+    { p: [9, 0, -7.4], r: 0.3, s: 1.6 }, { p: [9.7, 0, -6.7], r: -0.2, s: 1.6 }, { p: [-9, 0, -8], r: 0.1, s: 1.6 }
   ]);
-  place(group, 'hanging_industrial_lamp', [-6, 0, 6].flatMap((x) => [-8, 4].map((z) => ({ p: [x, 8.4 - 1.36, z] }))));
+  place(group, 'hanging_industrial_lamp', [-6, 0, 6].map((x) => ({ p: [x, 8.4 - 1.36, -2] })));
   group.add(d.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(1.4, 1.4, 1.4) }), { cast: false }));
-  const l1 = new THREE.PointLight(0xffc98d, 15, 30, 1.05);
-  l1.position.set(0, 7, 4);
-  group.add(l1);
 
   // Le bloc candidat
   const cand = glassBlock({ w: 3.2, h: 2.1, d: 1.2, tint: COLORS.effort });
@@ -168,6 +164,7 @@ export function createSequence5(ctx) {
 
   return {
     name: 'Minage',
+    lights: [{ p: [0, 7, 4], color: 0xffc98d, i: 15, d: 30 }, { p: [-9, 6, -6], color: 0xffb478, i: 7, d: 20 }, { p: [9, 6, -6], color: 0xffb478, i: 7, d: 20 }],
     groups: [group],
     panelEl: panel,
     LAB: { from: 0.68, to: 0.92 },

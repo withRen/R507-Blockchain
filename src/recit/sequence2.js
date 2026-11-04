@@ -26,9 +26,6 @@ export function createSequence2(ctx) {
   lineKit.box(36, 0.012, 0.045, 0xffffff, { p: [0, 0.01, 3.7] });
   lineKit.box(36, 0.012, 0.045, 0xffffff, { p: [0, 0.01, -3.7] });
   group.add(lineKit.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(0.65, 0.8, 1.7) }), { cast: false }));
-  const lamp = new THREE.PointLight(0xd5e0ff, 9, 18, 1.2);
-  lamp.position.set(0, 4.6, 3);
-  group.add(lamp);
 
   const chain = createChain();
   const blocks = chain.blocks.map((b, i) => {
@@ -84,6 +81,7 @@ export function createSequence2(ctx) {
 
   return {
     name: 'Chaînage',
+    lights: [{ p: [0, 4.6, 3], color: 0xd5e0ff, i: 9, d: 18 }, { p: [-7, 4, 4], color: 0xd5e0ff, i: 5, d: 14 }],
     groups: [group, ctx.cityGroup],
     cityLit: true,
     panelEl: panel,

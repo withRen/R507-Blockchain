@@ -66,6 +66,7 @@ export function createSequence3(ctx) {
 
   return {
     name: 'Falsification',
+    lights: [{ p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 9, d: 15 }, { p: [-5.4, 3.2, 7], color: 0xe8eeff, i: 5, d: 12 }],
     groups: [ctx.office.group, ctx.cityGroup],
     cityLit: true,
     panelEl: panel,

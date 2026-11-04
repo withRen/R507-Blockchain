@@ -65,12 +65,6 @@ export function createServerRoom(scene) {
   [-7, 7].forEach((x) => strips.box(0.14, 0.03, 22, 0xffffff, { p: [x, CEIL - 0.02, 0] }));
   group.add(strips.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(0.9, 0.96, 1.1) }), { cast: false }));
 
-  const l1 = new THREE.PointLight(0xc9d6ff, 10, 15, 1.2);
-  l1.position.set(0, 4.8, 3.4);
-  const l2 = new THREE.PointLight(0x6c84ff, 9, 9, 1.4);
-  l2.position.set(0, 1.1, 2.4);
-  group.add(l1, l2);
-
   // ---------- Le bloc ----------
   const block = new THREE.Group();
   block.position.set(0, 2.05, 0);

@@ -81,6 +81,7 @@ export function createSequence6(ctx) {
 
   return {
     name: 'Consensus',
+    lights: [{ p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 9, d: 15 }, { p: [-2.4, 2.6, 7], color: 0xc8d4ff, i: 3, d: 8 }],
     groups: [ctx.office.group, ctx.cityGroup],
     cityLit: true,
     panelEl: panel,

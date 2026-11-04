@@ -3,7 +3,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { loadEnvironment } from './assets.js';
+import { loadEnvironment, setWarmup, syncAssets } from './assets.js';
 import { createCity } from './city.js';
 import { createOffice } from './office.js';
 import { createServerRoom } from './serverroom.js';
@@ -27,12 +27,13 @@ const unaccent = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 Promise.race([
   Promise.all(['400 40px "Newsreader"', '500 20px "Inter"', '500 16px "IBM Plex Mono"'].map((f) => document.fonts.load(f))),
   new Promise((r) => setTimeout(r, 2000))
-]).finally(init);
+]).finally(() => init());
 
-function init() {
+async function init() {
   const canvas = document.querySelector('#scene');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
-  let pixelRatio = Math.min(window.devicePixelRatio, 1.5);
+  renderer.info.autoReset = false;
+  let pixelRatio = Math.min(window.devicePixelRatio, 1.25);
   renderer.setPixelRatio(pixelRatio);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.95;
@@ -51,10 +52,29 @@ function init() {
   moon.position.set(-0.5, 0.65, 1);
   scene.add(moon);
 
-  loadEnvironment(renderer, scene);
+  // Un jeu de lumieres fixe, deplace d'un decor a l'autre. Si leur nombre changeait,
+  // tous les materiaux seraient recompiles : c'est ce qui provoque les saccades.
+  const rig = [0, 1, 2].map(() => {
+    const l = new THREE.PointLight(0xffffff, 0, 16, 1.2);
+    scene.add(l);
+    return l;
+  });
+  const worldPos = new THREE.Vector3();
+  function applyLights(seq) {
+    rig.forEach((l, i) => {
+      const def = seq.lights?.[i];
+      l.intensity = def ? def.i : 0;
+      if (!def) return;
+      (seq.parent ?? scene).getWorldPosition(worldPos);
+      l.position.set(worldPos.x + def.p[0], worldPos.y + def.p[1], worldPos.z + def.p[2]);
+      l.color.setHex(def.color);
+      l.distance = def.d;
+    });
+  }
+  await loadEnvironment(renderer, scene);
 
   // ---------- Rendu avec bloom ----------
-  const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+  const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 2 });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
   const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.34, 0.55, 0.92);
@@ -68,7 +88,8 @@ function init() {
     renderer.setSize(w, h, false);
     composer.setPixelRatio(pixelRatio);
     composer.setSize(w, h);
-    bloom.resolution.set(Math.round(w * pixelRatio * 0.5), Math.round(h * pixelRatio * 0.5));
+    // Bloom a demi-resolution : c'est le poste le plus couteux
+    bloom.setSize(Math.round(w * pixelRatio * 0.5), Math.round(h * pixelRatio * 0.5));
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -170,6 +191,7 @@ function init() {
   // ---------- Les sequences ----------
   const prologue = {
     name: 'Prologue',
+    lights: [{ p: [3.5, 3.2, -1.2], color: 0xe8eeff, i: 7, d: 18 }, { p: [-5.4, 3.2, -7.5], color: 0xe8eeff, i: 8, d: 18 }, { p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 9, d: 15 }],
     ...P,
     CAMERA: P.CAMERA,
     actorsDef: P.ACTORS,
@@ -180,10 +202,11 @@ function init() {
     heroLevel: null,
     update(t) {
       office.group.visible = t > 0.2 && t < 0.92;
+      // Camera tournee vers le fond de l'etage : la ville derriere elle n'est pas dessinee
+      cityGroup.visible = !(t > 0.285 && t < 0.615);
       office.setLedgerChanged(t > P.SCENE.ledger);
       const open = curve(P.SCENE.lift, t);
       office.setLiftOpen(open);
-      office.liftGlow.intensity = open * 0.5;
       const start = 0.9;
       prologue.heroLevel = (i) => smooth((t - (i === 0 ? start : start + (((i * 5) % 14) / 14) * 0.05)) / 0.012);
       prologue.linkLevel = smooth((t - 0.925) / 0.03);
@@ -193,6 +216,7 @@ function init() {
   };
   const sequence1 = {
     name: 'Bloc',
+    lights: [{ p: [0, 4.8, 3.4], color: 0xc9d6ff, i: 10, d: 15 }, { p: [0, 1.1, 2.4], color: 0x6c84ff, i: 9, d: 9 }],
     ...S1,
     actorsDef: S1.ACTORS,
     parent: room.group,
@@ -240,6 +264,15 @@ function init() {
     });
   });
   const allGroups = new Set(sequences.flatMap((s) => s.groups));
+
+  // Tous les shaders sont compiles avant le debut : plus de saccade en changeant de decor
+  setWarmup(renderer, (mesh) => { renderer.compileAsync(mesh, camera, scene).catch(() => {}); });
+  allGroups.forEach((g) => { g.visible = true; });
+  sequences.forEach((s) => applyLights(s));
+  const wait = new Promise((r) => setTimeout(r, 4000));
+  await Promise.race([renderer.compileAsync(scene, camera).catch(() => {}), wait]);
+  allGroups.forEach((g) => { g.visible = false; });
+  document.querySelector('#loading')?.classList.add('off');
 
   // Navigation : une mini-chaine, un bloc par sequence
   const nav = $('#chain-nav');
@@ -293,6 +326,12 @@ function init() {
     city.setNetwork(null);
     active = seq;
     seq.enter?.();
+    applyLights(seq);
+    // On charge la sequence courante et ses voisines, on decharge le reste
+    const idx = sequences.indexOf(seq);
+    const needed = new Set();
+    [idx - 1, idx, idx + 1].forEach((i) => sequences[i]?.groups.forEach((g) => { if (g !== cityGroup) needed.add(g); }));
+    syncAssets(new Set([...allGroups].filter((g) => g !== cityGroup)), needed);
     curLine = curTerm = curSlug = undefined;
     navButtons.forEach((b, i) => {
       const idx = sequences.indexOf(seq);
@@ -347,6 +386,7 @@ function init() {
   function frame() {
     const dt = Math.min(clock.getDelta(), 0.06);
     const time = clock.elapsedTime;
+    renderer.info.reset();
     const goal = forced ?? clamp01(window.scrollY / Math.max(1, scrollMax()));
     shown += (goal - shown) * (reduceMotion || forced !== null ? 1 : 1 - Math.exp(-dt * 3.4));
 
@@ -366,7 +406,8 @@ function init() {
     room.tick(dt, time);
     if (cityGroup.visible) {
       const level = seq.heroLevel ?? (() => 0.9);
-      city.update(time, camera, level, seq.linkLevel ?? (seq.cityLit ? 0.34 : 0));
+      const inside = seq.insideAt ? seq.insideAt(t) : !seq.outside && seq.CAMERA !== undefined && seq.name !== 'Chaînage';
+      city.update(time, camera, level, seq.linkLevel ?? (seq.cityLit ? 0.34 : 0), inside);
     }
     hud(seq, t, seq.override?.());
 
@@ -379,6 +420,7 @@ function init() {
 
     if (useBloom) composer.render(dt);
     else renderer.render(scene, camera);
+    window.__recitStats = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs.length };
 
     frames++;
     const now = performance.now();
@@ -386,9 +428,10 @@ function init() {
     if (now - mark > 1500) {
       const fps = (frames * 1000) / (now - mark);
       window.__recitFps = fps;
-      if (document.visibilityState === 'visible' && fps > 5 && fps < 32 && forced === null) {
-        if (pixelRatio > 1) {
-          pixelRatio = Math.max(1, pixelRatio - 0.25);
+      // Sous 45 images par seconde, la qualite baisse d'elle-meme, par paliers
+      if (document.visibilityState === 'visible' && fps > 5 && fps < 45 && forced === null) {
+        if (pixelRatio > 0.8) {
+          pixelRatio = Math.max(0.8, pixelRatio - 0.2);
           renderer.setPixelRatio(pixelRatio);
           resize();
         } else if (useBloom) {

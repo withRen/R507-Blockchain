@@ -58,12 +58,6 @@ export function createSequence7(ctx) {
   }
   group.add(textured(rack, metalSurface(), 1.3));
   group.add(red.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(1.9, 1.4, 1.4) }), { cast: false }));
-  const lamp = new THREE.PointLight(0xc9d6ff, 9, 26, 1.1);
-  lamp.position.set(-1, 3.8, 3.5);
-  const lampRed = new THREE.PointLight(0xff5b4c, 7, 16, 1.2);
-  lampRed.position.set(12, 2.8, -3);
-  group.add(lamp, lampRed);
-
   // ---------- Hologramme : chaine publique et chaine secrete ----------
   const X0 = -7.4;
   const SP = 1.45;
@@ -160,6 +154,7 @@ export function createSequence7(ctx) {
 
   return {
     name: 'Attaque',
+    lights: [{ p: [-1, 3.8, 3.5], color: 0xc9d6ff, i: 9, d: 26 }, { p: [12, 2.8, -3], color: 0xff5b4c, i: 7, d: 16 }, { p: [-10, 3.8, 3], color: 0xc9d6ff, i: 5, d: 18 }],
     groups: [group],
     panelEl: panel,
     LAB: { from: 0.8, to: 0.94 },

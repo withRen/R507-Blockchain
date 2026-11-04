@@ -7,9 +7,10 @@ import { surface, textured } from './assets.js';
 const skinMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.52, metalness: 0, envMapIntensity: 0.55 });
 const cloth = (kit) => textured(kit, surface('poly_wool_herringbone', { map: false, normalScale: 0.75, roughness: 1, envMapIntensity: 0.45 }), 0.2);
 
-const sphere = new THREE.SphereGeometry(1, 20, 16);
-const cap = (r, l) => new THREE.CapsuleGeometry(r, l, 6, 14);
-const cone = (a, b, h) => new THREE.CylinderGeometry(a, b, h, 22, 1);
+const sphere = new THREE.SphereGeometry(1, 24, 18);
+const small = new THREE.SphereGeometry(1, 10, 8);
+const cap = (r, l) => new THREE.CapsuleGeometry(r, l, 5, 14);
+const cone = (a, b, h) => new THREE.CylinderGeometry(a, b, h, 32, 3);
 
 export function createFigure(spec) {
   const {
@@ -32,6 +33,10 @@ export function createFigure(spec) {
   torso.add(sphere, trousers, { p: [0, hipY, 0], s: [sw * 0.84, 0.1, sw * 0.58] });
   // Col et chemise
   torso.add(new THREE.ConeGeometry(0.065, 0.2, 3), shirt, { p: [0, hipY + torsoH - 0.09, sw * 0.585], r: [Math.PI, 0, 0], s: [1, 1, 0.12] });
+  // Revers de veste
+  const lapel = new THREE.Color(jacket).multiplyScalar(1.45).getHex();
+  torso.box(0.035, 0.24, 0.012, lapel, { p: [0.052, hipY + torsoH - 0.13, sw * 0.6], r: [0, 0, 0.3] });
+  torso.box(0.035, 0.24, 0.012, lapel, { p: [-0.052, hipY + torsoH - 0.13, sw * 0.6], r: [0, 0, -0.3] });
   style.torso?.(torso, { hipY, torsoH, sw, H });
   body.add(cloth(torso));
 
@@ -41,7 +46,17 @@ export function createFigure(spec) {
   const hk = new Kit();
   hk.add(new THREE.CylinderGeometry(0.052, 0.062, 0.1, 12), skin, { p: [0, 0.045, 0] });
   hk.add(sphere, skin, { p: [0, 0.175, 0.008], s: [0.092, 0.118, 0.104] });
-  hk.add(sphere, skin, { p: [0, 0.158, 0.105], s: [0.016, 0.026, 0.02] });
+  const shade = new THREE.Color(skin).multiplyScalar(0.72).getHex();
+  // Machoire, nez, oreilles, arcades, yeux et bouche : un visage sobre mais lisible
+  hk.add(sphere, skin, { p: [0, 0.112, 0.022], s: [0.07, 0.07, 0.076] });
+  hk.add(small, skin, { p: [0, 0.172, 0.104], s: [0.014, 0.03, 0.022] });
+  hk.add(small, skin, { p: [0.092, 0.17, 0], s: [0.012, 0.03, 0.02] });
+  hk.add(small, skin, { p: [-0.092, 0.17, 0], s: [0.012, 0.03, 0.02] });
+  hk.add(small, skin, { p: [0.036, 0.2, 0.094], s: [0.03, 0.009, 0.012] });
+  hk.add(small, skin, { p: [-0.036, 0.2, 0.094], s: [0.03, 0.009, 0.012] });
+  hk.add(small, 0x17110f, { p: [0.036, 0.186, 0.097], s: [0.0125, 0.0065, 0.007] });
+  hk.add(small, 0x17110f, { p: [-0.036, 0.186, 0.097], s: [0.0125, 0.0065, 0.007] });
+  hk.add(small, shade, { p: [0, 0.128, 0.094], s: [0.022, 0.006, 0.008] });
   style.head?.(hk, { hair });
   head.add(new THREE.Mesh(hk.geometry(), skinMaterial));
   body.add(head);
@@ -57,7 +72,7 @@ export function createFigure(spec) {
     elbow.position.y = -0.3 * H;
     const fore = new Kit();
     fore.add(cap(0.037, 0.23 * H), style.sleeve ?? jacket, { p: [0, -0.135 * H, 0] });
-    fore.add(sphere, skin, { p: [0, -0.3 * H, 0], s: [0.038, 0.058, 0.03] });
+    fore.add(small, skin, { p: [0, -0.3 * H, 0], s: [0.038, 0.058, 0.03] });
     style.hand?.(fore, { sign, H });
     elbow.add(cloth(fore));
     shoulder.add(elbow);
@@ -78,7 +93,7 @@ export function createFigure(spec) {
     knee.position.y = -0.41 * H;
     const shin = new Kit();
     shin.add(cap(0.05, 0.34 * H), trousers, { p: [0, -0.2 * H, 0] });
-    shin.add(sphere, shoes, { p: [0, -0.43 * H, 0.05], s: [0.05, 0.036, 0.122] });
+    shin.add(small, shoes, { p: [0, -0.43 * H, 0.05], s: [0.05, 0.036, 0.122] });
     knee.add(cloth(shin));
     hip.add(knee);
     root.add(hip);

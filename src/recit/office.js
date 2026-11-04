@@ -189,18 +189,6 @@ export function createOffice(scene) {
   cutout.position.set(0, 1.4, 0.115);
   lift.add(cutout);
 
-  // Lumieres de l'etage
-  const a = new THREE.PointLight(0xe8eeff, 7, 18, 1.2);
-  a.position.set(3.5, 3.2, -1.2);
-  const b = new THREE.PointLight(0xe8eeff, 8, 18, 1.2);
-  b.position.set(-5.4, 3.2, -7.5);
-  const c = new THREE.PointLight(0xdbe3ff, 9, 15, 1.15);
-  c.position.set(-2.4, 3.2, 3.6);
-  const liftGlow = new THREE.PointLight(0xffcf95, 0, 6, 1.5);
-  liftGlow.position.set(0, 2.1, 0.8);
-  lift.add(liftGlow);
-  group.add(a, b, c);
-
   // Verre de la baie : un voile tres leger
   const glass = new THREE.Mesh(
     new THREE.PlaneGeometry(W * 2, CEIL),
@@ -227,5 +215,5 @@ export function createOffice(scene) {
     return m;
   };
 
-  return { group, setLedgerChanged, setLiftOpen, liftGlow, makeShadow };
+  return { group, setLedgerChanged, setLiftOpen, makeShadow };
 }

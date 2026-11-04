@@ -20,9 +20,6 @@ export function createEpilogue(ctx) {
   k.box(3.2, 2.4, 3.2, 0x20242e, { p: [-9, 1.2, -8] });
   k.box(2.2, 1.7, 4.2, 0x20242e, { p: [10, 0.85, -7] });
   group.add(textured(k, surface('concrete_floor_worn_001', { normalScale: 0.8 }), 3));
-  const lamp = new THREE.PointLight(0xc8d6ff, 9, 16, 1.1);
-  lamp.position.set(-1, 3.6, 7.2);
-  group.add(lamp);
 
   const panel = ctx.panel(`
     <h2>Ce qu’il faut retenir</h2>
@@ -41,6 +38,7 @@ export function createEpilogue(ctx) {
 
   return {
     name: 'Épilogue',
+    lights: [{ p: [-1, 3.6, 7.2], color: 0xc8d6ff, i: 9, d: 16 }],
     groups: [group, ctx.cityGroup],
     cityLit: true,
     outside: true,

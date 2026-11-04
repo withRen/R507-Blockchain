@@ -1,6 +1,5 @@
-// Le quartier d'affaires de nuit. Des centaines de tours pour tres peu de draw calls :
-// les fenetres sont calculees dans le shader et le reflet sur l'asphalte est simule
-// par une copie retournee de la ville, vue a travers un sol sombre semi-transparent.
+// Le quartier d'affaires de nuit. Les fenetres sont calculees dans le shader, et les tours
+// sont groupees par quartiers : un quartier hors du champ n'est pas dessine du tout.
 import * as THREE from 'three';
 import { rng, Kit } from './kit.js';
 
@@ -22,49 +21,60 @@ const towerVertex = /* glsl */`
   }`;
 
 const towerFragment = /* glsl */`
-  uniform vec3 uFog; uniform float uFar; uniform float uMirror;
+  uniform vec3 uFog; uniform float uFar;
   varying vec3 vW; varying vec3 vN; varying float vSeed; varying float vDensity; varying float vGlow; varying float vDepth;
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   void main() {
     vec3 n = normalize(vN);
     vec3 col;
-    float heightY = abs(vW.y);
+    float heightY = vW.y;
+    float seed = abs(vSeed);
     if (abs(n.y) > 0.5) {
       col = vec3(0.004, 0.006, 0.011);
     } else {
-      float along = abs(n.x) > 0.5 ? vW.z : vW.x;
-      float side = abs(n.x) > 0.5 ? 1.0 : 0.0;
-      vec2 cellSize = vec2(1.9, 3.7);
-      vec2 p = vec2(along, heightY) / cellSize;
+      vec3 tangent = normalize(vec3(n.z, 0.0, -n.x));
+      float along = dot(vW, tangent);
+      float side = dot(n.xz, vec2(0.71, 0.71)) * 0.5 + 0.5;
+      // Chaque tour a sa propre facade : largeur des baies et bandeaux de beton
+      float baie = mix(1.5, 3.1, fract(seed * 5.3));
+      float etage = mix(3.4, 4.2, fract(seed * 2.7));
+      float bandeau = step(0.5, fract(seed * 11.0));
+      vec2 p = vec2(along / baie, heightY / etage);
       vec2 id = floor(p);
       vec2 f = fract(p);
-      float pane = smoothstep(0.05, 0.1, f.x) * smoothstep(0.95, 0.9, f.x) * smoothstep(0.2, 0.26, f.y) * smoothstep(0.86, 0.8, f.y);
+      float sill = mix(0.2, 0.34, bandeau);
+      float pane = smoothstep(0.04, 0.09, f.x) * smoothstep(0.96, 0.91, f.x) * smoothstep(sill, sill + 0.05, f.y) * smoothstep(0.88, 0.82, f.y);
       // Les bureaux s'allument par plateaux entiers, pas fenetre par fenetre
       vec2 bay = vec2(floor(id.x / 5.0), id.y);
-      float r = hash(bay + vSeed * 91.0 + side * 13.0);
-      float floorOn = step(0.3, hash(vec2(id.y, vSeed * 37.0)));
+      float r = hash(bay + seed * 91.0 + floor(side * 8.0) * 13.0);
+      float floorOn = step(0.3, hash(vec2(id.y, seed * 37.0)));
       float density = mix(vDensity, 0.82, vGlow);
       float lit = step(1.0 - density, r) * floorOn;
       vec3 warm = mix(vec3(0.95, 0.62, 0.3), vec3(1.0, 0.8, 0.54), hash(bay + 3.0));
       vec3 cool = vec3(0.56, 0.74, 1.0);
-      vec3 win = mix(warm, cool, step(0.68, hash(bay * 1.7 + vSeed)));
+      vec3 win = mix(warm, cool, step(0.68, hash(bay * 1.7 + seed)));
       win = mix(win, vec3(0.34, 0.47, 1.0), vGlow * 0.92);
       float brightness = (0.42 + 0.7 * hash(id + 7.0)) * (1.0 + vGlow * 0.4);
       // Le 41e etage de Meridian reste allume : c'est la que tout commence
       if (vSeed < 0.0 && heightY > 171.6 && heightY < 175.4) { lit = 1.0; win = vec3(0.86, 0.92, 1.0); brightness = 1.0; }
-      vec3 glass = mix(vec3(0.0035, 0.006, 0.012), vec3(0.008, 0.014, 0.027), clamp(heightY / 220.0, 0.0, 1.0));
-      glass += 0.0035 * side * vec3(0.3, 0.45, 0.7);
-      // Dalles horizontales discretes
-      glass += vec3(0.006, 0.008, 0.012) * smoothstep(0.1, 0.0, f.y);
-      col = mix(glass, win * brightness, lit * pane);
+      // Le verre reflete le ciel, d'autant plus qu'on le regarde en biais
+      vec3 V = normalize(cameraPosition - vW);
+      float fresnel = pow(1.0 - max(dot(V, n), 0.0), 3.0);
+      float up = clamp(reflect(-V, n).y * 0.5 + 0.5, 0.0, 1.0);
+      vec3 sky = mix(vec3(0.02, 0.016, 0.018), vec3(0.016, 0.03, 0.062), up);
+      vec3 glass = vec3(0.0035, 0.0055, 0.011) + sky * (0.16 + fresnel * 1.1) * (0.8 + 0.4 * hash(id * 0.31 + seed));
+      vec3 concrete = mix(vec3(0.012, 0.0125, 0.014), vec3(0.03, 0.031, 0.034), side);
+      float frame = 1.0 - smoothstep(0.0, 0.05, min(f.x, 1.0 - f.x));
+      col = mix(concrete, glass, pane);
+      col += vec3(0.008, 0.009, 0.012) * frame;
+      col = mix(col, win * brightness, lit * pane);
       // Au loin les fenetres se fondent en une valeur moyenne, sans scintillement
       float aa = clamp(fwidth(p.x) * 1.4 + fwidth(p.y) * 1.4, 0.0, 1.0);
-      vec3 average = glass + win * density * 0.14 * (1.0 + vGlow);
+      vec3 average = mix(concrete, glass, 0.6) + win * density * 0.14 * (1.0 + vGlow);
       col = mix(col, average, aa);
     }
     float f = 1.0 - exp(-pow(vDepth / uFar, 2.0) * 3.2);
     col = mix(col, uFog, f);
-    if (uMirror > 0.5) col *= 0.42;
     gl_FragColor = vec4(col, 1.0);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
@@ -119,6 +129,8 @@ export function createCity(scene) {
         d: 20 + r() * 15,
         h: Math.min(h, 150),
         step: r() < 0.42,
+        chamfer: r() < 0.38,
+        roof: r(),
         hero: -1
       });
     }
@@ -129,78 +141,93 @@ export function createCity(scene) {
   heroCells.forEach(([i, j], k) => {
     const found = list.find((t) => Math.round(t.x / SP) === i && Math.round(t.z / SP) === j);
     const t = found ?? { x: i * SP, z: j * SP, w: 26, d: 26, step: false };
-    Object.assign(t, { h: 136 + ((k * 37) % 41), hero: k + 1, w: 28, d: 28, step: false });
+    Object.assign(t, { h: 136 + ((k * 37) % 41), hero: k + 1, w: 28, d: 28, step: false, chamfer: k % 2 === 0, roof: 1 });
     if (!found) list.push(t);
   });
-  list.push({ ...MERIDIAN, step: false, hero: 0 });
+  list.push({ ...MERIDIAN, step: false, hero: 0, roof: 0 });
 
-  // Une tour = un ou deux volumes (socle + retrait)
+  // Une tour = un ou deux volumes (socle + retrait), plus ses equipements de toit
   const blocks = [];
   list.forEach((t) => {
+    let top = t.h;
+    let w = t.w;
+    let de = t.d;
     if (t.step) {
       blocks.push({ ...t, h: t.h * 0.58, y: 0 });
-      blocks.push({ ...t, w: t.w * 0.68, d: t.d * 0.68, y: t.h * 0.58, h: t.h * 0.42 });
+      w = t.w * 0.68;
+      de = t.d * 0.68;
+      blocks.push({ ...t, w, d: de, y: t.h * 0.58, h: t.h * 0.42 });
     } else {
       blocks.push({ ...t, y: 0 });
     }
+    if (t.roof > 0.3 && t.hero < 0) {
+      blocks.push({ x: t.x + (t.roof - 0.65) * w * 0.4, z: t.z - (t.roof - 0.65) * de * 0.4, w: w * 0.42, d: de * 0.34, y: top, h: 3 + t.roof * 5, hero: -1, chamfer: false });
+    }
+    if (t.roof > 0.9) blocks.push({ x: t.x, z: t.z, w: 0.7, d: 0.7, y: top, h: 14 + t.roof * 12, hero: -1, chamfer: false });
   });
 
-  const box = new THREE.BoxGeometry(1, 1, 1);
-  box.translate(0, 0.5, 0);
-  const geometry = box.clone();
-  const count = blocks.length;
-  const seeds = new Float32Array(count);
-  const dens = new Float32Array(count);
-  const glow = new Float32Array(count);
-  const heroOf = [];
+  // Deux formes de tour, et un maillage par quartier
+  const boxGeo = new THREE.BoxGeometry(1, 1, 1).toNonIndexed();
+  boxGeo.translate(0, 0.5, 0);
+  const chamferShape = new THREE.Shape();
+  const A = 0.5;
+  const C = 0.36;
+  [[A, C], [C, A], [-C, A], [-A, C], [-A, -C], [-C, -A], [C, -A], [A, -C]].forEach(([x, y], i) => (i ? chamferShape.lineTo(x, y) : chamferShape.moveTo(x, y)));
+  chamferShape.closePath();
+  const chamferGeo = new THREE.ExtrudeGeometry(chamferShape, { depth: 1, bevelEnabled: false }).toNonIndexed();
+  chamferGeo.rotateX(-Math.PI / 2);
+  chamferGeo.computeVertexNormals();
+
+  const towerMaterial = new THREE.ShaderMaterial({
+    vertexShader: towerVertex,
+    fragmentShader: towerFragment,
+    uniforms: { uFog: { value: fog }, uFar: { value: 1050 } }
+  });
+  const CHUNK = 230;
+  const chunks = new Map();
+  blocks.forEach((b) => {
+    const key = `${Math.floor(b.x / CHUNK)}:${Math.floor(b.z / CHUNK)}:${b.chamfer ? 1 : 0}`;
+    if (!chunks.has(key)) chunks.set(key, []);
+    chunks.get(key).push(b);
+  });
   const d = new THREE.Object3D();
-  const matrices = new Float32Array(count * 16);
-  blocks.forEach((b, i) => {
-    d.position.set(b.x, b.y, b.z);
-    d.scale.set(b.w, b.h, b.d);
-    d.updateMatrix();
-    d.matrix.toArray(matrices, i * 16);
-    seeds[i] = b.hero === 0 ? -0.5 : r();
-    dens[i] = 0.1 + r() * 0.3;
-    heroOf[i] = b.hero;
-  });
-  geometry.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 1));
-  geometry.setAttribute('aDensity', new THREE.InstancedBufferAttribute(dens, 1));
-  const glowAttr = new THREE.InstancedBufferAttribute(glow, 1);
-  glowAttr.setUsage(THREE.DynamicDrawUsage);
-  geometry.setAttribute('aGlow', glowAttr);
-
-  const make = (mirror) => {
-    const mat = new THREE.ShaderMaterial({
-      vertexShader: towerVertex,
-      fragmentShader: towerFragment,
-      side: mirror ? THREE.BackSide : THREE.FrontSide,
-      uniforms: { uFog: { value: fog }, uFar: { value: 1050 }, uMirror: { value: mirror ? 1 : 0 } }
+  const heroSlots = [];
+  const chunkMeshes = [];
+  chunks.forEach((items, key) => {
+    const geometry = (key.endsWith(':1') ? chamferGeo : boxGeo).clone();
+    const seeds = new Float32Array(items.length);
+    const dens = new Float32Array(items.length);
+    const glow = new Float32Array(items.length);
+    const mesh = new THREE.InstancedMesh(geometry, towerMaterial, items.length);
+    items.forEach((b, i) => {
+      d.position.set(b.x, b.y, b.z);
+      d.scale.set(b.w, b.h, b.d);
+      d.updateMatrix();
+      mesh.setMatrixAt(i, d.matrix);
+      seeds[i] = b.hero === 0 ? -0.5 : r();
+      dens[i] = 0.1 + r() * 0.3;
+      if (b.hero >= 0) heroSlots.push({ hero: b.hero, index: i, array: glow, attr: null, geometry });
     });
-    const m = new THREE.InstancedMesh(geometry, mat, count);
-    m.instanceMatrix.array.set(matrices);
-    m.instanceMatrix.needsUpdate = true;
-    m.frustumCulled = false;
-    return m;
-  };
-  const towers = make(false);
-  scene.add(towers);
-  const mirror = new THREE.Group();
-  mirror.scale.y = -1;
-  mirror.add(make(true));
-  scene.add(mirror);
+    geometry.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 1));
+    geometry.setAttribute('aDensity', new THREE.InstancedBufferAttribute(dens, 1));
+    const glowAttr = new THREE.InstancedBufferAttribute(glow, 1);
+    glowAttr.setUsage(THREE.DynamicDrawUsage);
+    geometry.setAttribute('aGlow', glowAttr);
+    heroSlots.forEach((s) => { if (s.geometry === geometry) s.attr = glowAttr; });
+    mesh.computeBoundingSphere();
+    scene.add(mesh);
+    chunkMeshes.push(mesh);
+  });
 
-  // L'asphalte mouille : presque noir, on devine le reflet de la ville dessous
+  // L'asphalte, presque noir, qui se fond dans le lointain
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(1480, 48),
     new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
       uniforms: { uFog: { value: fog } },
       vertexShader: /* glsl */`varying float vD; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
       fragmentShader: /* glsl */`uniform vec3 uFog; varying float vD;
         void main(){ float f = 1.0 - exp(-pow(vD / 1050.0, 2.0) * 3.2);
-          gl_FragColor = vec4(mix(vec3(0.0022, 0.0032, 0.0058), uFog, f), mix(0.76, 1.0, f));
+          gl_FragColor = vec4(mix(vec3(0.0022, 0.0032, 0.0058), uFog, f), 1.0);
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
         }`
@@ -228,7 +255,7 @@ export function createCity(scene) {
   lampMesh.frustumCulled = false;
   scene.add(lampMesh);
 
-  const CARS = 260;
+  const CARS = 200;
   const cars = new THREE.InstancedMesh(dot, new THREE.MeshBasicMaterial({ fog: false }), CARS);
   cars.frustumCulled = false;
   const carData = [];
@@ -313,27 +340,42 @@ export function createCity(scene) {
     });
     return best;
   }
-  function update(time, camera, heroLevels /* (index) => 0..1 */, linkLevel) {
+  const lastLevel = new Array(heroes.length).fill(-1);
+  const FAR = 1300;
+  function update(time, camera, heroLevels /* (index) => 0..1 */, linkLevel, inside = false) {
     skyMesh.position.copy(camera.position);
-    for (let i = 0; i < CARS; i++) {
-      const c = carData[i];
-      const s = ((c.off + time * c.speed * c.dir) % 1200 + 1200) % 1200 - 600;
-      d.position.set(c.alongX ? s : c.road, 0.7, c.alongX ? c.road : s);
-      d.scale.set(c.alongX ? 2.4 : 1.15, 0.6, c.alongX ? 1.15 : 2.4);
-      d.updateMatrix();
-      cars.setMatrixAt(i, d.matrix);
+    // Les quartiers trop loin, deja fondus dans la brume, ne sont pas dessines
+    chunkMeshes.forEach((m) => {
+      m.visible = m.boundingSphere.center.distanceTo(camera.position) - m.boundingSphere.radius < FAR;
+    });
+    // Depuis l'interieur, la circulation et les lampadaires sont invisibles a cette distance
+    cars.visible = !inside;
+    lampMesh.visible = !inside;
+    if (!inside) {
+      for (let i = 0; i < CARS; i++) {
+        const c = carData[i];
+        const s = ((c.off + time * c.speed * c.dir) % 1200 + 1200) % 1200 - 600;
+        d.position.set(c.alongX ? s : c.road, 0.7, c.alongX ? c.road : s);
+        d.scale.set(c.alongX ? 2.4 : 1.15, 0.6, c.alongX ? 1.15 : 2.4);
+        d.updateMatrix();
+        cars.setMatrixAt(i, d.matrix);
+      }
+      cars.instanceMatrix.needsUpdate = true;
     }
-    cars.instanceMatrix.needsUpdate = true;
 
-    for (let i = 0; i < count; i++) {
-      if (heroOf[i] >= 0) glow[i] = heroLevels(heroOf[i]);
-    }
-    glowAttr.needsUpdate = true;
+    // On ne renvoie au processeur graphique que ce qui a change
+    let crownsDirty = false;
     heroes.forEach((t, i) => {
       const g = heroLevels(i);
+      if (Math.abs(g - lastLevel[i]) < 0.002) return;
+      lastLevel[i] = g;
       crowns.setColorAt(i, col.setRGB(0.55 * g, 0.75 * g, 2.6 * g));
+      crownsDirty = true;
+      heroSlots.forEach((slot) => {
+        if (slot.hero === i) { slot.array[slot.index] = g; slot.attr.needsUpdate = true; }
+      });
     });
-    crowns.instanceColor.needsUpdate = true;
+    if (crownsDirty) crowns.instanceColor.needsUpdate = true;
 
     links.material.opacity = linkLevel * 0.72;
     pulses.visible = linkLevel > 0.02;

@@ -18,6 +18,12 @@ body { color: var(--paper); font-family: var(--text); overflow-x: hidden; }
 #stage-ui { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
 
 #fade { position: absolute; inset: 0; background: #000; opacity: 0; }
+#loading {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font: 500 13px var(--mono); letter-spacing: 0.08em; color: var(--soft);
+  background: var(--night);
+}
+#loading.off { display: none; }
 
 /* Lieu et heure, comme au debut d'une sequence de film */
 #slug {

@@ -59,6 +59,7 @@ export function createSequence4(ctx) {
 
   const seq = {
     name: 'Réseau',
+    lights: [],
     groups: [ctx.cityGroup],
     cityLit: true,
     panelEl: panel,
