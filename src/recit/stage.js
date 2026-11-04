@@ -123,3 +123,52 @@ export function closedRoom(group, { W, D, CEIL, wall = 0x8a8d93, floor = 0x8a8d9
 }
 
 export const metalSurface = () => surface('metal_plate_02', { metalness: 0.8, roughness: 0.9, normalScale: 0.4 });
+
+// Face avant d'une baie : unites, grilles d'aeration et diodes, dessinees dans une texture
+function rackTexture(accent, second) {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 512;
+  const x = c.getContext('2d');
+  x.fillStyle = '#0b0c0f';
+  x.fillRect(0, 0, 256, 512);
+  const pick = (i, j) => { const s = Math.sin(i * 12.9 + j * 78.2) * 43758.5; return s - Math.floor(s); };
+  for (let u = 0; u < 14; u++) {
+    const y = 8 + u * 35.5;
+    x.fillStyle = u % 3 === 0 ? '#1d2026' : '#15171c';
+    x.fillRect(10, y, 236, 31);
+    x.fillStyle = '#2a2e36';
+    x.fillRect(10, y, 236, 1.5);
+    x.fillStyle = '#050608';
+    for (let v = 0; v < 26; v++) for (let w = 0; w < 4; w++) x.fillRect(84 + v * 6, y + 6 + w * 5.5, 3, 2.5);
+    x.fillStyle = '#4a4f5a';
+    x.fillRect(14, y + 12, 5, 7);
+    x.fillRect(237, y + 12, 5, 7);
+    for (let l = 0; l < 6; l++) {
+      if (pick(u, l) < 0.28) continue;
+      x.fillStyle = pick(l, u + 3) > 0.72 ? second : accent;
+      x.fillRect(26 + l * 9, y + 13, 5, 5);
+    }
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  return t;
+}
+
+export function rackFaces(group, spots, { accent = '#7c93ff', second = '#62d6a0', w = 2.3, h = 3.5, gain = 1.5 } = {}) {
+  const mesh = new THREE.InstancedMesh(
+    new THREE.PlaneGeometry(w, h),
+    new THREE.MeshBasicMaterial({ map: rackTexture(accent, second), color: new THREE.Color(gain, gain, gain) }),
+    spots.length
+  );
+  const d = new THREE.Object3D();
+  spots.forEach(({ p, r }, i) => {
+    d.position.set(...p);
+    d.rotation.set(0, r, 0);
+    d.updateMatrix();
+    mesh.setMatrixAt(i, d.matrix);
+  });
+  mesh.computeBoundingSphere();
+  group.add(mesh);
+  return mesh;
+}

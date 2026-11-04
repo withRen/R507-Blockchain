@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { Kit } from './kit.js';
 import { place, textured } from './assets.js';
-import { closedRoom, COLORS, glassBlock, metalSurface, plate } from './stage.js';
+import { closedRoom, COLORS, glassBlock, metalSurface, plate, rackFaces } from './stage.js';
 import { curve } from './timeline.js';
 import { createMiner, hashBlock, meetsDifficulty } from '../lib/blockchain.js';
 
@@ -23,24 +23,21 @@ export function createSequence5(ctx) {
 
   // Rangees de machines, avec leurs diodes orange
   const m = new Kit();
-  const d = new Kit();
-  [-14.5, -11.5, 11.5, 14.5].forEach((x, col) => {
+  const fronts = [];
+  [-14.5, -11.5, 11.5, 14.5].forEach((x) => {
     for (let i = 0; i < 9; i++) {
       const z = -13 + i * 3.25;
       m.box(2, 3.8, 2.9, 0x6a655e, { p: [x, 1.9, z] });
-      const fx = x < 0 ? x + 1.01 : x - 1.01;
-      for (let u = 0; u < 7; u++) {
-        d.box(0.02, 0.1, 2.2, (i + u + col) % 6 === 0 ? 0x66e0a4 : 0xff9d32, { p: [fx, 0.6 + u * 0.47, z] });
-      }
+      fronts.push({ p: [x < 0 ? x + 1.015 : x - 1.015, 1.9, z], r: x < 0 ? Math.PI / 2 : -Math.PI / 2 });
     }
   });
+  rackFaces(group, fronts, { accent: '#ff9d32', second: '#66e0a4', w: 2.9, h: 3.8, gain: 1.7 });
   group.add(textured(m, metalSurface(), 1.3));
   place(group, 'worn_metal_rack', [-8, -5, -2, 1, 4, 7].map((x) => ({ p: [x, 0, -14.6], r: 0, s: 1.25 })));
   place(group, 'plastic_crate_01', [
     { p: [9, 0, -7.4], r: 0.3, s: 1.6 }, { p: [9.7, 0, -6.7], r: -0.2, s: 1.6 }, { p: [-9, 0, -8], r: 0.1, s: 1.6 }
   ]);
   place(group, 'hanging_industrial_lamp', [-6, 0, 6].map((x) => ({ p: [x, 8.4 - 1.36, -2] })));
-  group.add(d.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(1.4, 1.4, 1.4) }), { cast: false }));
 
   // Le bloc candidat
   const cand = glassBlock({ w: 3.2, h: 2.1, d: 1.2, tint: COLORS.effort });

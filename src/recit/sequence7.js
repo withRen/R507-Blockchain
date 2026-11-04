@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Kit } from './kit.js';
 import { place, textured } from './assets.js';
 import { surface } from './assets.js';
-import { closedRoom, COLORS, metalSurface, plate } from './stage.js';
+import { closedRoom, COLORS, metalSurface, plate, rackFaces } from './stage.js';
 import { curve, smooth } from './timeline.js';
 import { attackerSuccessProbability } from '../lib/blockchain.js';
 
@@ -50,14 +50,15 @@ export function createSequence7(ctx) {
   group.add(lines.mesh(new THREE.MeshBasicMaterial({ vertexColors: true }), { cast: false }));
   // Les machines cachees de Mallory, au fond, en rouge
   const rack = new Kit();
-  const red = new Kit();
+  const fronts = [];
   for (let i = 0; i < 6; i++) {
     const z = -7.5 + i * 2.2;
     rack.box(1.2, 3.4, 1.9, 0x5c5759, { p: [15.6, 1.7, z] });
-    for (let u = 0; u < 7; u++) red.box(0.02, 0.05, 1.3, 0xff463c, { p: [14.98, 0.5 + u * 0.42, z] });
+    fronts.push({ p: [14.985, 1.7, z], r: -Math.PI / 2 });
   }
   group.add(textured(rack, metalSurface(), 1.3));
-  group.add(red.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(1.9, 1.4, 1.4) }), { cast: false }));
+  rackFaces(group, fronts, { accent: '#ff463c', second: '#ff8a5c', w: 1.9, h: 3.4, gain: 1.9 });
+
   // ---------- Hologramme : chaine publique et chaine secrete ----------
   const X0 = -7.4;
   const SP = 1.45;

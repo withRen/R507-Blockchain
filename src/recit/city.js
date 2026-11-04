@@ -9,8 +9,11 @@ const towerVertex = /* glsl */`
   attribute float aSeed;
   attribute float aDensity;
   attribute float aGlow;
-  varying vec3 vW; varying vec3 vN; varying float vSeed; varying float vDensity; varying float vGlow; varying float vDepth;
+  varying vec3 vW; varying vec3 vN; varying float vSeed; varying float vDensity; varying float vGlow; varying float vDepth; varying float vEdge;
   void main() {
+    float sx = length(instanceMatrix[0].xyz);
+    float sz = length(instanceMatrix[2].xyz);
+    vEdge = min((0.5 - abs(position.x)) * sx, (0.5 - abs(position.z)) * sz);
     vec4 w = modelMatrix * instanceMatrix * vec4(position, 1.0);
     vW = w.xyz;
     vN = normal;
@@ -22,22 +25,32 @@ const towerVertex = /* glsl */`
 
 const towerFragment = /* glsl */`
   uniform vec3 uFog; uniform float uFar;
-  varying vec3 vW; varying vec3 vN; varying float vSeed; varying float vDensity; varying float vGlow; varying float vDepth;
+  varying vec3 vW; varying vec3 vN; varying float vSeed; varying float vDensity; varying float vGlow; varying float vDepth; varying float vEdge;
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float noise(vec2 p) {
+    vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+  }
+  float fbm(vec2 p) { return 0.55 * noise(p) + 0.3 * noise(p * 2.3) + 0.15 * noise(p * 5.1); }
   void main() {
     vec3 n = normalize(vN);
     vec3 col;
     float heightY = vW.y;
     float seed = abs(vSeed);
     if (abs(n.y) > 0.5) {
-      col = vec3(0.004, 0.006, 0.011);
+      // Toit : gravier, dalles, et un acrotere plus clair sur le pourtour
+      float g = fbm(vW.xz * 0.9);
+      vec2 dalle = abs(fract(vW.xz / 3.2) - 0.5);
+      col = vec3(0.0065, 0.0072, 0.0095) * (0.6 + 0.9 * g) * (0.82 + 0.18 * smoothstep(0.47, 0.5, max(dalle.x, dalle.y)));
+      float acrotere = 1.0 - smoothstep(0.55, 0.75, vEdge);
+      col = mix(col, vec3(0.03, 0.031, 0.036), acrotere);
     } else {
       vec3 tangent = normalize(vec3(n.z, 0.0, -n.x));
       float along = dot(vW, tangent);
       float side = dot(n.xz, vec2(0.71, 0.71)) * 0.5 + 0.5;
       // Chaque tour a sa propre facade : largeur des baies et bandeaux de beton
       float baie = mix(1.5, 3.1, fract(seed * 5.3));
-      float etage = mix(3.4, 4.2, fract(seed * 2.7));
+      float etage = vSeed < 0.0 ? 4.2 : mix(3.4, 4.2, fract(seed * 2.7));
       float bandeau = step(0.5, fract(seed * 11.0));
       vec2 p = vec2(along / baie, heightY / etage);
       vec2 id = floor(p);
@@ -56,18 +69,50 @@ const towerFragment = /* glsl */`
       win = mix(win, vec3(0.34, 0.47, 1.0), vGlow * 0.92);
       float brightness = (0.42 + 0.7 * hash(id + 7.0)) * (1.0 + vGlow * 0.4);
       // Le 41e etage de Meridian reste allume : c'est la que tout commence
-      if (vSeed < 0.0 && heightY > 171.6 && heightY < 175.4) { lit = 1.0; win = vec3(0.86, 0.92, 1.0); brightness = 1.0; }
-      // Le verre reflete le ciel, d'autant plus qu'on le regarde en biais
+      if (vSeed < 0.0 && id.y > 40.5 && id.y < 41.5) { lit = 1.0; win = vec3(0.86, 0.92, 1.0); brightness = 1.0; }
       vec3 V = normalize(cameraPosition - vW);
       float fresnel = pow(1.0 - max(dot(V, n), 0.0), 3.0);
       float up = clamp(reflect(-V, n).y * 0.5 + 0.5, 0.0, 1.0);
       vec3 sky = mix(vec3(0.02, 0.016, 0.018), vec3(0.016, 0.03, 0.062), up);
+      // Vitre : legere ondulation du reflet d'un panneau a l'autre
       vec3 glass = vec3(0.0035, 0.0055, 0.011) + sky * (0.16 + fresnel * 1.1) * (0.8 + 0.4 * hash(id * 0.31 + seed));
-      vec3 concrete = mix(vec3(0.012, 0.0125, 0.014), vec3(0.03, 0.031, 0.034), side);
-      float frame = 1.0 - smoothstep(0.0, 0.05, min(f.x, 1.0 - f.x));
+      // Beton : traces d'usure qui coulent le long de la facade
+      float stain = fbm(vec2(along * 0.22 + seed * 40.0, heightY * 0.035));
+      vec3 concrete = mix(vec3(0.012, 0.0125, 0.014), vec3(0.03, 0.031, 0.034), side) * (0.55 + 0.9 * stain);
+      // Relief : ombre sous le linteau, lumiere sur l'appui, montants metalliques
+      float mullion = 1.0 - smoothstep(0.0, 0.05, min(f.x, 1.0 - f.x));
+      float reveal = smoothstep(0.82, 0.9, f.y) * (1.0 - smoothstep(0.9, 0.98, f.y));
+      float ledge = smoothstep(sill - 0.05, sill, f.y) * (1.0 - smoothstep(sill, sill + 0.02, f.y));
       col = mix(concrete, glass, pane);
-      col += vec3(0.008, 0.009, 0.012) * frame;
-      col = mix(col, win * brightness, lit * pane);
+      col *= 1.0 - 0.6 * reveal;
+      col += vec3(0.012, 0.013, 0.016) * ledge;
+      col += vec3(0.006, 0.007, 0.009) * mullion;
+      if (lit > 0.5 && pane > 0.01) {
+        // Une vraie piece derriere la vitre : le regard entre, et touche un mur, le sol ou le plafond
+        vec3 rd = -V;
+        vec3 ray = vec3(dot(rd, tangent) / baie, rd.y / etage, max(-dot(rd, n), 0.05) / (etage * 1.3));
+        vec2 inner = vec2((f.x - 0.5) * 0.92, (f.y - sill) / (0.88 - sill) - 0.5);
+        float tx = (0.5 - sign(ray.x) * inner.x) / max(abs(ray.x), 0.001);
+        float ty = (0.5 - sign(ray.y) * inner.y) / max(abs(ray.y), 0.001);
+        float tz = 1.0 / ray.z;
+        float t = min(min(tx, ty), tz);
+        vec2 hit = inner + ray.xy * t;
+        vec3 room;
+        if (t == tz) {
+          room = win * (0.72 + 0.22 * hash(id * 3.1));
+          room *= 0.55 + 0.45 * smoothstep(-0.5, -0.12, hit.y);
+          // Silhouette de mobilier et d'etageres contre le mur du fond
+          float meuble = step(0.5, hash(vec2(floor((hit.x + 0.5) * 4.0 + id.x * 3.0), id.y)));
+          room *= 1.0 - 0.55 * meuble * (1.0 - smoothstep(-0.28, -0.18, hit.y));
+        } else if (t == ty) {
+          room = ray.y > 0.0
+            ? win * (0.95 + 0.9 * step(0.72, fract((hit.x + id.x * 0.5) * 3.0)))
+            : win * 0.28 * (0.75 + 0.5 * fbm(hit * 9.0 + id));
+        } else {
+          room = win * (0.42 + 0.16 * smoothstep(0.2, 0.9, t / tz));
+        }
+        col = mix(col, room * brightness + sky * fresnel * 0.5, pane);
+      }
       // Au loin les fenetres se fondent en une valeur moyenne, sans scintillement
       float aa = clamp(fwidth(p.x) * 1.4 + fwidth(p.y) * 1.4, 0.0, 1.0);
       vec3 average = mix(concrete, glass, 0.6) + win * density * 0.14 * (1.0 + vGlow);

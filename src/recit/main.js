@@ -345,6 +345,11 @@ async function init() {
     const li = lines.find((l) => t >= l.from && t <= l.to);
     const speaker = li && !li.vo ? unaccent(li.who) : null;
     Object.values(actors).forEach((a) => {
+      // Un personnage n'existe dans la scene qu'a partir de son entree
+      const present = t >= (a.from ?? 0);
+      a.c.root.visible = present;
+      a.shadow.visible = present;
+      if (!present) return;
       const s = sampleTrack(a.track, t);
       a.c.root.position.set(s.x, 0, s.z);
       a.c.root.rotation.y = s.face;

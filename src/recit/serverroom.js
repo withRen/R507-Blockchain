@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { Kit } from './kit.js';
 import { textured } from './assets.js';
-import { closedRoom, metalSurface } from './stage.js';
+import { closedRoom, metalSurface, rackFaces } from './stage.js';
 
 const FIELD = {
   parent: { label: 'HASH DU BLOC PARENT', color: '#b9c3d8', tint: 0x7f8ba3 },
@@ -37,24 +37,18 @@ export function createServerRoom(scene) {
   closedRoom(group, { W, D, CEIL, wall: 0x50545c, floor: 0x777b83, ceil: 0x3c3f46, floorTex: 'metal_plate_02', wallTex: 'grey_plaster', tileFloor: 1.2, tileWall: 2.2 });
   const k = new Kit();
   // Baies de serveurs, en rangees de part et d'autre
-  const leds = new Kit();
-  [-8.4, -5.6, 5.6, 8.4].forEach((x, col) => {
+  const faces = [];
+  [-8.4, -5.6, 5.6, 8.4].forEach((x) => {
     for (let i = 0; i < 9; i++) {
       const z = -10 + i * 2.5;
       k.box(1.1, 3.5, 2.3, 0x4a4f58, { p: [x, 1.75, z] });
-      const face = x < 0 ? x + 0.56 : x - 0.56;
-      for (let u = 0; u < 12; u++) {
-        const on = (i * 7 + u * 3 + col * 5) % 5 !== 0;
-        if (!on) continue;
-        const tone = (i + u + col) % 9 === 0 ? 0xffa53a : (i * u + col) % 4 === 0 ? 0x5fd19c : 0x5b74ff;
-        leds.box(0.02, 0.04, 0.22 + ((u * 13 + i) % 5) * 0.2, tone, { p: [face, 0.5 + u * 0.24, z - 0.2 + ((u + i) % 3) * 0.18] });
-      }
+      faces.push({ p: [x < 0 ? x + 0.565 : x - 0.565, 1.75, z], r: x < 0 ? Math.PI / 2 : -Math.PI / 2 });
     }
   });
+  rackFaces(group, faces);
   // Socle du bloc
   k.add(new THREE.CylinderGeometry(1.95, 2.1, 0.28, 48), 0x5b606a, { p: [0, 0.14, 0] });
   group.add(textured(k, metalSurface(), 1.3));
-  group.add(leds.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(1.5, 1.5, 1.5) }), { cast: false }));
 
   const ring = new THREE.Mesh(new THREE.TorusGeometry(1.98, 0.018, 8, 80), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.7, 0.9, 3) }));
   ring.rotation.x = Math.PI / 2;

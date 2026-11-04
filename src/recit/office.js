@@ -89,6 +89,14 @@ export function createOffice(scene) {
   mt.box(0.12, 0.75, 0.8, 0x20242c, { p: [-3.9, 0.375, 8.1] });
   mt.box(0.12, 0.75, 0.8, 0x20242c, { p: [-0.9, 0.375, 8.1] });
   for (let i = 0; i <= 10; i++) mt.box(0.07, CEIL, 0.12, 0x2a2e36, { p: [-W + i * 3, CEIL / 2, D] });
+  // Plafond a dalles et plinthes
+  const trim = new Kit();
+  for (let x = -14; x <= 14; x += 1.2) trim.box(0.025, 0.02, D * 2, 0x202329, { p: [x, CEIL - 0.012, 0] });
+  for (let z = -12.6; z <= 12.6; z += 1.2) trim.box(W * 2, 0.02, 0.025, 0x202329, { p: [0, CEIL - 0.012, z] });
+  trim.box(W * 2, 0.11, 0.03, 0x1a1c20, { p: [0, 0.055, -D + 0.115] });
+  trim.box(0.03, 0.11, D * 2, 0x1a1c20, { p: [-W + 0.115, 0.055, 0] });
+  trim.box(0.03, 0.11, D * 2, 0x1a1c20, { p: [W - 0.115, 0.055, 0] });
+  group.add(trim.mesh(new THREE.MeshLambertMaterial({ vertexColors: true }), { cast: false }));
   const wd = new Kit();
   wd.box(2.6, 0.08, 1.15, 0xc8b8a8, { p: [-12.2, 0.75, -6.8] });
   wd.box(3.8, 0.07, 1.1, 0xc8b8a8, { p: [-2.4, 0.75, 8.1] });

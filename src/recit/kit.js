@@ -2,6 +2,7 @@
 // maillage colore par sommet, ce qui limite fortement le nombre de draw calls.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 function gradient() {
   const data = new Uint8Array([120, 120, 120, 255, 190, 190, 190, 255, 255, 255, 255, 255]);
@@ -44,7 +45,12 @@ export class Kit {
     return this;
   }
 
-  box(w, h, d, hex, opts) { return this.add(new THREE.BoxGeometry(w, h, d), hex, { flat: true, ...opts }); }
+  // Les objets assez grands ont une arete biseautee, qui accroche la lumiere
+  box(w, h, d, hex, opts) {
+    const min = Math.min(w, h, d);
+    if (min >= 0.05) return this.add(new RoundedBoxGeometry(w, h, d, 1, Math.min(0.018, min * 0.22)), hex, opts);
+    return this.add(new THREE.BoxGeometry(w, h, d), hex, { flat: true, ...opts });
+  }
 
   geometry() { return mergeGeometries(this.parts, false); }
 

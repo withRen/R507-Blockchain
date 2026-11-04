@@ -55,9 +55,8 @@ export const ACTORS = {
     headPitch: [[0.25, 0], [0.34, 0.12], [0.44, 0.12], [0.47, 0], [0.545, 0.03]]
   },
   bob: {
+    from: CUT,
     track: [
-      { t: 0, x: -30, z: 6, face: 0 },
-      { t: CUT, x: -30, z: 6, face: 0 },
       { t: CUT + 0.0005, x: -0.45, z: 6.2, face: -1.2 },
       { t: 1, x: -0.45, z: 6.2, face: -1.2 }
     ],
@@ -66,9 +65,8 @@ export const ACTORS = {
     headYaw: [[0.76, 0], [0.8, -0.85], [1, -0.85]]
   },
   ines: {
+    from: CUT,
     track: [
-      { t: 0, x: -30, z: 12, face: 0 },
-      { t: CUT, x: -30, z: 12, face: 0 },
       { t: CUT + 0.0005, x: -1.8, z: 11.1, face: 0 },
       { t: 1, x: -1.8, z: 11.1, face: 0 }
     ],
