@@ -28,7 +28,7 @@ export function createSequence4(ctx) {
 
   const panel = ctx.panel(`
     <h2>À vous : testez le réseau</h2>
-    <p class="lab-hint">Clique une tour pour la couper, puis émets une transaction.</p>
+    <p class="lab-hint">Cliquez sur une tour pour la couper, puis émettez une transaction.</p>
     <button id="n-send" type="button">Émettre une transaction depuis une tour au hasard</button>
     <p class="lab-out-label">Nœuds qui l’ont reçue</p>
     <output id="n-count" class="big-num">0 / 14</output>
@@ -58,7 +58,7 @@ export function createSequence4(ctx) {
   $('#n-reset').addEventListener('click', () => { cut.clear(); syncMeridian(); bfs(); $('#n-state').textContent = 'Tous les nœuds sont allumés.'; });
 
   const seq = {
-    name: 'Réseau',
+    name: 'Réseau et décentralisation',
     lights: [],
     groups: [ctx.cityGroup],
     cityLit: true,
@@ -77,10 +77,10 @@ export function createSequence4(ctx) {
     SLUGS: [{ from: 0.005, to: 1, time: '04 h 50', place: 'Au-dessus du quartier d’affaires' }],
     LINES: [
       { from: 0.03, to: 0.13, who: 'Alice', vo: false, text: 'Et si elle corrige tous les hashes ?' },
-      { from: 0.14, to: 0.26, who: 'Inès', vo: true, text: 'Il faudrait corriger chaque copie. Chaque tour éclairée est un nœud : il garde tout le registre et vérifie lui-même chaque bloc.' },
+      { from: 0.14, to: 0.26, who: 'Inès', vo: true, text: 'Il faudrait corriger chaque copie. Chaque tour éclairée est un nœud : elle garde le registre et vérifie chaque bloc.' },
       { from: 0.27, to: 0.38, who: 'Inès', vo: true, text: 'Une transaction se propage de voisin en voisin. Personne ne la reçoit au même instant.' },
       { from: 0.39, to: 0.5, who: 'Alice', text: 'Et si Meridian tombe ?' },
-      { from: 0.5, to: 0.62, who: 'Inès', vo: true, text: 'Regardez. Elle s’éteint, et le réseau continue. Sur Bitcoin, il n’y a ni siège, ni serveur, ni coffre : les bitcoins ne sont rangés nulle part ailleurs que dans ce registre.' },
+      { from: 0.5, to: 0.62, who: 'Inès', vo: true, text: 'Regardez : elle s’éteint et le réseau continue. Bitcoin n’a ni siège ni serveur central.' },
       { from: 0.93, to: 1, who: 'Alice', text: 'Si tout le monde a le registre, qui écrit le prochain bloc ?' }
     ],
     TERMS: [

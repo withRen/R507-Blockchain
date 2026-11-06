@@ -1,6 +1,6 @@
 // Sequence 6 : 06 h 00, la salle du conseil. Comparaison des mecanismes de consensus.
 import * as THREE from 'three';
-import { Kit } from './kit.js';
+import { Kit, flat } from './kit.js';
 import { COLORS, plate } from './stage.js';
 import { curve } from './timeline.js';
 import { MERIDIAN } from './city.js';
@@ -12,38 +12,106 @@ const SHARES = [40, 25, 15, 12, 8];
 
 export function createSequence6(ctx) {
   const holo = new THREE.Group();
-  holo.position.set(-2.4, 0.84, 8.1);
+  holo.position.set(-2.4, 0.8, 8.1);
   holo.visible = false;
   ctx.office.group.add(holo);
-  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(1.2, 1.2, 1.2), transparent: true });
+  const mat = new THREE.MeshStandardMaterial({
+    vertexColors: true,
+    roughness: 0.45,
+    metalness: 0.15,
+    envMapIntensity: 0.75,
+    emissive: new THREE.Color(0x182038),
+    emissiveIntensity: 0.15,
+    transparent: true
+  });
 
-  const makeGroup = (x, build, title, colorCss) => {
+  const makeGroup = (x, build, title, colorCss, ringColor) => {
     const g = new THREE.Group();
     g.position.x = x;
+
+    // Socle projecteur metallique sur la table pour chaque mecanisme
+    const baseKit = new Kit();
+    baseKit.box(1.06, 0.025, 0.32, 0x3b4252, { p: [0, 0.012, 0] });
+    const baseMesh = flat(baseKit);
+    const glowLine = new THREE.Mesh(
+      new THREE.BoxGeometry(0.98, 0.008, 0.24),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(ringColor).multiplyScalar(1.1), transparent: true })
+    );
+    glowLine.position.y = 0.027;
+
     const k = new Kit();
     build(k);
-    const m = new THREE.Mesh(k.geometry(), mat.clone());
-    g.add(m);
-    const label = plate(1.14, 0.2, 456, 80);
+    const geo = k.geometry();
+    const m = new THREE.Mesh(geo, mat.clone());
+    m.position.y = 0.03;
+    const edges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(geo, 28),
+      new THREE.LineBasicMaterial({ color: new THREE.Color(ringColor).multiplyScalar(1.2), transparent: true })
+    );
+    edges.position.y = 0.03;
+    g.add(baseMesh, glowLine, m, edges);
+
+    const label = plate(1.18, 0.22, 472, 88);
     const c = label.ctx;
+    c.fillStyle = 'rgba(8, 12, 24, 0.82)';
+    c.fillRect(0, 0, 472, 88);
+    c.strokeStyle = colorCss;
+    c.lineWidth = 2;
+    c.strokeRect(3, 3, 466, 82);
     c.fillStyle = colorCss;
-    c.font = `500 34px ${MONO}`;
+    c.font = `600 33px ${MONO}`;
     c.textAlign = 'center';
-    c.fillText(title, 228, 54);
+    c.fillText(title, 236, 56);
     label.tex.needsUpdate = true;
-    label.mesh.position.y = 0.96;
+    label.mesh.position.y = 0.99;
     label.mesh.rotation.y = Math.PI;
     g.add(label.mesh);
     holo.add(g);
-    return { g, m, label };
+    return { g, m, edges, glowLine, baseMesh, label };
   };
+
   const w = 0.13;
-  const pow = makeGroup(1.25, (k) => SHARES.forEach((s, i) => k.box(w, s * 0.019, w, COLORS.effort, { p: [(i - 2) * 0.19, s * 0.0095, 0] })), 'TRAVAIL · PoW', '#ffb860');
-  const pos = makeGroup(0, (k) => SHARES.forEach((s, i) => {
-    const n = Math.round(s / 3.4);
-    for (let j = 0; j < n; j++) k.add(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 14), COLORS.stake, { p: [(i - 2) * 0.19, 0.03 + j * 0.065, 0] });
-  }), 'ENJEU · PoS', '#67e0e4');
-  const poa = makeGroup(-1.25, (k) => [0, 1, 2, 3, 4].forEach((i) => k.box(w, i < 3 ? 0.62 : 0.09, w, i < 3 ? COLORS.authority : COLORS.dim, { p: [(i - 2) * 0.19, i < 3 ? 0.31 : 0.045, 0] })), 'AUTORITÉ · PoA', '#c3b0ff');
+  const pow = makeGroup(
+    1.25,
+    (k) =>
+      SHARES.forEach((s, i) => {
+        const h = s * 0.019;
+        const x = (i - 2) * 0.19;
+        k.box(w, h, w, COLORS.effort, { p: [x, h / 2, 0] });
+        k.box(w * 1.12, 0.02, w * 1.12, 0xffc978, { p: [x, h + 0.01, 0] });
+      }),
+    'TRAVAIL · PoW',
+    '#ffb860',
+    COLORS.effort
+  );
+  const pos = makeGroup(
+    0,
+    (k) =>
+      SHARES.forEach((s, i) => {
+        const n = Math.round(s / 3.4);
+        const x = (i - 2) * 0.19;
+        for (let j = 0; j < n; j++) {
+          k.add(new THREE.CylinderGeometry(0.065, 0.065, 0.048, 12), COLORS.stake, { p: [x, 0.028 + j * 0.065, 0] });
+        }
+      }),
+    'ENJEU · PoS',
+    '#67e0e4',
+    COLORS.stake
+  );
+  const poa = makeGroup(
+    -1.25,
+    (k) =>
+      [0, 1, 2, 3, 4].forEach((i) => {
+        const x = (i - 2) * 0.19;
+        const h = i < 3 ? 0.62 : 0.09;
+        const col = i < 3 ? COLORS.authority : COLORS.dim;
+        k.box(w, h, w, col, { p: [x, h / 2, 0] });
+        if (i < 3) k.add(new THREE.CylinderGeometry(0.055, 0.07, 0.04, 6), 0xd4c4ff, { p: [x, h + 0.02, 0] });
+      }),
+    'AUTORITÉ · PoA',
+    '#c3b0ff',
+    COLORS.authority
+  );
 
   const panel = ctx.panel(`
     <h2>À vous : produisez 100 blocs</h2>
@@ -80,8 +148,8 @@ export function createSequence6(ctx) {
   });
 
   return {
-    name: 'Consensus',
-    lights: [{ p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 9, d: 15 }, { p: [-2.4, 2.6, 7], color: 0xc8d4ff, i: 3, d: 8 }],
+    name: 'Comparaison des consensus',
+    lights: [{ p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 3.5, d: 14 }, { p: [-2.4, 2.6, 7], color: 0xc8d4ff, i: 2.2, d: 10 }],
     groups: [ctx.office.group, ctx.cityGroup],
     cityLit: true,
     panelEl: panel,
@@ -119,9 +187,9 @@ export function createSequence6(ctx) {
     TERMS: [
       { from: 0.13, to: 0.22, label: 'Glossaire', title: 'Consensus', def: 'Mécanisme par lequel les participants d’un réseau décentralisé s’accordent sur les transactions et les blocs retenus comme valides.' },
       { from: 0.25, to: 0.37, label: 'PoW', title: 'Preuve de travail', def: 'Avantage : ouverte et très éprouvée. Limite : énergie, et concentration chez ceux qui ont les machines.' },
-      { from: 0.4, to: 0.51, label: 'PoS', title: 'Preuve d’enjeu', def: 'Une mise en garantie (32 ETH sur Ethereum), un tirage toutes les 12 secondes. Un tricheur perd sa mise : le slashing. Limite : le capital pèse lourd.' },
-      { from: 0.54, to: 0.68, label: 'PoA', title: 'Preuve d’autorité', def: 'Des signataires autorisés se relaient, surtout sur des réseaux privés ou de test. Limite : il faut leur faire confiance.' },
-      { from: 0.94, to: 1, label: 'Note d’audit', title: 'Pas de meilleur absolu', def: 'Chaque mécanisme échange de la sécurité, de la vitesse, de l’énergie et de la décentralisation. Ce qui change, c’est ce que la triche fait perdre.' }
+      { from: 0.4, to: 0.51, label: 'PoS', title: 'Preuve d’enjeu', def: 'Une mise bloquée donne une chance d’être tiré au sort, et un tricheur la perd. Avantage : très peu d’énergie. Limite : le capital pèse lourd.' },
+      { from: 0.54, to: 0.68, label: 'PoA', title: 'Preuve d’autorité', def: 'Des signataires autorisés se relaient. Avantage : rapide et sobre. Limite : il faut leur faire confiance.' },
+      { from: 0.94, to: 1, label: 'Note d’audit', title: 'Pas de meilleur absolu', def: 'Chacun échange de la sécurité, de la vitesse, de l’énergie et de la décentralisation. Aucun n’est le meilleur partout.' }
     ],
     leave() { holo.visible = false; },
     update(t, time) {
@@ -129,13 +197,18 @@ export function createSequence6(ctx) {
       const o = curve([[0.2, 0], [0.26, 1]], t);
       holo.scale.setScalar(0.95);
       [pow, pos, poa].forEach((p) => {
-        p.m.material.opacity = o;
+        p.m.material.opacity = o * 0.92;
+        p.edges.material.opacity = o * 0.78;
+        p.glowLine.material.opacity = o;
+        p.baseMesh.visible = o > 0.1;
         p.label.mesh.material.opacity = o;
         p.g.visible = o > 0.01;
       });
       // La preuve de travail est la seule qui s'agite en permanence
-      pow.m.position.y = Math.sin(time * 42) * 0.006;
+      pow.m.position.y = 0.03 + Math.sin(time * 42) * 0.006;
       pow.m.position.x = Math.cos(time * 37) * 0.004;
+      pow.edges.position.y = pow.m.position.y;
+      pow.edges.position.x = pow.m.position.x;
     }
   };
 }

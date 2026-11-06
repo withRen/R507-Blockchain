@@ -15,8 +15,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
-        sources: resolve(import.meta.dirname, 'sources.html'),
-        ancien: resolve(import.meta.dirname, 'ancien-parcours.html')
+        sources: resolve(import.meta.dirname, 'sources.html')
       }
     }
   }

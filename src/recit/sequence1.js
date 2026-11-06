@@ -70,7 +70,7 @@ export const LINES = [
   { from: 0.465, to: 0.53, who: 'Inès', text: 'Et le nonce : un simple nombre, qui ne veut rien dire. Les mineurs le font varier.' },
   { from: 0.535, to: 0.6, who: 'Inès', text: 'On passe l’ensemble dans SHA-256, la fonction de hachage de Bitcoin. Il en sort le hash du bloc.' },
   { from: 0.605, to: 0.66, who: 'Alice', text: 'Donc c’est chiffré.' },
-  { from: 0.665, to: 0.74, who: 'Inès', text: 'Non. Rien n’est caché. Le hash résume le bloc, il ne le protège pas et il ne permet pas de revenir en arrière.' },
+  { from: 0.665, to: 0.74, who: 'Inès', text: 'Non. Rien n’est caché. Le hash résume le bloc, et on ne peut pas retrouver le bloc à partir de lui.' },
   { from: 0.95, to: 1, who: 'Alice', text: 'Et qu’est-ce qui empêche de remplacer tout le bloc, avec un nouveau hash ?' }
 ];
 
@@ -81,14 +81,14 @@ export const TERMS = [
   { from: 0.47, to: 0.53, label: 'Glossaire', title: 'Nonce', def: 'Valeur, souvent numérique, modifiée pendant une recherche de preuve de travail afin d’obtenir un hash respectant une difficulté donnée.' },
   { from: 0.54, to: 0.6, label: 'Glossaire', title: 'Hash', def: 'Résultat de l’application d’une fonction de hachage à des données ; il sert notamment à produire une représentation de longueur fixe et à relier des blocs.' },
   { from: 0.67, to: 0.74, label: 'Glossaire', title: 'Empreinte cryptographique', def: 'Hash utilisé comme identifiant vérifiable de données. Elle est très sensible à une modification et ne permet pas, en pratique, de retrouver les données originales.' },
-  { from: 0.945, to: 1, label: 'Note d’audit', title: 'Ce que ça ne prouve pas', def: 'Une empreinte montre que le contenu n’a pas changé, pas qu’il est vrai. Simplifié ici : Bitcoin hache un en-tête de 6 champs, deux fois, et traite environ 7 transactions par seconde.' }
+  { from: 0.945, to: 1, label: 'Note d’audit', title: 'Ce que ça ne prouve pas', def: 'Une empreinte montre que le contenu n’a pas changé, pas qu’il est vrai. Ce bloc est simplifié : un vrai bloc Bitcoin contient davantage de champs.' }
 ];
 
 // Definitions affichees quand le visiteur clique sur une couche du bloc
 export const LAYER_INFO = {
-  data: { label: 'Couche cliquée', title: 'Données', def: 'Les transactions du bloc, lisibles par tous. Modifie-les dans le panneau : le hash change.' },
+  data: { label: 'Couche cliquée', title: 'Données', def: 'Les transactions du bloc, lisibles par tous. Modifiez-les dans le panneau : le hash change.' },
   parent: { label: 'Couche cliquée', title: 'Hash du bloc parent', def: 'L’empreinte du bloc précédent. Si le passé change, ce lien ne correspond plus.' },
-  nonce: { label: 'Couche cliquée', title: 'Nonce', def: 'Un simple nombre. Change-le : tout le hash change aussi, c’est ce qu’exploitent les mineurs.' }
+  nonce: { label: 'Couche cliquée', title: 'Nonce', def: 'Un simple nombre. Changez-le : tout le hash change aussi, et c’est ce qu’exploitent les mineurs.' }
 };
 
 export const PARENT = '000a3f1c9e27d46b';

@@ -38,12 +38,12 @@ const towerFragment = /* glsl */`
     float heightY = vW.y;
     float seed = abs(vSeed);
     if (abs(n.y) > 0.5) {
-      // Toit : gravier, dalles, et un acrotere plus clair sur le pourtour
+      // Toit : gravier, dalles techniques, et un acrotere plus clair sur le pourtour
       float g = fbm(vW.xz * 0.9);
       vec2 dalle = abs(fract(vW.xz / 3.2) - 0.5);
-      col = vec3(0.0065, 0.0072, 0.0095) * (0.6 + 0.9 * g) * (0.82 + 0.18 * smoothstep(0.47, 0.5, max(dalle.x, dalle.y)));
+      col = vec3(0.008, 0.009, 0.012) * (0.6 + 0.9 * g) * (0.82 + 0.18 * smoothstep(0.47, 0.5, max(dalle.x, dalle.y)));
       float acrotere = 1.0 - smoothstep(0.55, 0.75, vEdge);
-      col = mix(col, vec3(0.03, 0.031, 0.036), acrotere);
+      col = mix(col, vec3(0.036, 0.038, 0.045), acrotere);
     } else {
       vec3 tangent = normalize(vec3(n.z, 0.0, -n.x));
       float along = dot(vW, tangent);
@@ -63,30 +63,30 @@ const towerFragment = /* glsl */`
       float floorOn = step(0.3, hash(vec2(id.y, seed * 37.0)));
       float density = mix(vDensity, 0.82, vGlow);
       float lit = step(1.0 - density, r) * floorOn;
-      vec3 warm = mix(vec3(0.95, 0.62, 0.3), vec3(1.0, 0.8, 0.54), hash(bay + 3.0));
-      vec3 cool = vec3(0.56, 0.74, 1.0);
+      vec3 warm = mix(vec3(0.96, 0.64, 0.32), vec3(1.0, 0.82, 0.56), hash(bay + 3.0));
+      vec3 cool = vec3(0.58, 0.76, 1.0);
       vec3 win = mix(warm, cool, step(0.68, hash(bay * 1.7 + seed)));
-      win = mix(win, vec3(0.34, 0.47, 1.0), vGlow * 0.92);
-      float brightness = (0.42 + 0.7 * hash(id + 7.0)) * (1.0 + vGlow * 0.4);
+      win = mix(win, vec3(0.36, 0.5, 1.0), vGlow * 0.92);
+      float brightness = (0.45 + 0.72 * hash(id + 7.0)) * (1.0 + vGlow * 0.42);
       // Le 41e etage de Meridian reste allume : c'est la que tout commence
-      if (vSeed < 0.0 && id.y > 40.5 && id.y < 41.5) { lit = 1.0; win = vec3(0.86, 0.92, 1.0); brightness = 1.0; }
+      if (vSeed < 0.0 && id.y > 40.5 && id.y < 41.5) { lit = 1.0; win = vec3(0.88, 0.94, 1.0); brightness = 1.05; }
       vec3 V = normalize(cameraPosition - vW);
       float fresnel = pow(1.0 - max(dot(V, n), 0.0), 3.0);
       float up = clamp(reflect(-V, n).y * 0.5 + 0.5, 0.0, 1.0);
-      vec3 sky = mix(vec3(0.02, 0.016, 0.018), vec3(0.016, 0.03, 0.062), up);
+      vec3 sky = mix(vec3(0.024, 0.019, 0.022), vec3(0.018, 0.034, 0.072), up);
       // Vitre : legere ondulation du reflet d'un panneau a l'autre
-      vec3 glass = vec3(0.0035, 0.0055, 0.011) + sky * (0.16 + fresnel * 1.1) * (0.8 + 0.4 * hash(id * 0.31 + seed));
+      vec3 glass = vec3(0.004, 0.0065, 0.013) + sky * (0.18 + fresnel * 1.18) * (0.8 + 0.4 * hash(id * 0.31 + seed));
       // Beton : traces d'usure qui coulent le long de la facade
       float stain = fbm(vec2(along * 0.22 + seed * 40.0, heightY * 0.035));
-      vec3 concrete = mix(vec3(0.012, 0.0125, 0.014), vec3(0.03, 0.031, 0.034), side) * (0.55 + 0.9 * stain);
+      vec3 concrete = mix(vec3(0.014, 0.015, 0.017), vec3(0.035, 0.037, 0.041), side) * (0.55 + 0.9 * stain);
       // Relief : ombre sous le linteau, lumiere sur l'appui, montants metalliques
       float mullion = 1.0 - smoothstep(0.0, 0.05, min(f.x, 1.0 - f.x));
       float reveal = smoothstep(0.82, 0.9, f.y) * (1.0 - smoothstep(0.9, 0.98, f.y));
       float ledge = smoothstep(sill - 0.05, sill, f.y) * (1.0 - smoothstep(sill, sill + 0.02, f.y));
       col = mix(concrete, glass, pane);
       col *= 1.0 - 0.6 * reveal;
-      col += vec3(0.012, 0.013, 0.016) * ledge;
-      col += vec3(0.006, 0.007, 0.009) * mullion;
+      col += vec3(0.014, 0.015, 0.019) * ledge;
+      col += vec3(0.008, 0.009, 0.012) * mullion;
       if (lit > 0.5 && pane > 0.01) {
         // Une vraie piece derriere la vitre : le regard entre, et touche un mur, le sol ou le plafond
         vec3 rd = -V;
@@ -138,7 +138,7 @@ function sky(fog) {
         vec3 c = mix(uFog, vec3(0.006, 0.0115, 0.028), smoothstep(0.0, 0.2, h));
         c = mix(c, vec3(0.0012, 0.0024, 0.0065), smoothstep(0.14, 0.62, h));
         // Halo de la ville, a peine chaud, au ras de l'horizon
-        c += vec3(0.011, 0.0075, 0.007) * exp(-h * 18.0);
+        c += vec3(0.012, 0.0085, 0.0075) * exp(-h * 18.0);
         vec2 g = floor(vP.xz / max(vP.y, 0.08) * 90.0);
         c += vec3(0.25, 0.3, 0.4) * step(0.9988, n(g)) * smoothstep(0.25, 0.55, h) * 0.5;
         gl_FragColor = vec4(c, 1.0);
@@ -193,6 +193,7 @@ export function createCity(scene) {
 
   // Une tour = un ou deux volumes (socle + retrait), plus ses equipements de toit
   const blocks = [];
+  const beacons = [];
   list.forEach((t) => {
     let top = t.h;
     let w = t.w;
@@ -208,7 +209,11 @@ export function createCity(scene) {
     if (t.roof > 0.3 && t.hero < 0) {
       blocks.push({ x: t.x + (t.roof - 0.65) * w * 0.4, z: t.z - (t.roof - 0.65) * de * 0.4, w: w * 0.42, d: de * 0.34, y: top, h: 3 + t.roof * 5, hero: -1, chamfer: false });
     }
-    if (t.roof > 0.9) blocks.push({ x: t.x, z: t.z, w: 0.7, d: 0.7, y: top, h: 14 + t.roof * 12, hero: -1, chamfer: false });
+    if (t.roof > 0.85 || t.hero >= 0) {
+      const mastH = t.hero >= 0 ? 10 : 14 + t.roof * 12;
+      blocks.push({ x: t.x, z: t.z, w: 0.65, d: 0.65, y: top, h: mastH, hero: -1, chamfer: false });
+      beacons.push([t.x, top + mastH + 0.4, t.z]);
+    }
   });
 
   // Deux formes de tour, et un maillage par quartier
@@ -264,15 +269,41 @@ export function createCity(scene) {
     chunkMeshes.push(mesh);
   });
 
-  // L'asphalte, presque noir, qui se fond dans le lointain
+  // L'asphalte humide de nuit : grille d'avenues, flaques reflechissantes et halos de lampadaires
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(1480, 48),
     new THREE.ShaderMaterial({
       uniforms: { uFog: { value: fog } },
-      vertexShader: /* glsl */`varying float vD; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
-      fragmentShader: /* glsl */`uniform vec3 uFog; varying float vD;
-        void main(){ float f = 1.0 - exp(-pow(vD / 1050.0, 2.0) * 3.2);
-          gl_FragColor = vec4(mix(vec3(0.0022, 0.0032, 0.0058), uFog, f), 1.0);
+      vertexShader: /* glsl */`
+        varying float vD; varying vec3 vW;
+        void main(){
+          vec4 w = modelMatrix * vec4(position, 1.0);
+          vW = w.xyz;
+          vec4 mv = viewMatrix * w;
+          vD = -mv.z;
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: /* glsl */`
+        uniform vec3 uFog; varying float vD; varying vec3 vW;
+        float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float noise(vec2 p){
+          vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+          return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+        }
+        void main(){
+          vec2 cell = abs(fract(vW.xz / 46.0) - 0.5) * 46.0;
+          float roadX = 1.0 - smoothstep(4.8, 5.4, cell.x);
+          float roadZ = 1.0 - smoothstep(4.8, 5.4, cell.y);
+          float road = max(roadX, roadZ);
+          float puddle = smoothstep(0.42, 0.72, noise(vW.xz * 0.08));
+          vec3 base = mix(vec3(0.003, 0.0042, 0.0072), vec3(0.0055, 0.0075, 0.013), road);
+          // Halos chauds des lampadaires le long des avenues
+          float lampPool = exp(-pow(min(cell.x, cell.y) / 4.2, 2.0)) * road;
+          vec3 refl = vec3(0.026, 0.015, 0.008) * lampPool * (0.45 + 0.9 * puddle);
+          refl += vec3(0.005, 0.009, 0.022) * puddle * road;
+          vec3 col = base + refl;
+          float f = 1.0 - exp(-pow(vD / 1050.0, 2.0) * 3.2);
+          gl_FragColor = vec4(mix(col, uFog, f), 1.0);
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
         }`
@@ -281,7 +312,7 @@ export function createCity(scene) {
   ground.rotation.x = -Math.PI / 2;
   scene.add(ground);
 
-  // Lampadaires et circulation
+  // Lampadaires, balises rouges d'aviation sur les toits et circulation
   const dot = new THREE.BoxGeometry(1, 1, 1);
   const lamps = [];
   for (let i = -R; i < R; i++) {
@@ -299,6 +330,17 @@ export function createCity(scene) {
   });
   lampMesh.frustumCulled = false;
   scene.add(lampMesh);
+
+  const beaconMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(2.2, 0.18, 0.14), fog: false });
+  const beaconMesh = new THREE.InstancedMesh(dot, beaconMat, beacons.length);
+  beacons.forEach(([x, y, z], i) => {
+    d.position.set(x, y, z);
+    d.scale.setScalar(0.55);
+    d.updateMatrix();
+    beaconMesh.setMatrixAt(i, d.matrix);
+  });
+  beaconMesh.frustumCulled = false;
+  scene.add(beaconMesh);
 
   const CARS = 200;
   const cars = new THREE.InstancedMesh(dot, new THREE.MeshBasicMaterial({ fog: false }), CARS);
@@ -328,7 +370,7 @@ export function createCity(scene) {
   edges.forEach(([a, b]) => linkPts.push(heroPos[a], heroPos[b]));
   const links = new THREE.LineSegments(
     new THREE.BufferGeometry().setFromPoints(linkPts),
-    new THREE.LineBasicMaterial({ color: new THREE.Color(0.32, 0.44, 1.5), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })
+    new THREE.LineBasicMaterial({ color: new THREE.Color(0.36, 0.5, 1.65), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })
   );
   links.frustumCulled = false;
   scene.add(links);
@@ -353,19 +395,40 @@ export function createCity(scene) {
   nameC.width = 1024; nameC.height = 170;
   const nx = nameC.getContext('2d');
   nx.fillStyle = '#f2f5ff';
-  nx.font = '500 118px "Inter", Helvetica, Arial, sans-serif';
+  nx.font = '500 118px "Roboto", Helvetica, Arial, sans-serif';
   nx.textAlign = 'center';
   nx.textBaseline = 'middle';
   nx.letterSpacing = '26px';
   nx.fillText('MERIDIAN', 512, 92);
   const nameTex = new THREE.CanvasTexture(nameC);
   nameTex.colorSpace = THREE.SRGBColorSpace;
-  const sign = new THREE.Mesh(new THREE.PlaneGeometry(27, 4.5), new THREE.MeshBasicMaterial({ map: nameTex, transparent: true, depthWrite: false, fog: false, color: new THREE.Color(1.5, 1.55, 1.7) }));
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(27, 4.5), new THREE.MeshBasicMaterial({ map: nameTex, transparent: true, depthWrite: false, fog: false, color: new THREE.Color(0.92, 0.95, 1.0) }));
   sign.position.set(0, MERIDIAN.h - 7, MERIDIAN.d / 2 + 0.15);
   scene.add(sign);
 
+  // Enseignes des tours voisines, reprises de l'histoire
+  [['FONDS KERN', 1, 0, 1], ['BANQUE DU CANAL', 2, 1, 0], ['PORT AUTONOME', 3, 0, -1]].forEach(([text, idx, dx, dz]) => {
+    const t = heroes[idx];
+    const c = document.createElement('canvas');
+    c.width = 1024; c.height = 170;
+    const x = c.getContext('2d');
+    x.fillStyle = '#e8edf8';
+    x.font = '500 92px "Roboto", Helvetica, Arial, sans-serif';
+    x.textAlign = 'center';
+    x.textBaseline = 'middle';
+    x.letterSpacing = '12px';
+    x.fillText(text, 512, 88);
+    const map = new THREE.CanvasTexture(c);
+    map.colorSpace = THREE.SRGBColorSpace;
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(26, 4.3), new THREE.MeshBasicMaterial({ map, transparent: true, depthWrite: false, fog: false }));
+    mesh.position.set(t.x + dx * (t.w / 2 + 0.2), t.h - 8, t.z + dz * (t.d / 2 + 0.2));
+    if (dx !== 0) mesh.rotation.y = dx > 0 ? Math.PI / 2 : -Math.PI / 2;
+    if (dz < 0) mesh.rotation.y = Math.PI;
+    scene.add(mesh);
+  });
+
   const PULSES = 34;
-  const pulses = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.1, 1.4, 3.4), fog: false }), PULSES);
+  const pulses = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 10, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.4, 0.7, 1.2), fog: false }), PULSES);
   pulses.frustumCulled = false;
   scene.add(pulses);
 
@@ -389,6 +452,10 @@ export function createCity(scene) {
   const FAR = 1300;
   function update(time, camera, heroLevels /* (index) => 0..1 */, linkLevel, inside = false) {
     skyMesh.position.copy(camera.position);
+    // Pulsation douce des balises d'aviation sur les sommets
+    const bPulse = 0.65 + 0.35 * Math.sin(time * 2.6);
+    beaconMat.color.setRGB(2.1 * bPulse, 0.16 * bPulse, 0.12 * bPulse);
+
     // Les quartiers trop loin, deja fondus dans la brume, ne sont pas dessines
     chunkMeshes.forEach((m) => {
       m.visible = m.boundingSphere.center.distanceTo(camera.position) - m.boundingSphere.radius < FAR;
@@ -414,7 +481,7 @@ export function createCity(scene) {
       const g = heroLevels(i);
       if (Math.abs(g - lastLevel[i]) < 0.002) return;
       lastLevel[i] = g;
-      crowns.setColorAt(i, col.setRGB(0.55 * g, 0.75 * g, 2.6 * g));
+      crowns.setColorAt(i, col.setRGB(0.45 * g, 0.65 * g, 1.2 * g));
       crownsDirty = true;
       heroSlots.forEach((slot) => {
         if (slot.hero === i) { slot.array[slot.index] = g; slot.attr.needsUpdate = true; }
@@ -422,7 +489,7 @@ export function createCity(scene) {
     });
     if (crownsDirty) crowns.instanceColor.needsUpdate = true;
 
-    links.material.opacity = linkLevel * 0.72;
+    links.material.opacity = linkLevel * 0.75;
     pulses.visible = linkLevel > 0.02;
     if (net?.active) {
       // Une vraie propagation : l'impulsion suit le graphe, noeud apres noeud
@@ -450,7 +517,7 @@ export function createCity(scene) {
         const u = (time * 0.32 + i * 0.37) % 1;
         v.lerpVectors(heroPos[a], heroPos[b], u);
         d.position.copy(v);
-        d.scale.setScalar(0.72 * linkLevel);
+        d.scale.setScalar(0.75 * linkLevel);
         d.updateMatrix();
         pulses.setMatrixAt(i, d.matrix);
       }

@@ -65,8 +65,8 @@ export function createSequence3(ctx) {
   let wasTampered = null;
 
   return {
-    name: 'Falsification',
-    lights: [{ p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 9, d: 15 }, { p: [-5.4, 3.2, 7], color: 0xe8eeff, i: 5, d: 12 }],
+    name: 'Immutabilité et falsification',
+    lights: [{ p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 3.5, d: 14 }, { p: [-5.4, 3.2, 7], color: 0xe8eeff, i: 2.2, d: 12 }],
     groups: [ctx.office.group, ctx.cityGroup],
     cityLit: true,
     panelEl: panel,

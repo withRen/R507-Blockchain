@@ -18,6 +18,10 @@ const GRADIENT = gradient();
 export const toon = new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: GRADIENT });
 export const toonTint = (opts = {}) => new THREE.MeshToonMaterial({ gradientMap: GRADIENT, ...opts });
 
+// Tout le decor partage une seule matiere mate, sans texture : un rendu net et simple
+export const matte = new THREE.MeshLambertMaterial({ vertexColors: true });
+export const flat = (kit) => new THREE.Mesh(kit.geometry(), matte);
+
 const tmpM = new THREE.Matrix4();
 const tmpQ = new THREE.Quaternion();
 const tmpE = new THREE.Euler();

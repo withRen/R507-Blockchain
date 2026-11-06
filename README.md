@@ -1,7 +1,7 @@
 # R507 — Blockchain en 3D
 ---
 
-> **Branche `test-alternate`** : version alternative du parcours, un récit 3D dans un quartier d'affaires de nuit. Démo : https://withren.github.io/R507-Blockchain/ . L'ancien parcours reste sur `ancien-parcours.html`.
+> **« Le Registre »** : un récit 3D dans un quartier d'affaires de nuit. Démo : https://withren.github.io/R507-Blockchain/ .
 
 ## Équipe
 
@@ -14,7 +14,7 @@
 
 - **Public visé :** des personnes qui n'ont jamais étudié la blockchain, sans explication orale préalable.
 - **Objectif :** qu'à la fin du parcours l'utilisateur comprenne ce qu'est un bloc, comment les blocs sont reliés, pourquoi une falsification se repère, et comment un réseau décentralisé se met d'accord.
-- **Fil rouge narratif :** la transaction « Alice → Bob : 5 jetons », racontée en faisant défiler la page.
+- **Fil rouge narratif :** « Le Registre », une enquête d'une nuit (23 h 47 à 07 h 10) dans un quartier d'affaires. Alice Vasseur, auditrice, découvre que 40 millions ont disparu d'un registre central tenu par un seul administrateur. Avec Inès, elle découvre au fil de la nuit comment une blockchain répond à ce problème, face à Mallory Kern qui tente de tricher.
 
 ## Notions abordées
 
@@ -22,17 +22,20 @@ Chaque notion est associée à une animation ou une interaction visible, pas seu
 
 | # | Notion | Interaction prévue |
 |---|---|---|
-| 1 | Structure d'un bloc (données, hash, hash parent, nonce) | Les petites infos forment un bloc en trois couches (données, lien, nonce) ; on modifie une lettre et l'empreinte change en direct, les cubes « tremblent » |
-| 2 | Chaînage cryptographique | Les infos se regroupent en 5 blocs reliés par des liens ; en-têtes de chapitres réellement chaînés en SHA-256 |
-| 3 | Immutabilité et détection de falsification | En défilant, le bloc 3 est modifié : lui et toute la suite deviennent rouges en cascade |
-| 4 | Réseau et décentralisation | La pièce revient au centre puis **se décompose en maillage** : 14 nœuds qui ont chacun leur copie, des messages circulent sur les liaisons |
-| 5 | Validation et minage (PoW, nonce, difficulté) | Chaque cube qui saute est un essai ; seuls ceux qui franchissent la barre gagnent. Minage réel (SHA-256) dans le navigateur |
-| 6 | Comparaison de consensus (PoW vs PoS / PoA) | Trois figures (colonnes de machines, piles de jetons, piliers d'autorité) et une simulation de 100 blocs |
-| 7 | Cycle de vie d'une transaction et scénario d'attaque | Les confirmations s'empilent au défilement, puis la chaîne secrète de Mallory rattrape la vraie et la remplace ; chances de réussite selon la formule de Nakamoto |
+| 1 | Structure d'un bloc (données, hash, hash parent, nonce) | Séq. 1, salle des serveurs : un bloc de verre en trois couches ; on modifie les données ou le nonce et le hash SHA-256 est recalculé en direct ; clic sur une couche pour sa définition |
+| 2 | Chaînage cryptographique | Séq. 2, passerelle vitrée : cinq blocs reliés ; modifier le bloc 2 rompt le lien 2-3 (rouge), puis on répare la chaîne en recopiant les hashes, sans aucun coût |
+| 3 | Immutabilité et détection de falsification | Séq. 3, bureau de Mallory : on change 5 en 500 dans le bloc 3 de sa copie ; son nœud passe au rouge, les 13 autres gardent leur copie |
+| 4 | Réseau et décentralisation | Séq. 4, au-dessus de la ville : les 14 tours sont les nœuds ; on coupe des tours (dont Meridian) et on émet une transaction qui se propage de voisin en voisin |
+| 5 | Validation et minage (PoW, nonce, difficulté) | Séq. 5, ferme de minage du port : vrai mineur SHA-256 dans le navigateur (2 à 5 zéros), puis vérification du bloc trouvé en un seul hash |
+| 6 | Comparaison de consensus (PoW vs PoS / PoA) | Séq. 6, salle du conseil : trois hologrammes (tours d'énergie, piles de jetons, piliers d'autorité) et simulation de 100 blocs pour 5 participants |
+| 7 | Cycle de vie d'une transaction et scénario d'attaque | Séq. 7, parking de la tour Kern : voyage du paiement jusqu'aux confirmations, chaîne secrète de Mallory, et calculateur (formule de Nakamoto) pour décider combien de blocs Bob doit attendre |
 
-**Concept :** un récit à faire défiler. On ouvre sur un logo Bitcoin en fil de fer, couvert de ~1 800 petits cubes, les « petites infos ». À chaque étape, ces infos se détachent pour prendre une nouvelle forme ; dans la section maillage, la pièce entière se décompose en réseau, pour montrer que le bitcoin n'est rangé nulle part. Le fond change de teinte selon le chapitre et des fragments d'information y flottent. Chaque chapitre a une carte d'explication et une carte « Le revers » (inconvénients). Les sources sont sur une page dédiée : [`sources.html`](sources.html).
+**Concept :** un récit 3D à faire défiler (`index.html`), en 9 séquences : un prologue, une séquence par notion, un épilogue. Chaque notion a son lieu dans la même ville, son heure dans la nuit, et se termine par un panneau « À vous » où l'utilisateur manipule la notion avec de vrais calculs. Chaque séquence finit sur la question à laquelle la suivante répond. Les encarts « Le revers » donnent les limites réelles, et l'épilogue fait un bilan honnête. Les sources sont sur une page dédiée : [`sources.html`](sources.html).
 
-Charte : le site prend l'allure d'un **livre de comptes**. Pas de cartes ni d'arrondis : du texte posé sur la page, des filets fins, des chiffres en police à chasse fixe. Chaque chapitre est une écriture du registre, avec sa vraie empreinte SHA-256 et le lien vers celle du chapitre précédent ; les chapitres sont donc eux-mêmes chaînés. La navigation est une mini-chaîne de 7 blocs. « Le revers » fait basculer la page en sombre et liste les inconvénients comme des débits (−), et « À retenir » est le total souligné d'un double filet. Couleurs : une encre bleue pour l'information, vert = valide, rouge = falsifié, orange = effort et énergie. Titres en Instrument Serif, texte en DM Sans, données en JetBrains Mono.
+Charte : une ville de nuit, mate et sombre, construite entièrement en code (aucune texture ni modèle externe, voir [`docs/ASSETS.md`](docs/ASSETS.md)). Seuls les objets techniques brillent : des blocs de verre holographiques qui affichent leurs vraies valeurs. Couleurs : bleu = information, vert = valide, rouge = falsifié ou attaque, orange = effort de minage, turquoise = enjeu, violet = autorité. Dialogues en Roboto, données en IBM Plex Mono. Navigation par une mini-chaîne de 9 blocs.
+
+La première version du projet (« Grand Registre », 1 800 cubes sur une interface de livre de comptes) reste dans l'historique Git (branche `main` avant la fusion du récit) ; elle est documentée comme alternative écartée dans le livrable de modélisation.
+
 Les choix de représentation sont justifiés dans [`docs/MMI-R507-projet-blockchain-CHOIX-MODELISATION.md`](docs/MMI-R507-projet-blockchain-CHOIX-MODELISATION.md) et s'appuient sur la fiche de recherche [`docs/MMI-R507-projet-blockchain-FICHE-RECHERCHE.md`](docs/MMI-R507-projet-blockchain-FICHE-RECHERCHE.md).
 
 ## Stack technique
@@ -95,7 +98,7 @@ Le suivi se fait dans **GitHub Projects**, avec les colonnes :
 
 ## Critères de qualité
 
-- Parcours principal à **30 FPS ou plus** sur un poste de TP standard (rendu optimisé via un unique `THREE.InstancedMesh` de 1 800 cubes).
+- Parcours principal à **30 FPS ou plus** sur un poste de TP standard (ville découpée en quartiers non dessinés hors champ, chargement à la demande, fenêtres calculées dans un shader, aucune texture externe).
 - **Tests utilisateurs** avec au moins 2 personnes extérieures au groupe. Leurs retours sont notés et transformés en issues si besoin.
   Questionnaire à leur faire remplir : [formulaire de retours testeurs](https://docs.google.com/forms/d/e/1FAIpQLSdWOe5Z6wL2r4mvUCPZjamTJZX2sr3akOwpV4yEK9PuOTuHjA/viewform).
 - Textes lisibles, légendes, retours visuels et navigation claire.
@@ -109,7 +112,7 @@ Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code géné
 | Claude (Claude Code) | Cadrage initial, rédaction de la structure du README, génération des jalons et issues GitHub |
 | Antigravity | Initialisation du projet Vite + Three.js, scène 3D minimale, intégration UI WebGL (issue #6) |
 | Claude (Claude Code) | Première version du parcours scénarisé en 7 chapitres (scènes Three.js, textes, inconvénients, recherche et vérification des sources) |
-| Claude (Claude Code) | Branche `test-alternate` : scénario « Le Registre » et récit 3D en 9 séquences (`src/recit/`), intégration des assets Poly Haven (voir `docs/ASSETS.md`) |
+| Claude (Claude Code) | Branche `test-alternate` : scénario « Le Registre » et récit 3D en 9 séquences (`src/recit/`), décors construits en code, sans asset externe |
 | Antigravity | Rédaction des livrables (`CHOIX-MODELISATION.md`, `GRILLE-AUTOEVAL.md`, fiches de suivi hebdomadaire `SEMAINE-02` à `SEMAINE-04`) et synchronisation avec la fiche de recherche |
 
 ## Sources

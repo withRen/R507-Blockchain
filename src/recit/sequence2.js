@@ -1,7 +1,6 @@
-// Sequence 2 : 03 h 40, la passerelle. Chainage cryptographique.
+// Sequence 2 : 03 h 40, la passerelle vitree. Chainage cryptographique.
 import * as THREE from 'three';
-import { Kit } from './kit.js';
-import { surface, textured } from './assets.js';
+import { Kit, flat } from './kit.js';
 import { COLORS, createChain, drawChainFace, filament, glassBlock } from './stage.js';
 import { curve } from './timeline.js';
 
@@ -15,17 +14,46 @@ export function createSequence2(ctx) {
   group.position.set(0, Y, 60);
   ctx.scene.add(group);
 
-  const k = new Kit();
-  k.box(36, 0.14, 7.5, 0x8d9199, { p: [0, -0.07, 0] });
+  // Dalle de la passerelle en dalles de pierre sombre et bordures
+  const fl = new Kit();
+  fl.box(36, 0.22, 7.6, 0x828792, { p: [0, -0.11, 0] });
+  fl.box(36, 0.14, 0.36, 0x484d58, { p: [0, 0.07, -3.62] });
+  fl.box(36, 0.14, 0.36, 0x484d58, { p: [0, 0.07, 3.62] });
+  group.add(
+    flat(fl)
+  );
+
+  // Charpente metallique de la passerelle : portiques, traverses, garde-corps et socles des 5 blocs
+  const steel = new Kit();
+  const H = 3.8;
   for (let i = 0; i <= 12; i++) {
-    k.box(0.05, 3.5, 0.05, 0x242a36, { p: [-18 + i * 3, 1.75, -3.7] });
+    const x = -18 + i * 3;
+    steel.box(0.1, H, 0.12, 0x2e3442, { p: [x, H / 2, -3.68] });
+    steel.box(0.1, H, 0.12, 0x2e3442, { p: [x, H / 2, 3.68] });
+    steel.box(0.1, 0.1, 7.5, 0x2e3442, { p: [x, H - 0.05, 0] });
   }
-  k.box(36, 0.04, 0.06, 0x2d3442, { p: [0, 3.5, -3.7] });
-  group.add(textured(k, surface('large_grey_tiles', { roughness: 0.7, normalScale: 0.7 }), 2.4));
+  steel.box(36, 0.12, 0.14, 0x262b36, { p: [0, H, -3.68] });
+  steel.box(36, 0.12, 0.14, 0x262b36, { p: [0, H, 3.68] });
+  steel.box(36, 0.05, 0.08, 0x485264, { p: [0, 1.05, -3.55] });
+  steel.box(36, 0.05, 0.08, 0x485264, { p: [0, 1.05, 3.55] });
+  // Socles au sol sous chacun des 5 blocs de la chaine
+  for (let i = 0; i < 5; i++) {
+    steel.box(2.8, 0.07, 0.85, 0x282f3c, { p: [X(i), 0.035, -0.9] });
+  }
+  group.add(flat(steel));
+
+  
+  // Garde-corps vitres et lignes de guidage au sol
+  const bridgeGlass = new THREE.MeshBasicMaterial({ color: 0x3d5a80, transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide });
+  [-3.55, 3.55].forEach((z) => {
+    const panel = new THREE.Mesh(new THREE.PlaneGeometry(36, 1), bridgeGlass);
+    panel.position.set(0, 0.55, z);
+    group.add(panel);
+  });
   const lineKit = new Kit();
-  lineKit.box(36, 0.012, 0.045, 0xffffff, { p: [0, 0.01, 3.7] });
-  lineKit.box(36, 0.012, 0.045, 0xffffff, { p: [0, 0.01, -3.7] });
-  group.add(lineKit.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(0.65, 0.8, 1.7) }), { cast: false }));
+  lineKit.box(36, 0.015, 0.04, 0x5b74ff, { p: [0, 0.012, 3.48] });
+  lineKit.box(36, 0.015, 0.04, 0x5b74ff, { p: [0, 0.012, -3.48] });
+  group.add(lineKit.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }), { cast: false }));
 
   const chain = createChain();
   const blocks = chain.blocks.map((b, i) => {
@@ -80,10 +108,11 @@ export function createSequence2(ctx) {
   const REVEAL = [0.08, 0.13, 0.18, 0.23, 0.28];
 
   return {
-    name: 'Chaînage',
-    lights: [{ p: [0, 4.6, 3], color: 0xd5e0ff, i: 9, d: 18 }, { p: [-7, 4, 4], color: 0xd5e0ff, i: 5, d: 14 }],
+    name: 'Chaînage cryptographique',
+    lights: [{ p: [0, 4.2, 3.2], color: 0x9bc2ff, i: 1.6, d: 15 }, { p: [-6, 3.8, 3.6], color: 0x7aa5e8, i: 1.1, d: 14 }],
     groups: [group, ctx.cityGroup],
     cityLit: true,
+    onBridge: true,
     panelEl: panel,
     LAB: { from: 0.62, to: 0.91 },
     actorsDef: {

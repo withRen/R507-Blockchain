@@ -1,10 +1,4 @@
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { loadEnvironment, setWarmup, syncAssets } from './assets.js';
 import { createCity } from './city.js';
 import { createOffice } from './office.js';
 import { createServerRoom } from './serverroom.js';
@@ -26,18 +20,18 @@ const params = new URLSearchParams(location.search);
 const unaccent = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 Promise.race([
-  Promise.all(['400 40px "Newsreader"', '500 20px "Inter"', '500 16px "IBM Plex Mono"'].map((f) => document.fonts.load(f))),
+  Promise.all(['400 40px "Newsreader"', '500 20px "Roboto"', '500 16px "IBM Plex Mono"'].map((f) => document.fonts.load(f))),
   new Promise((r) => setTimeout(r, 2000))
 ]).finally(() => init());
 
 async function init() {
   const canvas = document.querySelector('#scene');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.info.autoReset = false;
-  let pixelRatio = Math.min(window.devicePixelRatio, 1.25);
+  let pixelRatio = Math.min(window.devicePixelRatio, 1.5);
   renderer.setPixelRatio(pixelRatio);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.95;
+  renderer.toneMappingExposure = 0.92;
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x020306);
@@ -48,8 +42,8 @@ async function init() {
   const office = createOffice(scene);
   const room = createServerRoom(scene);
 
-  scene.add(new THREE.HemisphereLight(0x8fa2c7, 0x2d3440, 0.3));
-  const moon = new THREE.DirectionalLight(0x9db6e6, 0.4);
+  scene.add(new THREE.HemisphereLight(0xc4cede, 0x6a7080, 1.5));
+  const moon = new THREE.DirectionalLight(0xc4d2ea, 0.7);
   moon.position.set(-0.5, 0.65, 1);
   scene.add(moon);
 
@@ -64,7 +58,7 @@ async function init() {
   function applyLights(seq) {
     rig.forEach((l, i) => {
       const def = seq.lights?.[i];
-      l.intensity = def ? def.i : 0;
+      l.intensity = def ? def.i * 0.4 : 0;
       if (!def) return;
       (seq.parent ?? scene).getWorldPosition(worldPos);
       l.position.set(worldPos.x + def.p[0], worldPos.y + def.p[1], worldPos.z + def.p[2]);
@@ -72,45 +66,11 @@ async function init() {
       l.distance = def.d;
     });
   }
-  await loadEnvironment(renderer, scene);
-
-  // ---------- Rendu avec bloom ----------
-  const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 2 });
-  const composer = new EffectComposer(renderer, target);
-  composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.34, 0.55, 0.92);
-  composer.addPass(bloom);
-  composer.addPass(new OutputPass());
-  // Etalonnage de cinema : ombres froides, hautes lumieres chaudes, vignette et grain
-  const grade = new ShaderPass({
-    uniforms: { tDiffuse: { value: null }, uTime: { value: 0 } },
-    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
-    fragmentShader: `
-      uniform sampler2D tDiffuse; uniform float uTime; varying vec2 vUv;
-      float n(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233)) + uTime) * 43758.5453); }
-      void main(){
-        vec3 c = texture2D(tDiffuse, vUv).rgb;
-        float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
-        c = mix(c * vec3(0.9, 0.97, 1.1), c * vec3(1.05, 1.0, 0.93), smoothstep(0.08, 0.65, l));
-        c = mix(vec3(l), c, 1.08);
-        c = smoothstep(-0.015, 1.03, c);
-        vec2 q = vUv - 0.5;
-        c *= 1.0 - dot(q, q) * 0.62;
-        c += (n(vUv * 913.0) - 0.5) * 0.016;
-        gl_FragColor = vec4(c, 1.0);
-      }`
-  });
-  composer.addPass(grade);
-  let useBloom = !params.has('nobloom') && window.innerWidth > 700;
 
   function resize() {
     const w = window.innerWidth;
     const h = window.innerHeight;
     renderer.setSize(w, h, false);
-    composer.setPixelRatio(pixelRatio);
-    composer.setSize(w, h);
-    // Bloom a demi-resolution : c'est le poste le plus couteux
-    bloom.setSize(Math.round(w * pixelRatio * 0.5), Math.round(h * pixelRatio * 0.5));
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -212,7 +172,7 @@ async function init() {
   // ---------- Les sequences ----------
   const prologue = {
     name: 'Prologue',
-    lights: [{ p: [3.5, 3.2, -1.2], color: 0xe8eeff, i: 7, d: 18 }, { p: [-5.4, 3.2, -7.5], color: 0xe8eeff, i: 8, d: 18 }, { p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 9, d: 15 }],
+    lights: [{ p: [3.5, 3.2, -1.2], color: 0xe8eeff, i: 3.2, d: 16 }, { p: [-5.4, 3.2, -7.5], color: 0xe8eeff, i: 3.4, d: 16 }, { p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 3.6, d: 15 }],
     ...P,
     CAMERA: P.CAMERA,
     actorsDef: P.ACTORS,
@@ -236,8 +196,8 @@ async function init() {
     leave() { elTitle.classList.remove('on'); }
   };
   const sequence1 = {
-    name: 'Bloc',
-    lights: [{ p: [0, 4.8, 3.4], color: 0xc9d6ff, i: 10, d: 15 }, { p: [0, 1.1, 2.4], color: 0x6c84ff, i: 9, d: 9 }],
+    name: 'Structure d’un bloc',
+    lights: [{ p: [0, 4.8, 3.4], color: 0xc9d6ff, i: 3.8, d: 15 }, { p: [0, 1.1, 2.4], color: 0x6c84ff, i: 2.8, d: 9 }],
     ...S1,
     actorsDef: S1.ACTORS,
     parent: room.group,
@@ -287,7 +247,6 @@ async function init() {
   const allGroups = new Set(sequences.flatMap((s) => s.groups));
 
   // Tous les shaders sont compiles avant le debut : plus de saccade en changeant de decor
-  setWarmup(renderer, (mesh) => { renderer.compileAsync(mesh, camera, scene).catch(() => {}); });
   allGroups.forEach((g) => { g.visible = true; });
   sequences.forEach((s) => applyLights(s));
   const wait = new Promise((r) => setTimeout(r, 4000));
@@ -350,16 +309,13 @@ async function init() {
     applyLights(seq);
     // On charge la sequence courante et ses voisines, on decharge le reste
     const idx = sequences.indexOf(seq);
-    const needed = new Set();
-    [idx - 1, idx, idx + 1].forEach((i) => sequences[i]?.groups.forEach((g) => { if (g !== cityGroup) needed.add(g); }));
-    syncAssets(new Set([...allGroups].filter((g) => g !== cityGroup)), needed);
     curLine = curTerm = curSlug = undefined;
     navButtons.forEach((b, i) => {
       const idx = sequences.indexOf(seq);
       b.classList.toggle('now', i === idx);
       b.classList.toggle('done', i < idx);
     });
-    navLabel.textContent = seq.name;
+    navLabel.textContent = (idx > 0 && idx < 8 ? `Notion ${idx}/7 · ` : '') + seq.name;
   }
 
   function poseActors(actors, lines, t, time) {
@@ -409,7 +365,7 @@ async function init() {
   // ---------- Boucle ----------
   let mark = 0;
   let frames = 0;
-  function frame() {
+  function step() {
     const dt = Math.min(clock.getDelta(), 0.06);
     const time = clock.elapsedTime;
     renderer.info.reset();
@@ -432,7 +388,7 @@ async function init() {
     room.tick(dt, time);
     if (cityGroup.visible) {
       const level = seq.heroLevel ?? (() => 0.9);
-      const inside = seq.insideAt ? seq.insideAt(t) : !seq.outside && seq.CAMERA !== undefined && seq.name !== 'Chaînage';
+      const inside = seq.insideAt ? seq.insideAt(t) : !seq.outside && !seq.onBridge;
       city.update(time, camera, level, seq.linkLevel ?? (seq.cityLit ? 0.34 : 0), inside);
     }
     hud(seq, t, seq.override?.());
@@ -444,9 +400,7 @@ async function init() {
     elHint.classList.toggle('off', shown > 0.002);
     bar.style.transform = `scaleX(${shown.toFixed(4)})`;
 
-    grade.uniforms.uTime.value = time % 10;
-    bloom.enabled = useBloom;
-    composer.render(dt);
+    renderer.render(scene, camera);
     window.__recitStats = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs.length };
 
     frames++;
@@ -461,14 +415,29 @@ async function init() {
           pixelRatio = Math.max(0.8, pixelRatio - 0.2);
           renderer.setPixelRatio(pixelRatio);
           resize();
-        } else if (useBloom) {
-          useBloom = false;
         }
       }
       mark = now;
       frames = 0;
     }
+  }
+  function frame() {
+    step();
     requestAnimationFrame(frame);
+  }
+  // Mesure du temps reel d'une image (processeur et carte graphique) : ?bench dans l'adresse
+  if (params.has('bench')) {
+    const gl = renderer.getContext();
+    const px = new Uint8Array(4);
+    window.__bench = (n = 12) => {
+      for (let i = 0; i < 3; i++) step();
+      const t0 = performance.now();
+      for (let i = 0; i < n; i++) {
+        step();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      }
+      return { ms: +((performance.now() - t0) / n).toFixed(1), dpr: pixelRatio, w: window.innerWidth, h: window.innerHeight, ...window.__recitStats };
+    };
   }
   window.__recit = { renderer, scene, camera };
   document.body.classList.add('ready');
