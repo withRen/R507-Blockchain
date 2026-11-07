@@ -63,14 +63,54 @@ export function sampleTrack(track, t) {
   };
 }
 
-// Camera : un seul plan-sequence, sans coupe
+// Camera : un seul plan-sequence, sans coupe. Interpolation monotone : la camera passe par
+// chaque image-cle sans s'y arreter, ne depasse jamais sa cible et reste immobile entre
+// deux images-cles identiques, ce qui garde les cadrages fixes des interactions.
+const SLOPES = new WeakMap();
+const camValues = (k) => [...k.pos, ...k.look, k.fov];
+function cameraSlopes(keys) {
+  let all = SLOPES.get(keys);
+  if (all) return all;
+  const n = keys.length;
+  const values = keys.map(camValues);
+  all = values.map(() => new Array(7).fill(0));
+  for (let c = 0; c < 7; c++) {
+    for (let i = 1; i < n - 1; i++) {
+      const h0 = keys[i].t - keys[i - 1].t;
+      const h1 = keys[i + 1].t - keys[i].t;
+      if (h0 <= 0 || h1 <= 0) continue;
+      const d0 = (values[i][c] - values[i - 1][c]) / h0;
+      const d1 = (values[i + 1][c] - values[i][c]) / h1;
+      if (d0 * d1 <= 0) continue;
+      const w0 = 2 * h1 + h0;
+      const w1 = h1 + 2 * h0;
+      all[i][c] = (w0 + w1) / (w0 / d0 + w1 / d1);
+    }
+  }
+  SLOPES.set(keys, all);
+  return all;
+}
+const camOut = new Array(7);
 export function sampleCamera(keys, t, outPos, outLook) {
   let i = 0;
   while (i < keys.length - 2 && t > keys[i + 1].t) i++;
   const a = keys[i];
   const b = keys[i + 1];
-  const k = smoother((t - a.t) / (b.t - a.t));
-  outPos.set(a.pos[0] + (b.pos[0] - a.pos[0]) * k, a.pos[1] + (b.pos[1] - a.pos[1]) * k, a.pos[2] + (b.pos[2] - a.pos[2]) * k);
-  outLook.set(a.look[0] + (b.look[0] - a.look[0]) * k, a.look[1] + (b.look[1] - a.look[1]) * k, a.look[2] + (b.look[2] - a.look[2]) * k);
-  return THREE.MathUtils.lerp(a.fov, b.fov, k);
+  const h = b.t - a.t;
+  const u = h > 0 ? clamp01((t - a.t) / h) : 1;
+  const slopes = cameraSlopes(keys);
+  const va = camValues(a);
+  const vb = camValues(b);
+  const u2 = u * u;
+  const u3 = u2 * u;
+  const h00 = 2 * u3 - 3 * u2 + 1;
+  const h10 = u3 - 2 * u2 + u;
+  const h01 = -2 * u3 + 3 * u2;
+  const h11 = u3 - u2;
+  for (let c = 0; c < 7; c++) {
+    camOut[c] = h00 * va[c] + h10 * h * slopes[i][c] + h01 * vb[c] + h11 * h * slopes[i + 1][c];
+  }
+  outPos.set(camOut[0], camOut[1], camOut[2]);
+  outLook.set(camOut[3], camOut[4], camOut[5]);
+  return camOut[6];
 }

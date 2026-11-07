@@ -1,63 +1,73 @@
-// Lecture automatique. Elle ne fait que deplacer le defilement : la position de la page
-// reste la seule source de verite pour le film, la barre de progression et la navigation.
-const RATE = 0.04; // part de sequence parcourue par seconde entre deux repliques
+// Lecture automatique : une seule horloge de progression.
+// Pendant la lecture, c'est elle qui donne la position du film. La page ne fait que suivre,
+// pour la barre de defilement et la navigation, sans jamais revenir influencer le film.
+const CRUISE = 0.04; // part de sequence parcourue par seconde entre deux repliques
+const ACCEL = 2.4; // reactivite de la vitesse : elle change toujours en douceur
+const BRAKE = 0.02; // deceleration avant une interaction, en sequence par seconde au carre
+const CREEP = 0.002; // vitesse minimale d'approche, pour finir par arriver
+const SEEK = 7; // Espace : l'essentiel du trajet se fait en 0,4 s environ
 const GESTURE_GAP = 300; // ms sans molette ni toucher : le geste du visiteur est termine
+const TRANSITION = 1.5; // temps d'apparition et de lecture, en plus de la pause de 2 a 5 s
 
 export const holdFor = (chars) => Math.min(5, Math.max(2, 1.5 + chars / 45));
 
-// Les arrets de la lecture : chaque replique, puis chaque interaction, sur tout le film
-export function buildBeats(sequences) {
+// Le film en zones : une replique se traverse lentement, le temps de la lire, et la camera
+// continue d'avancer pendant ce temps. Entre deux zones, on avance a vitesse de croisiere.
+export function buildScore(sequences) {
   const count = sequences.length;
-  const beats = [];
+  const zones = [];
+  const stops = [];
   sequences.forEach((seq, idx) => {
+    const at = (t) => (idx + t) / count;
     (seq.LINES ?? []).forEach((l) => {
-      const t = l.from + (l.to - l.from) * 0.55;
-      const term = seq.TERMS?.find((c) => t >= c.from && t <= c.to);
+      const mid = (l.from + l.to) / 2;
+      const term = seq.TERMS?.find((c) => mid >= c.from && mid <= c.to);
       const chars = Math.max(l.text.length, term ? term.def.length * 0.6 : 0);
-      beats.push({ pos: (idx + t) / count, hold: holdFor(chars) });
+      const duration = holdFor(chars) + TRANSITION;
+      zones.push({ from: at(l.from), to: at(l.to), speed: (l.to - l.from) / duration, duration });
     });
-    (seq.BEATS ?? []).forEach((b) => beats.push({ pos: (idx + b.t) / count, hold: b.hold }));
-    if (seq.LAB) {
-      const t = seq.labStop ?? Math.min(seq.LAB.from + 0.06, seq.LAB.to - 0.01);
-      beats.push({ pos: (idx + t) / count, wait: true });
-    }
+    (seq.BEATS ?? []).forEach((b) => {
+      zones.push({ from: at(b.from), to: at(b.to), speed: (b.to - b.from) / b.hold, duration: b.hold });
+    });
+    if (seq.LAB) stops.push(at(seq.labStop ?? Math.min(seq.LAB.from + 0.06, seq.LAB.to - 0.01)));
   });
-  return beats.sort((a, b) => a.pos - b.pos);
+  zones.sort((a, b) => a.from - b.from);
+  stops.sort((a, b) => a - b);
+  // Espace vise le debut de la prochaine replique, ou la prochaine interaction
+  const marks = [
+    ...zones.map((z) => ({ pos: z.from + 0.002 / count, zone: z })),
+    ...stops.map((pos) => ({ pos, stop: true }))
+  ].sort((a, b) => a.pos - b.pos);
+  return { zones, stops, marks };
 }
 
-export function createDirector({ beats, scrollMax, reduceMotion, count }) {
+export function createDirector({ score, scrollMax, reduceMotion, count }) {
+  const { zones, stops, marks } = score;
   const hint = document.querySelector('#hint');
   const btnAuto = document.querySelector('#auto');
   const btnNext = document.querySelector('#continue');
   const max = () => Math.max(1, scrollMax());
+  const px = (n) => n / max();
 
   let started = false;
   let on = false;
-  let phase = 'idle'; // idle, travel, hold, wait, done
-  let idx = 0;
-  let rem = 0;
+  let phase = 'idle'; // idle, cruise, seek, wait, done
   let p = window.scrollY / max();
+  let v = 0; // vitesse courante, en sequence par seconde
+  let seekTo = null;
+  let rem = 0; // mouvement reduit : temps restant sur la replique
   let lastY = window.scrollY;
   let lastGesture = 0;
   let inGesture = false; // le geste qui a lance la lecture ne doit pas la remettre en pause
 
-  const scrollToP = () => {
-    window.scrollTo(0, p * max());
+  const follow = () => {
+    const y = Math.round(p * max());
+    if (y === Math.round(lastY)) return;
+    window.scrollTo(0, y);
     lastY = window.scrollY;
   };
-  // La page arrondit le defilement au pixel : on compare avec une marge de 2 pixels,
-  // sinon Espace retomberait sur la replique en cours.
-  const nextIndex = (from, strict) => {
-    const eps = 2 / max();
-    return beats.findIndex((b) => (strict ? b.pos > from + eps : b.pos >= from - eps));
-  };
-  const arrive = (i) => {
-    idx = i;
-    p = beats[i].pos;
-    phase = beats[i].wait ? 'wait' : 'hold';
-    rem = beats[i].hold ?? 0;
-    scrollToP();
-  };
+  const nextMark = (from) => marks.find((m) => m.pos > from + px(2));
+  const zoneAt = (pos) => zones.find((z) => pos >= z.from && pos <= z.to);
   const paintUI = () => {
     btnAuto.classList.toggle('on', started);
     btnAuto.setAttribute('aria-pressed', String(on));
@@ -74,6 +84,8 @@ export function createDirector({ beats, scrollMax, reduceMotion, count }) {
   const pause = () => {
     on = false;
     phase = 'idle';
+    seekTo = null;
+    v = 0;
     inGesture = false;
     paintUI();
   };
@@ -84,14 +96,23 @@ export function createDirector({ beats, scrollMax, reduceMotion, count }) {
     phase = 'idle';
     paintUI();
   };
+  const land = (mark) => {
+    p = mark.pos;
+    seekTo = null;
+    if (!on) { phase = 'idle'; v = 0; return; }
+    if (mark.stop) { phase = 'wait'; v = 0; return; }
+    phase = 'cruise';
+    v = mark.zone.speed;
+    rem = mark.zone.duration;
+  };
   const skip = () => {
     if (!started) start();
-    p = window.scrollY / max();
-    const i = nextIndex(p, true);
-    if (i < 0) return;
-    if (on) { arrive(i); return; }
-    p = beats[i].pos;
-    scrollToP();
+    const from = seekTo ? seekTo.pos : p;
+    const mark = nextMark(from);
+    if (!mark) return;
+    if (reduceMotion) { land(mark); follow(); return; }
+    seekTo = mark;
+    phase = 'seek';
   };
 
   // Molette, toucher, touches de defilement : le visiteur reprend la main
@@ -99,6 +120,7 @@ export function createDirector({ beats, scrollMax, reduceMotion, count }) {
     const now = performance.now();
     if (!started) { start(); inGesture = true; }
     else if (on && !(inGesture && now - lastGesture < GESTURE_GAP)) pause();
+    else if (phase === 'seek') { seekTo = null; phase = 'idle'; }
     lastGesture = now;
   };
   window.addEventListener('wheel', onGesture, { passive: true });
@@ -122,46 +144,83 @@ export function createDirector({ beats, scrollMax, reduceMotion, count }) {
   });
   paintUI();
 
+  function cruise(dt) {
+    const stop = stops.find((s) => s > p + px(1));
+    const zone = zoneAt(p);
+    if (reduceMotion) {
+      // Pas de mouvement : on reste sur place le temps de lire, puis on saute
+      rem -= dt;
+      if (rem <= 0) {
+        const mark = nextMark(p);
+        if (mark) land(mark); else phase = 'done';
+      }
+      return;
+    }
+    const target = zone ? zone.speed : CRUISE;
+    v += (target - v) * (1 - Math.exp(-dt * ACCEL));
+    // On ralentit avant d'entrer dans une replique, pour lui laisser tout son temps de lecture
+    const ahead = zones.find((z) => z.from > p);
+    if (ahead) {
+      const dist = (ahead.from - p) * count;
+      v = Math.min(v, Math.sqrt(ahead.speed * ahead.speed + 2 * BRAKE * dist));
+    }
+    if (stop !== undefined) {
+      // Freinage regulier jusqu'a l'interaction
+      const dist = (stop - p) * count;
+      v = Math.min(v, Math.max(CREEP, Math.sqrt(2 * BRAKE * dist)));
+    }
+    p += (v * dt) / count;
+    if (stop !== undefined && p >= stop) {
+      p = stop;
+      v = 0;
+      phase = 'wait';
+    } else if (stop === undefined && p >= 1) {
+      p = 1;
+      v = 0;
+      phase = 'done';
+    }
+  }
+
   return {
     pause,
-    tick(dt, labOpen) {
+    // Renvoie la position du film quand la lecture la pilote, sinon null
+    tick(dt, labOpen, shown) {
       const y = window.scrollY;
       if (Math.abs(y - lastY) > 6) {
         // Defilement venu d'ailleurs : ascenseur, navigation, bouton de l'epilogue
         lastY = y;
         p = y / max();
+        seekTo = null;
+        v = 0;
         if (started && on && !inGesture) pause();
         else phase = 'idle';
       }
       if (inGesture && performance.now() - lastGesture > GESTURE_GAP) inGesture = false;
 
-      if (on && !inGesture) {
-        if (phase === 'idle') {
-          p = y / max();
-          const i = nextIndex(p, false);
-          if (labOpen) { phase = 'wait'; idx = i; }
-          else if (i < 0) phase = 'done';
-          else { idx = i; phase = 'travel'; }
+      if (phase === 'idle' && on && !inGesture) {
+        // La lecture reprend exactement la ou se trouve l'image, sans saut
+        p = shown;
+        v = 0;
+        if (reduceMotion) {
+          const zone = zoneAt(p);
+          rem = zone ? zone.duration : 0;
         }
-        if (phase === 'travel') {
-          const b = beats[idx];
-          p = reduceMotion ? b.pos : Math.min(b.pos, p + (RATE * dt) / count);
-          if (p >= b.pos - 1e-9) arrive(idx);
-          else scrollToP();
-        } else if (phase === 'hold') {
-          rem -= dt;
-          if (rem <= 0) {
-            const i = idx + 1;
-            if (i >= beats.length) phase = 'done';
-            else { idx = i; phase = 'travel'; }
-          }
-        }
+        phase = labOpen ? 'wait' : 'cruise';
       }
+      if (phase === 'seek') {
+        p += (seekTo.pos - p) * (1 - Math.exp(-dt * SEEK));
+        if (Math.abs(seekTo.pos - p) < px(2)) land(seekTo);
+      } else if (phase === 'cruise') {
+        cruise(dt);
+      }
+      const driving = phase !== 'idle';
+      if (driving) follow();
 
-      const hasNext = nextIndex(y / max(), true) >= 0;
-      const showNext = started && hasNext && (labOpen || (on && phase === 'wait'));
+      const hasNext = !!nextMark(y / max());
+      const showNext = started && hasNext && (on ? phase === 'wait' : labOpen);
       btnNext.classList.toggle('on', showNext);
       hint.classList.toggle('off', showNext);
+      return driving ? p : null;
     }
   };
 }

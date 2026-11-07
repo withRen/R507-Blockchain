@@ -13,7 +13,7 @@ import { createSequence5 } from './sequence5.js';
 import { createSequence6 } from './sequence6.js';
 import { createSequence7 } from './sequence7.js';
 import { createEpilogue } from './epilogue.js';
-import { createDirector, buildBeats } from './director.js';
+import { createDirector, buildScore } from './director.js';
 import { hashBlock } from '../lib/blockchain.js';
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -308,7 +308,7 @@ async function init() {
     insideAt: (t) => t > 0.24 && t < 0.895,
     fade: (t) => Math.max(smooth((t - 0.603) / 0.017) * (1 - smooth((t - 0.6205) / 0.018)), smooth((t - 0.992) / 0.008)),
     heroLevel: null,
-    BEATS: [{ t: 0.987, hold: 3 }], // la carte de titre, sans replique
+    BEATS: [{ from: 0.978, to: 0.992, hold: 3 }], // la carte de titre, sans replique
     update(t) {
       office.group.visible = t > 0.2 && t < 0.92;
       // Camera tournee vers le fond de l'etage : la ville derriere elle n'est pas dessinee
@@ -380,6 +380,20 @@ async function init() {
   sequences.forEach((s) => applyLights(s));
   const wait = new Promise((r) => setTimeout(r, 4000));
   await Promise.race([renderer.compileAsync(scene, camera).catch(() => {}), wait]);
+  // Compiler ne suffit pas : geometries et textures partent vers la carte graphique au premier
+  // dessin. On dessine donc tout une fois, hors ecran, pendant le chargement.
+  const warmed = [];
+  scene.traverse((o) => {
+    warmed.push([o, o.visible, o.frustumCulled]);
+    o.visible = true;
+    o.frustumCulled = false;
+  });
+  const warmTarget = new THREE.WebGLRenderTarget(4, 4);
+  renderer.setRenderTarget(warmTarget);
+  renderer.render(scene, camera);
+  renderer.setRenderTarget(null);
+  warmTarget.dispose();
+  warmed.forEach(([o, visible, culled]) => { o.visible = visible; o.frustumCulled = culled; });
   allGroups.forEach((g) => { g.visible = false; });
   document.querySelector('#loading')?.classList.add('off');
 
@@ -423,7 +437,7 @@ async function init() {
   let active = null;
   // Le mode ?seq= ou ?t= fige l'image : pas de lecture automatique
   const director = forced === null
-    ? createDirector({ beats: buildBeats(sequences), scrollMax, reduceMotion, count: COUNT })
+    ? createDirector({ score: buildScore(sequences), scrollMax, reduceMotion, count: COUNT })
     : null;
 
   function activate(seq) {
@@ -484,7 +498,7 @@ async function init() {
     });
   }
 
-  function placeCamera(seq, t) {
+  function placeCamera(seq, t, time) {
     camera.fov = sampleCamera(seq.CAMERA, t, pos, look);
     camera.updateProjectionMatrix();
     pointer.sx += (pointer.x - pointer.sx) * 0.05;
@@ -494,7 +508,13 @@ async function init() {
     camera.position.copy(pos);
     camera.lookAt(look);
     camera.getWorldQuaternion(quat);
-    off.set(pointer.sx * amp, -pointer.sy * amp * 0.6, 0).applyQuaternion(quat);
+    // Une camera tenue a la main : tres leger balancement, pour que l'image ne soit jamais figee
+    const sway = reduceMotion ? 0 : inside ? 0.012 : 0.5;
+    off.set(
+      pointer.sx * amp + Math.sin(time * 0.37) * sway,
+      -pointer.sy * amp * 0.6 + Math.sin(time * 0.53 + 1.3) * sway * 0.6,
+      0
+    ).applyQuaternion(quat);
     camera.position.add(off);
     camera.lookAt(look);
   }
@@ -502,13 +522,19 @@ async function init() {
   // ---------- Boucle ----------
   let mark = 0;
   let frames = 0;
+  let lowerSince = 0;
   function step() {
     const dt = Math.min(clock.getDelta(), 0.06);
     const time = clock.elapsedTime;
     renderer.info.reset();
-    director?.tick(dt, !!active?.labOpen);
-    const goal = forced ?? clamp01(window.scrollY / Math.max(1, scrollMax()));
-    shown += (goal - shown) * (reduceMotion || forced !== null ? 1 : 1 - Math.exp(-dt * 3.4));
+    // Une seule source a la fois : l'horloge de la lecture auto, sinon le defilement lisse
+    const driven = director ? director.tick(dt, !!active?.labOpen, shown) : null;
+    if (driven !== null) {
+      shown = driven;
+    } else {
+      const goal = forced ?? clamp01(window.scrollY / Math.max(1, scrollMax()));
+      shown += (goal - shown) * (reduceMotion || forced !== null ? 1 : 1 - Math.exp(-dt * 3.4));
+    }
 
     const scaled = Math.min(shown * COUNT, COUNT - 1e-6);
     const idx = Math.floor(scaled);
@@ -516,7 +542,7 @@ async function init() {
     const t = scaled - idx;
     activate(seq);
 
-    placeCamera(seq, t);
+    placeCamera(seq, t, time);
     poseActors(seq.actors, seq.LINES, t, time);
     if (seq.LAB) {
       seq.labOpen = t >= seq.LAB.from && t <= seq.LAB.to;
@@ -535,6 +561,13 @@ async function init() {
       ? seq.fade(t)
       : Math.max(1 - smooth(t / 0.022), idx < COUNT - 1 ? smooth((t - 0.986) / 0.014) : 0);
     elFade.style.opacity = fade.toFixed(3);
+    // Changer la resolution fige une image : on attend un passage au noir, ou 6 s au plus
+    if (lowerSince && (fade > 0.5 || performance.now() - lowerSince > 6000)) {
+      lowerSince = 0;
+      pixelRatio = Math.max(0.8, pixelRatio - 0.2);
+      renderer.setPixelRatio(pixelRatio);
+      resize();
+    }
     bar.style.transform = `scaleX(${shown.toFixed(4)})`;
 
     renderer.render(scene, camera);
@@ -548,11 +581,7 @@ async function init() {
       window.__recitFps = fps;
       // Sous 45 images par seconde, la qualite baisse d'elle-meme, par paliers
       if (document.visibilityState === 'visible' && fps > 5 && fps < 45 && forced === null) {
-        if (pixelRatio > 0.8) {
-          pixelRatio = Math.max(0.8, pixelRatio - 0.2);
-          renderer.setPixelRatio(pixelRatio);
-          resize();
-        }
+        if (pixelRatio > 0.8 && !lowerSince) lowerSince = now;
       }
       mark = now;
       frames = 0;
