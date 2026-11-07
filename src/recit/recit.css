@@ -118,9 +118,35 @@ body { color: var(--paper); overflow-x: hidden; }
 .lab button.ghost:hover:not(:disabled) { background: #0c1626; color: #00f0ff; border-color: #00f0ff; box-shadow: none; }
 .lab button:disabled { opacity: 0.42; cursor: default; }
 .lab-state { margin-top: 12px; font: 400 14px / 1.45 var(--text); color: #cdd4e2; }
-#lab-hash { display: block; font: 500 14.5px / 1.5 var(--mono); word-break: break-all; color: #d5f5e5; }
+.hash-out { display: block; font: 500 13px / 1.45 var(--mono); word-break: break-all; color: #d5f5e5; }
+#lab-target { color: #aebcff; }
 #lab-hash mark { background: none; color: #ff7a6e; }
+#lab-hash.win { color: #7bf0b8; }
+#lab-diff { margin-top: 8px; font: 600 15px var(--mono); color: #ff9d94; min-height: 20px; }
+#lab-diff.win { color: #7bf0b8; }
 #lab-note { margin-top: 10px; font: 400 14px / 1.4 var(--text); color: #cdd4e2; }
+#lab.win { border-left-color: #35c98a; box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65), 0 0 28px rgba(53, 201, 138, 0.28); }
+
+/* Sequence 1 : les transactions candidates */
+.chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.lab .chips button {
+  margin: 0; padding: 9px 6px; touch-action: none;
+  font: 500 12px var(--mono); letter-spacing: 0; text-transform: none; color: var(--paper);
+  background: #0d1221; border-color: #36415f; cursor: grab;
+}
+.lab .chips button:hover:not(:disabled) { color: #03060f; }
+.lab .chips button.tried { color: #8a9bb8; border-style: dashed; }
+.lab .chips button.now { border-color: #00c8e6; box-shadow: inset 0 0 0 1px #00c8e6; }
+.lab .chips button.good { color: #7bf0b8; border-color: #35c98a; box-shadow: inset 0 0 0 1px #35c98a; }
+.chip-ghost {
+  position: fixed; z-index: 5; pointer-events: none; padding: 9px 10px; transform: translate(-50%, -50%);
+  font: 500 12px var(--mono); color: var(--paper);
+  background: #0d1221; border: 1px solid #00c8e6; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
+}
+.stepper { display: flex; align-items: center; gap: 8px; margin-top: 12px; font: 500 11px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: #aebcff; }
+.stepper span { margin-right: auto; }
+.lab .stepper button { width: 30px; margin: 0; padding: 4px 0; font-size: 15px; }
+.stepper output { min-width: 62px; text-align: center; font: 500 15px var(--mono); color: var(--paper); }
 .big-num { display: block; font: 500 42px / 1.1 var(--mono); }
 .stats { display: flex; gap: 28px; margin-top: 14px; }
 .stats small { display: block; font: 500 11px var(--mono); text-transform: uppercase; color: var(--soft); }
@@ -176,6 +202,27 @@ body { color: var(--paper); overflow-x: hidden; }
   transition: opacity 0.4s;
 }
 #hint.off { opacity: 0; }
+
+/* Lecture automatique */
+#continue {
+  position: absolute; left: 50%; bottom: 18px; transform: translate(-50%, 6px);
+  padding: 10px 18px; cursor: pointer;
+  font: 500 13px var(--mono); letter-spacing: 0.05em; color: #00f0ff;
+  background: #091a30; border: 1px solid #00c8e6; border-radius: 2px;
+  opacity: 0; visibility: hidden; transition: opacity 0.3s, transform 0.3s, background 0.2s, color 0.2s;
+}
+#continue.on { opacity: 1; visibility: visible; transform: translate(-50%, 0); pointer-events: auto; }
+#continue:hover { background: #00f0ff; color: #03060f; }
+#auto {
+  position: absolute; right: clamp(16px, 3.4vw, 48px); bottom: 16px; padding: 6px 10px; cursor: pointer;
+  font: 500 11px var(--mono); letter-spacing: 0.06em; color: var(--soft);
+  background: rgba(3, 6, 14, 0.55); border: 1px solid #36415f; border-radius: 2px;
+  pointer-events: auto;
+}
+#auto:hover { color: #fff; border-color: #fff; }
+#auto[aria-pressed="true"] { color: #00f0ff; border-color: #00c8e6; }
+#continue:focus-visible, #auto:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+@media (hover: none) { #hint.started { display: none; } }
 
 #progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(241, 243, 248, 0.12); }
 #progress i { display: block; height: 100%; background: var(--paper); transform: scaleX(0); transform-origin: left; }

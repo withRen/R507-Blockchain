@@ -86,9 +86,19 @@ export const TERMS = [
 
 // Definitions affichees quand le visiteur clique sur une couche du bloc
 export const LAYER_INFO = {
-  data: { label: 'Couche cliquée', title: 'Données', def: 'Les transactions du bloc, lisibles par tous. Modifiez-les dans le panneau : le hash change.' },
+  data: { label: 'Couche cliquée', title: 'Données', def: 'Les transactions du bloc, lisibles par tous. Dépose-en une dans le bloc : le hash change.' },
   parent: { label: 'Couche cliquée', title: 'Hash du bloc parent', def: 'L’empreinte du bloc précédent. Si le passé change, ce lien ne correspond plus.' },
-  nonce: { label: 'Couche cliquée', title: 'Nonce', def: 'Un simple nombre. Changez-le : tout le hash change aussi, et c’est ce qu’exploitent les mineurs.' }
+  nonce: { label: 'Couche cliquée', title: 'Nonce', def: 'Un simple nombre. Change-le avec + et − : tout le hash change aussi, et c’est ce qu’exploitent les mineurs.' }
+};
+
+// L'animation qui montre le hash changer tout seul, avant le mini-jeu
+export const DEMO = ['Alice → Bob : 5 jetons', 'Alice → Bob : 6 jetons', 'Alice → Bob : 50 jetons', 'Alice → Bob : 5 jeton'];
+
+// Le mini-jeu : des transactions presque identiques, une seule donne l'empreinte cible
+export const GAME = {
+  answer: 'Alice → Bob : 5 jetons',
+  nonce: 48211,
+  chips: ['Alice → Bob : 6 jetons', 'Alice → Bod : 5 jetons', 'Alice → Bob : 5 jetons', 'Alice → Bob : 50 jetons', 'alice → Bob : 5 jetons', 'Alice → Bob : 5 jeton']
 };
 
 export const PARENT = '000a3f1c9e27d46b';

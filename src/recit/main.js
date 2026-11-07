@@ -13,6 +13,7 @@ import { createSequence5 } from './sequence5.js';
 import { createSequence6 } from './sequence6.js';
 import { createSequence7 } from './sequence7.js';
 import { createEpilogue } from './epilogue.js';
+import { createDirector, buildBeats } from './director.js';
 import { hashBlock } from '../lib/blockchain.js';
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -91,7 +92,6 @@ async function init() {
   const elTermTitle = elTerm.querySelector('strong');
   const elTermDef = elTerm.querySelector('p');
   const elTitle = $('#title-card');
-  const elHint = $('#hint');
   const elFade = $('#fade');
   const bar = $('#progress i');
   let curLine = null;
@@ -139,33 +139,160 @@ async function init() {
   };
 
   // ---------- Sequence 1 : le bloc, avec le vrai SHA-256 ----------
-  const inData = $('#lab-data');
-  const inNonce = $('#lab-nonce');
+  // Avant le mini-jeu, le hash change tout seul sous les yeux du visiteur.
+  // Ensuite, c'est a lui de retrouver la transaction qui donne l'empreinte cible.
+  const lab = $('#lab');
   const outHash = $('#lab-hash');
+  const outDiff = $('#lab-diff');
   const outNote = $('#lab-note');
-  const blockState = { index: 1, parent: S1.PARENT, data: inData.value, nonce: Number(inNonce.value) };
+  const outNonce = $('#lab-nonce');
+  const hashOf = (data, nonce) => hashBlock({ index: 1, parent: S1.PARENT, data, nonce });
+  const target = hashOf(S1.GAME.answer, S1.GAME.nonce);
+  const NO_HASH = '—'.repeat(64);
+  const game = { data: null, nonce: S1.GAME.nonce, token: 0 };
   let pickedLayer = null;
-  let previousHash = hashBlock(blockState);
-  function refreshBlock(fromUser) {
-    blockState.data = inData.value;
-    blockState.nonce = Number(inNonce.value) || 0;
-    const h = hashBlock(blockState);
-    room.drawLayer('data', blockState.data || ' ', pickedLayer === 'data');
-    room.drawLayer('nonce', String(blockState.nonce), pickedLayer === 'nonce');
+  let blockView = null; // ce que le bloc 3D affiche : recit, animation ou mini-jeu
+  $('#lab-target').textContent = target;
+
+  function paintBlock(data, nonce, hash, compareTo, solved = false) {
+    room.drawLayer('data', data, pickedLayer === 'data');
+    room.drawLayer('nonce', String(nonce), pickedLayer === 'nonce');
     room.drawLayer('parent', `${S1.PARENT}…`, pickedLayer === 'parent');
-    room.drawHash(h, fromUser ? previousHash : null);
-    outHash.innerHTML = [...h].map((ch, i) => (fromUser && previousHash[i] !== ch ? `<mark>${ch}</mark>` : ch)).join('');
-    if (fromUser && h !== previousHash) {
-      let n = 0;
-      for (let i = 0; i < 64; i++) if (h[i] !== previousHash[i]) n++;
-      outNote.textContent = `${n} caractères sur 64 ont changé.`;
-      room.pulse();
-    }
-    previousHash = h;
+    room.drawHash(hash, compareTo, solved);
   }
-  inData.addEventListener('input', () => refreshBlock(true));
-  inNonce.addEventListener('input', () => refreshBlock(true));
-  refreshBlock(false);
+  const gameHash = () => (game.data === null ? NO_HASH : hashOf(game.data, game.nonce));
+  function paintGame() {
+    const h = gameHash();
+    const solved = h === target;
+    paintBlock(game.data ?? '?', game.nonce, h, game.data === null ? null : target, solved);
+    room.setSolved(solved);
+  }
+  function showResult() {
+    const h = gameHash();
+    const solved = h === target;
+    paintGame();
+    outHash.classList.toggle('win', solved);
+    outDiff.classList.toggle('win', solved);
+    lab.classList.toggle('win', solved);
+    chips.forEach((c) => {
+      const now = c.dataset.tx === game.data;
+      c.classList.toggle('now', now && !solved);
+      c.classList.toggle('good', now && solved);
+    });
+    outNonce.textContent = game.nonce.toLocaleString('fr-FR');
+    if (game.data === null) {
+      outHash.textContent = 'en attente d’une transaction';
+      outDiff.textContent = '';
+      return;
+    }
+    const diff = [...h].filter((ch, i) => ch !== target[i]).length;
+    outHash.innerHTML = [...h].map((ch, i) => (ch !== target[i] ? `<mark>${ch}</mark>` : ch)).join('');
+    outDiff.textContent = solved ? 'Identique : 0/64 différent' : `${diff}/64 différents`;
+    if (solved) {
+      outNote.textContent = 'Trouvé ! Même entrée, même hash. Un seul caractère change presque tout, et on ne peut pas remonter du hash aux données : on ne peut qu’essayer. Le minage repose là-dessus.';
+    } else if (game.nonce !== S1.GAME.nonce) {
+      outNote.textContent = `Le nonce compte aussi : pour comparer à la cible, remets-le à ${S1.GAME.nonce.toLocaleString('fr-FR')}.`;
+    } else {
+      outNote.textContent = 'Presque le même texte, et pourtant un hash sans rapport. Aucun indice ne te dit si tu chauffes : essaie encore.';
+    }
+  }
+  // Les 64 caracteres se figent un a un, de gauche a droite
+  function flipHash() {
+    room.pulse();
+    const token = ++game.token;
+    if (reduceMotion || game.data === null) { showResult(); return; }
+    const h = gameHash();
+    const hex = '0123456789abcdef';
+    const t0 = performance.now();
+    const DURATION = 520;
+    let n = 0;
+    const run = (now) => {
+      if (token !== game.token) return;
+      const k = (now - t0) / DURATION;
+      if (k >= 1) { showResult(); return; }
+      const settled = Math.floor(k * 64);
+      const shownHash = [...h].map((ch, i) => (i < settled ? ch : hex[Math.floor(Math.random() * 16)])).join('');
+      outHash.textContent = shownHash;
+      // La texture 3D est plus couteuse : une image sur trois suffit
+      if (n++ % 3 === 0) room.drawHash(shownHash, null);
+      requestAnimationFrame(run);
+    };
+    room.drawLayer('data', game.data, pickedLayer === 'data');
+    room.drawLayer('nonce', String(game.nonce), pickedLayer === 'nonce');
+    room.setSolved(false);
+    requestAnimationFrame(run);
+  }
+  function dropTx(tx, chip) {
+    game.data = tx;
+    chip.classList.add('tried');
+    flipHash();
+  }
+  const chips = S1.GAME.chips.map((tx) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = tx;
+    b.dataset.tx = tx;
+    let drag = null;
+    let dragged = false;
+    b.addEventListener('pointerdown', (e) => {
+      drag = { x: e.clientX, y: e.clientY, ghost: null };
+      dragged = false;
+      b.setPointerCapture(e.pointerId);
+    });
+    b.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      if (!drag.ghost && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 6) {
+        drag.ghost = document.createElement('div');
+        drag.ghost.className = 'chip-ghost';
+        drag.ghost.textContent = tx;
+        stageUI.append(drag.ghost);
+        dragged = true;
+      }
+      if (drag.ghost) {
+        drag.ghost.style.left = `${e.clientX}px`;
+        drag.ghost.style.top = `${e.clientY}px`;
+      }
+    });
+    const endDrag = (e, cancelled) => {
+      if (!drag) return;
+      drag.ghost?.remove();
+      if (drag.ghost && !cancelled) {
+        // Lache hors du panneau, la transaction tombe dans le bloc
+        const r = lab.getBoundingClientRect();
+        const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+        if (!inside) dropTx(tx, b);
+      }
+      drag = null;
+    };
+    b.addEventListener('pointerup', (e) => endDrag(e, false));
+    b.addEventListener('pointercancel', (e) => endDrag(e, true));
+    b.addEventListener('click', () => {
+      if (dragged) { dragged = false; return; }
+      dropTx(tx, b);
+    });
+    $('#lab-chips').append(b);
+    return b;
+  });
+  const stepNonce = (d) => { game.nonce = Math.max(0, game.nonce + d); flipHash(); };
+  $('#lab-minus').addEventListener('click', () => stepNonce(-1));
+  $('#lab-plus').addEventListener('click', () => stepNonce(1));
+  showResult();
+
+  function blockFor(t, time, labFrom) {
+    if (t >= labFrom) {
+      if (blockView !== 'game') { blockView = 'game'; showResult(); }
+      return;
+    }
+    const demo = t >= 0.54 ? Math.floor(time / 1.8) % S1.DEMO.length : 0;
+    const view = `demo${demo}`;
+    if (view === blockView) return;
+    const data = S1.DEMO[demo];
+    const prev = blockView?.startsWith('demo') ? hashOf(S1.DEMO[Number(blockView.slice(4))], S1.GAME.nonce) : null;
+    blockView = view;
+    room.setSolved(false);
+    paintBlock(data, S1.GAME.nonce, hashOf(data, S1.GAME.nonce), t >= 0.54 ? prev : null);
+    if (t >= 0.54 && prev) room.pulse();
+  }
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
 
@@ -181,6 +308,7 @@ async function init() {
     insideAt: (t) => t > 0.24 && t < 0.895,
     fade: (t) => Math.max(smooth((t - 0.603) / 0.017) * (1 - smooth((t - 0.6205) / 0.018)), smooth((t - 0.992) / 0.008)),
     heroLevel: null,
+    BEATS: [{ t: 0.987, hold: 3 }], // la carte de titre, sans replique
     update(t) {
       office.group.visible = t > 0.2 && t < 0.92;
       // Camera tournee vers le fond de l'etage : la ville derriere elle n'est pas dessinee
@@ -210,9 +338,10 @@ async function init() {
       ray.setFromCamera(ndc, camera);
       const hit = ray.intersectObjects(room.pickables)[0];
       pickedLayer = hit ? hit.object.userData.layer : null;
-      refreshBlock(false);
+      paintGame();
     },
     update(t, time) {
+      blockFor(t, time, S1.LAB.from);
       const f = S1.FOCUS.find((x) => t >= x.from && t <= x.to);
       room.setReveal({
         data: curve(S1.REVEAL.data, t),
@@ -263,8 +392,9 @@ async function init() {
     b.setAttribute('aria-label', `Aller à : ${seq.name}`);
     b.addEventListener('click', () => {
       const y = (i / COUNT) * scrollMax() + 2;
+      director?.pause();
       window.scrollTo(0, y);
-      shown = y / scrollMax();
+      shown = clamp01(y / Math.max(1, scrollMax()));
     });
     nav.append(b);
   });
@@ -291,11 +421,18 @@ async function init() {
   const quat = new THREE.Quaternion();
   const clock = new THREE.Clock();
   let active = null;
+  // Le mode ?seq= ou ?t= fige l'image : pas de lecture automatique
+  const director = forced === null
+    ? createDirector({ beats: buildBeats(sequences), scrollMax, reduceMotion, count: COUNT })
+    : null;
 
   function activate(seq) {
     if (active === seq) return;
     active?.leave?.();
-    if (active?.panelEl) active.panelEl.classList.remove('on');
+    if (active) active.labOpen = false;
+    // Tous les panneaux se referment au changement de sequence, y compris ceux
+    // qu'une sequence ouvre elle-meme : la sequence active rouvre les siens juste apres
+    stageUI.querySelectorAll('.lab.on').forEach((el) => el.classList.remove('on'));
     allGroups.forEach((g) => { g.visible = seq.groups.includes(g); });
     sequences.forEach((s) => {
       Object.values(s.actors).forEach((a) => {
@@ -369,6 +506,7 @@ async function init() {
     const dt = Math.min(clock.getDelta(), 0.06);
     const time = clock.elapsedTime;
     renderer.info.reset();
+    director?.tick(dt, !!active?.labOpen);
     const goal = forced ?? clamp01(window.scrollY / Math.max(1, scrollMax()));
     shown += (goal - shown) * (reduceMotion || forced !== null ? 1 : 1 - Math.exp(-dt * 3.4));
 
@@ -397,7 +535,6 @@ async function init() {
       ? seq.fade(t)
       : Math.max(1 - smooth(t / 0.022), idx < COUNT - 1 ? smooth((t - 0.986) / 0.014) : 0);
     elFade.style.opacity = fade.toFixed(3);
-    elHint.classList.toggle('off', shown > 0.002);
     bar.style.transform = `scaleX(${shown.toFixed(4)})`;
 
     renderer.render(scene, camera);

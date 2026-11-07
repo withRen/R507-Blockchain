@@ -97,6 +97,7 @@ export function createEpilogue(ctx) {
     outside: true,
     panelEl: panel,
     LAB: { from: 0.72, to: 1.01 },
+    labStop: 0.98,
     parent: group,
     actorsDef: {
       alice: { track: [{ t: 0, x: -1.3, z: 9.2, face: 2.9 }, { t: 0.06, x: -1.3, z: 9.6, face: 0.2 }, { t: 1, x: -1.3, z: 9.6, face: 0.2 }] },

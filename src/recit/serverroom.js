@@ -151,7 +151,7 @@ export function createServerRoom(scene) {
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 1, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.3, 1.0, 0.6), transparent: true }));
   group.add(beam);
 
-  const drawHash = (hash, previous) => {
+  const drawHash = (hash, previous, solved = false) => {
     const { ctx, canvas, tex } = hashPlate;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'rgba(5, 15, 14, 0.88)';
@@ -167,7 +167,7 @@ export function createServerRoom(scene) {
     [...hash].forEach((ch, i) => {
       const row = i < lineChars ? 0 : 1;
       const col = i % lineChars;
-      ctx.fillStyle = previous && previous[i] !== ch ? '#ff7a6e' : '#e9f7f0';
+      ctx.fillStyle = solved ? '#7bf0b8' : previous && previous[i] !== ch ? '#ff7a6e' : '#e9f7f0';
       ctx.fillText(ch, 34 + col * 45, 116 + row * 62);
     });
     tex.needsUpdate = true;
@@ -197,13 +197,25 @@ export function createServerRoom(scene) {
 
   // Tremblement bref quand le contenu change
   let shake = 0;
+  let solved = false;
   const pulse = () => { shake = 1; };
   function tick(dt, time) {
     shake = Math.max(0, shake - dt * 2.4);
     block.position.x = Math.sin(time * 58) * 0.022 * shake;
-    ring.material.color.setRGB(0.7 + shake * 2.5, 0.95 - shake * 0.5, 3.2 - shake * 2.2);
+    if (solved) ring.material.color.setRGB(0.3, 2.4, 1.2);
+    else ring.material.color.setRGB(0.7 + shake * 2.5, 0.95 - shake * 0.5, 3.2 - shake * 2.2);
+  }
+  // Le bloc passe au vert quand le visiteur a retrouve la bonne transaction
+  function setSolved(on) {
+    solved = on;
+    Object.values(layers).forEach((L) => {
+      L.glass.material.color.setHex(on ? 0x35c98a : L.f.tint);
+      L.edges.material.color.set(on ? 0x7bf0b8 : L.f.tint);
+      if (!on) L.edges.material.color.multiplyScalar(1.3);
+    });
+    beam.material.color.setRGB(on ? 0.4 : 0.3, on ? 2 : 1, on ? 0.9 : 0.6);
   }
 
   const pickables = Object.values(layers).map((L) => L.glass);
-  return { group, drawLayer, drawHash, setReveal, pulse, tick, pickables };
+  return { group, drawLayer, drawHash, setReveal, setSolved, pulse, tick, pickables };
 }

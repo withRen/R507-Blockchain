@@ -19,22 +19,30 @@
     <p id="slug" aria-live="polite"><b></b><span></span></p>
     <aside id="term" aria-live="polite"><small></small><strong></strong><p></p></aside>
     <p id="line" aria-live="polite"><b></b><span></span></p>
-    <section id="lab" class="lab" aria-label="Modifier le bloc">
-      <h2>À vous : modifiez le bloc</h2>
-      <p class="lab-hint">Clique aussi sur une couche du bloc pour savoir à quoi elle sert.</p>
-      <label for="lab-data">Données</label>
-      <input id="lab-data" type="text" value="Alice → Bob : 5 jetons" spellcheck="false" autocomplete="off">
-      <label for="lab-nonce">Nonce</label>
-      <input id="lab-nonce" type="number" value="48211" min="0" step="1">
-      <p class="lab-out-label">Hash du bloc, recalculé pour de vrai (SHA-256)</p>
-      <output id="lab-hash" for="lab-data lab-nonce"></output>
-      <p id="lab-note" aria-live="polite">Remplace 5 par 6 et regarde le hash.</p>
+    <section id="lab" class="lab" aria-label="Retrouve la transaction">
+      <h2>À toi : retrouve la transaction</h2>
+      <p class="lab-hint">Une seule donne l’empreinte cible. Clique dessus ou glisse-la dans le bloc. Clique aussi sur une couche du bloc pour savoir à quoi elle sert.</p>
+      <div id="lab-chips" class="chips" role="group" aria-label="Transactions candidates"></div>
+      <p class="lab-out-label">Empreinte cible</p>
+      <output id="lab-target" class="hash-out"></output>
+      <p class="lab-out-label">Hash du bloc, calculé pour de vrai (SHA-256)</p>
+      <output id="lab-hash" class="hash-out"></output>
+      <p id="lab-diff" aria-live="polite"></p>
+      <div class="stepper">
+        <span id="lab-nonce-label">Nonce</span>
+        <button id="lab-minus" type="button" aria-label="Nonce moins un">−</button>
+        <output id="lab-nonce" aria-labelledby="lab-nonce-label"></output>
+        <button id="lab-plus" type="button" aria-label="Nonce plus un">+</button>
+      </div>
+      <p id="lab-note" aria-live="polite">Essaie : ça ne coûte rien.</p>
     </section>
     <div id="title-card">
       <h1>Le Registre</h1>
       <p>Prologue · Suite à 03 h 05 : la structure d’un bloc</p>
     </div>
-    <p id="hint">Fais défiler pour commencer</p>
+    <p id="hint">Fais défiler ou appuie sur Espace pour commencer</p>
+    <button id="continue" type="button">Continuer · Espace</button>
+    <button id="auto" type="button" aria-pressed="false">Lecture auto ▶</button>
     <nav id="chain-nav" aria-label="Séquences"></nav>
     <div id="progress"><i></i></div>
   </div>
