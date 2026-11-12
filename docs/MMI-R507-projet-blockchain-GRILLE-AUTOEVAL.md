@@ -6,7 +6,7 @@
 
 À remplir en groupe puis individuellement avant la soutenance, dans le dépôt. Elle sert à repérer les lacunes et préparer la soutenance ; elle n'est pas notée en elle-même. Toute note cochée doit être justifiée par une phrase ou une preuve.
 
-> Mise à jour du 6 novembre 2026 : la grille évalue désormais la v2, le récit urbain « Le Registre » (`index.html`, `src/recit/`), qui sera présenté en soutenance. Les scores ont été revus à la baisse là où la v2 n'est pas encore testée ou mesurée.
+> Mise à jour du 12 novembre 2026 : la grille décrit désormais la v3 du récit « Le Registre ». Les justifications ont été mises à jour ; **les scores sont ceux du 6 novembre et restent à revoir par le groupe** une fois la v3 testée et mesurée.
 
 ## Échelle
 
@@ -23,24 +23,24 @@
 | # | Critère | Score 0-4 | Justification / preuve |
 |:---|:---|:---:|:---|
 | 1.1 | Les 7 notions obligatoires sont toutes représentées conformément à la liste commune. | 4 | Une séquence par notion (`src/recit/sequence1.js` à `sequence7.js`), avec les définitions du glossaire du sujet dans les encarts. |
-| 1.2 | Chaque notion possède une animation ou interaction observable. | 4 | Un panneau « À vous » par séquence : modifier un bloc avec vrai SHA-256 (1), rompre et réparer la chaîne (2), falsifier le bloc 3 face à 14 nœuds (3), couper des tours et propager une transaction (4), vrai mineur 2 à 5 zéros et vérification en un hash (5), 100 blocs en PoW / PoS / PoA (6), calculateur de Nakamoto pour la décision de Bob (7). |
-| 1.3 | Un utilisateur non initié comprend sans explication orale préalable. | 2 | Le récit pose le problème avant la solution et les fausses idées sont corrigées par les personnages. Mais le dialogue est lu en entier avant chaque interaction, avec de longues répliques d'Inès (séquences 1 et 7), et la v2 n'a pas encore été testée par des personnes extérieures. |
+| 1.2 | Chaque notion possède une animation ou interaction observable. | 4 | Un exercice « À toi de jouer » par séquence : retrouver la transaction qui donne l'empreinte cible (1), rompre et réparer la chaîne (2), falsifier le bloc 3 face aux 14 copies (3), couper des tours et propager une transaction (4), vrai mineur et vérification en un hash (5), 100 blocs puis corruption des signataires (6), calculateur de Nakamoto (7). Plus un exercice dès le prologue. |
+| 1.3 | Un utilisateur non initié comprend sans explication orale préalable. | 2 | La v3 répond au test de la v2 (« trop long, on perd le fil ») : répliques resserrées, question d'ouverture, phrase « À retenir ». Mais la v3 elle-même n'a pas encore été testée par une personne extérieure. |
 | 1.4 | L'ordre est pédagogique et progressif. | 4 | Problème (registre unique) puis bloc, chaîne, falsification, réseau, minage, consensus, paiement et attaque, puis bilan. Chaque séquence finit sur la question que la suivante résout. |
-| 1.5 | Le fil rouge est cohérent. | 3 | Une enquête d'une nuit (23 h 47 à 07 h 10) autour des 40 millions disparus et de Mallory. Points faibles : les transactions d'exemple et les montants changent d'une séquence à l'autre, et deux personnages (Hélène, Clara) arrivent tard sans présentation. |
-| 1.6 | Les métaphores ne créent pas de fausse compréhension. | 3 | Décor mat et objets techniques en verre lumineux, séparés ; encarts « Le revers ». Formulations à corriger : la voix off qui dit qu'à six confirmations Mallory abandonne (faux à 30 % de puissance, 13 % de réussite), et « il faudrait corriger chaque copie » en séquence 4. |
-| 1.7 | Au moins 2 testeurs extérieurs ont été sollicités et leurs retours intégrés. | 2 | Tests menés sur la v1 via le [questionnaire](https://docs.google.com/forms/d/e/1FAIpQLSdWOe5Z6wL2r4mvUCPZjamTJZX2sr3akOwpV4yEK9PuOTuHjA/viewform), dont plusieurs corrections ont été reprises dans la v2. Le récit reste à tester avec au moins 2 personnes extérieures. |
+| 1.5 | Le fil rouge est cohérent. | 3 | Une enquête d'une nuit (23 h 47 à 07 h 10) autour des 40 millions disparus et de Maxime. Points faibles : les transactions d'exemple et les montants changent d'une séquence à l'autre, et deux personnages (Hélène, Clara) arrivent tard sans présentation. |
+| 1.6 | Les métaphores ne créent pas de fausse compréhension. | 3 | Décor mat et objets techniques en verre, séparés ; chaque séquence finit sur son revers. Les deux formulations signalées le 6 novembre sont corrigées : la voix off ne dit plus qu'à six confirmations l'attaquant abandonne toujours, et la séquence 4 ne dit plus qu'il faudrait « corriger chaque copie ». |
+| 1.7 | Au moins 2 testeurs extérieurs ont été sollicités et leurs retours intégrés. | 2 | Tests de la v1 via le [questionnaire](https://docs.google.com/forms/d/e/1FAIpQLSdWOe5Z6wL2r4mvUCPZjamTJZX2sr3akOwpV4yEK9PuOTuHjA/viewform). Pour la v2 : une personne non initiée et la revue de l'enseignant, consignées dans `docs/TESTS-UTILISATEURS.md` et intégrées à la v3. Il manque un second test par une personne non initiée. |
 
 ## Partie 2 — Argumentation des choix (25 %)
 
 | # | Critère | Score 0-4 | Justification / preuve |
 |:---|:---|:---:|:---|
-| 2.1 | `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` est complet et couvre les 7 notions. | 3 | Document réécrit pour la v2 (v2.0) : univers, caméra, 7 fiches, cohérence, IA, sources. Les rubriques « Tests utilisateurs » de la v2 restent à compléter. |
+| 2.1 | `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` est complet et couvre les 7 notions. | 3 | Document passé en v3.0 : nouvelle section 2.6 (un retour, une décision), rubriques f complétées avec les retours reçus. Les numéros d'issues de ces lignes restent à créer. |
 | 2.2 | Formes et échelles sont justifiées. | 4 | Un lieu par notion, objets techniques à hauteur de personnage, tours du quartier utilisées comme nœuds ; justifié fiche par fiche. |
-| 2.3 | Couleurs et codes sont cohérents et accessibles. | 4 | Palette sémantique unique (`COLORS` dans `src/recit/stage.js`) : bleu = donnée, vert = valide, rouge = falsifié / attaque, orange = effort, turquoise = enjeu, violet = autorité, sur fond de ville nocturne. |
+| 2.3 | Couleurs et codes sont cohérents et accessibles. | 4 | Palette sémantique unique (`COLORS` dans `src/recit/stage.js`), une couleur par sens, légende affichée en permanence. L'état d'un bloc se lit sur ses arêtes. |
 | 2.4 | Animations et interactions servent la compréhension. | 3 | Animations fidèles au réel (sauts en base 16 en séquence 5, délai par saut en séquence 4, formule exacte en séquence 7). Limite : l'interaction arrive après l'explication au lieu de la précéder. |
 | 2.5 | Une alternative écartée est documentée par notion. | 4 | Une alternative par fiche, et la v1 « Grand Registre » documentée comme métaphore écartée avec les raisons du changement (section 2.4). |
 | 2.6 | Les risques de mauvaise interprétation sont traités. | 4 | Rubriques b) et g) remplies pour chaque notion, appuyées sur `FICHE-RECHERCHE.md`, et reprises dans les dialogues (« Donc c'est chiffré ? Non. », « On m'avait dit infalsifiable. Faux. »). |
-| 2.7 | Les décisions s'appuient sur les tests utilisateurs. | 2 | Les décisions issues des tests v1 sont reprises et signalées ; aucune décision n'est encore issue d'un test de la v2. |
+| 2.7 | Les décisions s'appuient sur les tests utilisateurs. | 2 | Chaque changement de la v3 est rattaché à un retour précis (section 2.6 du livrable). Aucune décision n'est encore issue d'un test de la v3. |
 
 ## Partie 3 — GitHub Projects (20 %)
 
@@ -61,12 +61,12 @@
 
 | # | Critère | Score 0-4 | Justification / preuve |
 |:---|:---|:---:|:---|
-| 4.1 | Navigation intuitive et éléments identifiables. | 4 | Mini-chaîne de 9 blocs (prologue, 7 notions, épilogue) avec « Notion n/7 », saut direct à chaque séquence, invite « Fais défiler pour commencer », en-tête heure et lieu. |
+| 4.1 | Navigation intuitive et éléments identifiables. | 4 | Mini-chaîne de 9 blocs avec « Notion n/7 », bouton « Passer » toujours visible, lecture automatique sur demande, question de la séquence affichée, exercices annoncés, légende des couleurs, sources en fenêtre. |
 | 4.2 | Textes lisibles et contrastés. | 3 | Dialogues en bas d'écran avec nom du locuteur et mention « voix off », définitions dans un encart séparé, `Roboto` et `IBM Plex Mono`. À vérifier sur petit écran et vidéoprojecteur. |
 | 4.3 | Rythme des animations compréhensible. | 3 | Progression liée au défilement, donc au rythme de l'utilisateur ; respect de `prefers-reduced-motion`. Les séquences longues (7) restent denses. |
-| 4.4 | Au moins 30 FPS sur ordinateur standard type poste de TP. | 2 | Optimisations en place (culling par quartiers, chargement à la demande, fenêtres calculées dans le shader, pas de texture externe). Mesure sur un poste de TP encore à faire pour la v2. |
+| 4.4 | Au moins 30 FPS sur ordinateur standard type poste de TP. | 2 | Optimisations de la v2 conservées. Mesure sur un poste de TP encore à faire pour la v3 (elle ajoute les 14 copies en séquences 3 et 7). |
 | 4.5 | Aucun bug bloquant le parcours principal. | 3 | Parcours complet jouable en local. À revérifier après fusion dans `main` et build de production. |
-| 4.6 | Déploiement en ligne réalisé. | 3 | Le récit est la page d'entrée (`index.html`) et un workflow GitHub Actions déploie la branche `test-alternate` sur GitHub Pages. À faire : fusionner dans `main` et vérifier la démo en ligne. |
+| 4.6 | Déploiement en ligne réalisé. | 3 | La v2 est en ligne depuis `main`. La v3 est sur sa propre branche : à fusionner dans `main`, puis vérifier la démo en ligne. |
 
 ## Partie 5 — Soutenance (15 %)
 
@@ -98,6 +98,6 @@ Les points perdus viennent surtout des tests de la v2 (1.3, 1.7, 2.7), de la mes
 
 | Les 3 actions prioritaires | Responsable | Échéance |
 |:---|:---|:---|
-| 1. Commiter le travail en cours, fusionner `test-alternate` dans `main` et vérifier la démo en ligne | Rahim et Nicolas | Avant le 15 novembre 2026 |
-| 2. Faire tester le récit par au moins 2 personnes extérieures, puis remplir les rubriques f) de `CHOIX-MODELISATION.md` | Nicolas et Rahim | Avant le 15 novembre 2026 |
-| 3. Corriger les dialogues à risque (six confirmations à 30 %, « corriger chaque copie », redite prologue / séquence 1, présentation d'Hélène et Clara) et mesurer les FPS sur un poste de TP | Rahim et Nicolas | Avant le 15 novembre 2026 |
+| 1. Relire la v3 de bout en bout, la fusionner dans `main` et vérifier la démo en ligne | Rahim et Nicolas | Avant le 15 novembre 2026 |
+| 2. Faire tester la v3 par une seconde personne non initiée, créer les issues des décisions et les lier aux commits | Nicolas et Rahim | Avant le 15 novembre 2026 |
+| 3. Mesurer les FPS sur un poste de TP, déposer les musiques et les déclarer dans `docs/ASSETS.md`, rédiger les fiches de suivi manquantes (le sujet en demande 8) | Rahim et Nicolas | Avant le 15 novembre 2026 |

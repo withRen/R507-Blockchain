@@ -15,19 +15,21 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Personnes non initiées à la blockchain, sans explication orale préalable |
 | Lien vers la démo | https://withren.github.io/R507-Blockchain/ |
 | Lien vers GitHub Projects | https://github.com/users/withRen/projects/3 |
-| Version et date de mise à jour | v2.0, 6 novembre 2026 (passage du « Grand Registre » au récit urbain « Le Registre ») |
+| Version et date de mise à jour | v3.0, 12 novembre 2026 (même récit « Le Registre », réécrit après la revue de l’enseignant et un test utilisateur) |
 
 ### Historique de la direction
 
 Le projet a connu deux directions successives. La **v1 « Grand Registre »** (semaines 2 à 4, voir `docs/suivi/`) reposait sur un nuage abstrait de 1 800 cubes instanciés qui se réorganisaient d'une notion à l'autre, sur une interface éditoriale de type livre de comptes. La **v2 « Le Registre »**, présentée en soutenance, raconte les 7 notions à travers une enquête d'une nuit dans un quartier d'affaires, avec des personnages et des décors construits en code.
 
-Ce document décrit la v2. La v1 est documentée comme métaphore écartée (section 2.4), avec les raisons du changement. Les tests utilisateurs menés sur la v1 sont conservés quand leur enseignement a été repris dans la v2, et signalés comme tels.
+La **v3**, livrée, garde l’histoire, les lieux et l’ordre des notions de la v2. Elle réécrit l’explication et l’interface à partir de deux retours reçus sur la v2 : la revue de l’enseignant et le test d’une personne non initiée (section 2.6 et `docs/TESTS-UTILISATEURS.md`).
+
+Ce document décrit la v3. La v1 est documentée comme métaphore écartée (section 2.4), avec les raisons du changement. Les tests utilisateurs menés sur la v1 sont conservés quand leur enseignement a été repris, et signalés comme tels.
 
 ## 2. Univers visuel et métaphore principale
 
 ### 2.1 Public cible et objectif
 
-Le parcours s'adresse à un public étudiant ou grand public qui n'a jamais étudié la blockchain et qui découvre le site seul, sans médiation orale. Il dure environ 10 à 15 minutes, au fil du défilement.
+Le parcours s'adresse à un public étudiant ou grand public qui n'a jamais étudié la blockchain et qui découvre le site seul, sans médiation orale. Il se parcourt au défilement ou en lecture automatique.
 
 À la fin, l'utilisateur doit retenir :
 1. qu'une blockchain est un **registre public de transactions** découpé en **blocs**, et que l'empreinte d'un bloc (**hash**) le résume sans le chiffrer ;
@@ -41,18 +43,18 @@ Le parcours s'adresse à un public étudiant ou grand public qui n'a jamais étu
 
 **Le Registre** est une enquête qui dure une nuit, de 23 h 47 à 07 h 10, dans un quartier d'affaires.
 
-- **Point de départ, le problème :** Alice Vasseur, auditrice chez Meridian Clearing, découvre que 40 millions ont disparu du registre central de la ville. Un seul administrateur, Gaspard, a les droits d'écriture et rien n'apparaît dans les journaux. Le registre unique est à la fois le coffre et le seul témoin.
+- **Point de départ, le problème :** Léa Vasseur, auditrice chez Meridian Clearing, découvre que 40 millions ont disparu du registre central de la ville. Un seul administrateur, Gaspard, a les droits d'écriture et rien n'apparaît dans les journaux. Le registre unique est à la fois le coffre et le seul témoin.
 - **L'idée :** Inès, experte système, propose que chaque tour de la ville tienne sa propre copie du registre. C'est l'idée de la blockchain, et le reste de la nuit sert à comprendre comment elle tient.
-- **Une notion, un lieu, une heure :** chaque séquence se déroule dans un lieu dont la fonction rappelle la notion. La salle des serveurs pour l'intérieur d'un bloc, une passerelle qui relie deux tours pour le chaînage, le bureau de la rivale pour la falsification, la vue aérienne des 14 tours pour le réseau, une ferme de minage au port pour la preuve de travail, la salle du conseil pour le choix d'un consensus, un parking souterrain pour l'attaque cachée.
+- **Une notion, un lieu, une heure :** chaque séquence se déroule dans un lieu dont la fonction rappelle la notion. La salle des serveurs pour l'intérieur d'un bloc, une passerelle qui relie deux tours pour le chaînage, le bureau du rival pour la falsification, la vue aérienne des 14 tours pour le réseau, une ferme de minage au port pour la preuve de travail, la salle du conseil pour le choix d'un consensus, un parking souterrain pour l'attaque cachée.
 - **Les tours sont les nœuds :** les 14 tours éclairées du quartier, visibles dès le prologue, deviennent les 14 nœuds du réseau en séquence 4. La ville elle-même porte la décentralisation.
-- **Des personnages qui portent les questions :** Alice pose les questions d'un débutant (« Donc c'est chiffré ? »), Inès répond, Mallory Kern incarne l'attaquante, Bob le client qui doit décider quand livrer, Théo le mineur.
+- **Des personnages qui portent les questions :** Léa pose les questions d'un débutant (« Donc c'est chiffré ? »), Inès répond, Maxime Kern incarne l'attaquant, Julien le client qui doit décider quand livrer, Théo le mineur. Depuis la v3, chaque personnage apparaît deux fois, avec les mêmes couleurs : en silhouette 3D dans le décor, et en portrait 2D dans la boîte de dialogue quand il parle.
 - **Distinction métaphore / réalité :** les objets techniques (blocs, hashes, chaînes, nœuds) ne sont jamais des objets du décor. Ils apparaissent comme des hologrammes en verre, avec leurs vraies valeurs calculées, et chaque terme technique est défini dans un encart dédié. Le décor sert le récit, les hologrammes servent la notion.
 
 ### 2.3 Justification et limites
 
 | Question | Réponse |
 |:---|:---|
-| Quelles propriétés deviennent évidentes ? | Le problème que la blockchain résout (un registre unique tenu par une seule personne), la duplication du registre (chaque tour garde une copie), l'absence de centre (Meridian s'éteint et le réseau continue), la propagation de proche en proche (l'onde lumineuse de tour en tour), le coût du minage (une ferme entière d'ASIC), et le fait qu'une attaque se prépare en secret (la chaîne de Mallory au sous-sol). |
+| Quelles propriétés deviennent évidentes ? | Le problème que la blockchain résout (un registre unique tenu par une seule personne), la duplication du registre (chaque tour garde une copie), l'absence de centre (Meridian s'éteint et le réseau continue), la propagation de proche en proche (l'onde lumineuse de tour en tour), le coût du minage (une ferme entière d'ASIC), et le fait qu'une attaque se prépare en secret (la chaîne de Maxime au sous-sol). |
 | Quelles propriétés sont difficiles à représenter ou risquent d'être déformées ? | 1. Le hash, qui pourrait passer pour du chiffrement. 2. L'échelle réelle : des milliers de nœuds et un nombre astronomique d'essais par bloc, contre 14 tours et quelques milliers d'essais dans le navigateur. 3. Le risque de faire croire que le consensus est un vote à la majorité des nœuds, alors qu'en preuve de travail le poids vient de la puissance de calcul. 4. Le risque que le décor distraie de la notion. |
 | Comment ces limites sont-elles compensées ? | Par des calculs réels dans le navigateur (SHA-256 aux séquences 1, 2, 3 et 5, simulation de 100 blocs en séquence 6, formule de Nakamoto en séquence 7), par des répliques qui posent puis corrigent les idées fausses (« Donc c'est chiffré ? Non. »), par les encarts « Le revers » qui donnent les limites réelles, et par la page `sources.html` qui détaille chaque simplification. Pour le décor : une seule matière mate, aucune texture, et des hologrammes très contrastés qui attirent l'œil (section 2.5). |
 
@@ -69,11 +71,29 @@ Le parcours s'adresse à un public étudiant ou grand public qui n'a jamais étu
 
 | Élément | Choix | Justification pédagogique |
 |:---|:---|:---|
-| Palette et signification des couleurs | Ville de nuit très sombre (fond `#020306`). Couleurs sémantiques réservées aux hologrammes, constantes sur tout le parcours (`COLORS` dans `src/recit/stage.js`) : bleu `#5b74ff` = information / donnée, vert `#35c98a` = valide / confirmé, rouge `#ff4f45` = falsification / chaîne attaquante, orange `#e89a2c` = effort / minage, turquoise `#1fb4ba` = preuve d'enjeu, violet `#8f73ee` = preuve d'autorité, gris `#59616f` = inactif. | La nuit laisse le décor en retrait et fait ressortir les seuls éléments lumineux, qui sont les objets techniques. Un code couleur invariant permet de lire une scène sans légende : du rouge signale toujours une fraude, du vert toujours un état valide. |
-| Formes, style et niveau d'abstraction | Deux registres visuels séparés. **Le décor** (ville, bureaux, personnages) est construit en code dans `src/recit/` avec une seule matière mate, sans texture ni modèle externe (`docs/ASSETS.md`). **Les objets techniques** sont des blocs de verre holographiques, avec des faces qui affichent les vraies données, le hash parent, le nonce et le hash calculés. | Séparer nettement le décor (mat, sombre, réaliste) et la technique (verre, lumineux, chiffré) évite de confondre métaphore et réalité : l'utilisateur sait que ce qui brille est ce qu'il faut comprendre. |
+| Palette et signification des couleurs | Ville de nuit très sombre (fond `#020306`). Couleurs sémantiques réservées aux hologrammes, constantes sur tout le parcours (`COLORS` dans `src/recit/stage.js`) : bleu `#5b74ff` = information / donnée, vert `#35c98a` = valide / confirmé, rouge `#ff4f45` = falsification / chaîne attaquante, orange `#e89a2c` = effort / minage, turquoise `#1fb4ba` = preuve d'enjeu, violet `#8f73ee` = preuve d'autorité, gris `#59616f` = inactif. | La nuit laisse le décor en retrait et fait ressortir les seuls éléments lumineux, qui sont les objets techniques. Un code couleur invariant : du rouge signale toujours une fraude, du vert toujours un état valide. Depuis la v3, une légende reste affichée en permanence et l’état d’un bloc se lit sur ses arêtes, le verre restant bleu. |
+| Formes, style et niveau d'abstraction | Deux registres visuels séparés. **Le décor** (ville, bureaux, personnages) est construit en code dans `src/recit/` avec une seule matière mate, sans texture ni modèle externe (`docs/ASSETS.md`). **Les objets techniques** sont des blocs de verre holographiques, avec des faces qui affichent les vraies données, le hash parent, le nonce et le hash calculés. Depuis la v3, tous les blocs ont le même gabarit (3,05 × 2,1 × 0,85) et les mêmes champs dans le même ordre, de la séquence 1 à la séquence 7. | Séparer nettement le décor (mat, sombre, réaliste) et la technique (verre, lumineux, chiffré) évite de confondre métaphore et réalité : l'utilisateur sait que ce qui brille est ce qu'il faut comprendre. |
 | Éclairage et ambiance | Ville éclairée par les fenêtres calculées dans un shader, lumières ponctuelles colorées propres à chaque séquence, tonemapping ACES. L'heure change à chaque séquence et le jour se lève à l'épilogue. | La progression de la nuit vers l'aube matérialise l'avancée de la compréhension, de l'opacité du registre unique au bilan lucide. |
-| Typographie et lisibilité | `Roboto` pour les dialogues et l'interface, `IBM Plex Mono` pour les hashes, nonces et compteurs, `Newsreader` pour les titres. Dialogues en bas d'écran (nom du personnage, mention « voix off »), définitions dans un encart séparé, heure et lieu en haut. | La chasse fixe permet de comparer deux hashes caractère par caractère. Séparer dialogue, définition et repère spatio-temporel évite que tout se mélange dans un seul bloc de texte. |
+| Typographie et lisibilité | `Roboto` pour les dialogues et l'interface, `IBM Plex Mono` pour les hashes, nonces et compteurs. Dialogues en bas d'écran (nom du personnage, mention « voix off »), définitions dans un encart séparé, heure et lieu en haut. | La chasse fixe permet de comparer deux hashes caractère par caractère. Séparer dialogue, définition et repère spatio-temporel évite que tout se mélange dans un seul bloc de texte. |
 | Échelle et rapport de taille | Personnages à l'échelle humaine, tours d'environ 200 m, blocs holographiques à hauteur de personnage. Pendant les panneaux « À vous », l'objet 3D occupe une moitié de l'écran et le panneau l'autre. | Mettre le bloc à hauteur des personnages en fait un objet qu'on examine, pas un symbole lointain. Le partage d'écran pendant les interactions évite que le panneau cache la scène qu'il pilote. |
+
+### 2.6 Ce que la v3 change, et pourquoi
+
+Deux retours ont été reçus sur la v2 le 12 novembre 2026 : la revue de l'enseignant (sur la v1 puis la v2) et le test d'une personne non initiée. Ils sont consignés dans `docs/TESTS-UTILISATEURS.md`. Chaque décision ci-dessous en découle.
+
+| Retour | Décision de modélisation | Où |
+|:---|:---|:---|
+| L'enseignant clique là où il n'y a pas d'interaction, et ne repère pas celles qui existent. | Chaque exercice s'annonce : étiquette « À toi de jouer », halo à l'ouverture, curseur en forme de main sur les objets 3D cliquables. | `recit.css`, `main.js` |
+| Le défilement est capricieux ; il faudrait un bouton « passer à la suite ». | Bouton « Passer » toujours visible. La lecture automatique ne démarre plus au premier coup de molette. | `director.js` |
+| Le bloc change de forme et de couleur d'une séquence à l'autre ; trois couleurs lues comme trois chaînes. | Un seul gabarit de bloc, une couleur par sens, légende permanente. | `stage.js`, `serverroom.js` |
+| Les copies en parallèle ne se voient pas, surtout pendant l'attaque. | Les 14 copies sont visibles en séquences 3 et 7. | `sequence3.js`, `sequence7.js` |
+| L'autorité peut se déléguer et tourner ; corrompre tout le monde coûte plus cher. | Cinq signataires à tour de rôle et exercice de corruption. | `sequence6.js` |
+| Bitcoin n'est pas le seul usage ; un autre groupe a illustré une chaîne de production. | Bitcoin n'est cité qu'au prologue, pour le minage et pour la formule de l'attaque. La séquence 6 mentionne le suivi d'une marchandise, du produit brut au produit fini. Nous avons gardé notre histoire : la changer entièrement à trois jours du rendu aurait coûté plus qu'elle n'aurait apporté. | `sequence5.js`, `sequence6.js` |
+| Les sources devraient s'ouvrir sur place, limitées à la section en cours. | Bouton « Sources de cette séquence » qui ouvre une fenêtre, sans quitter le récit. | `sources-popup.js` |
+| « On est pris dans le déroulement depuis un moment » avant de pouvoir agir. | Un premier exercice dès le prologue : retrouver la ligne du registre qui a changé. | `main.js`, `prologue.js` |
+| La testeuse trouve le parcours trop long et perd le fil. | 63 répliques au lieu de 70, 27 fiches de termes au lieu de 34, question d'ouverture et « À retenir » par séquence, défilement raccourci de 30 %. | `sequenceN.js` |
+| La testeuse trouve les personnages peu soignés et suggère des portraits 2D de face. | Portraits 2D dans la boîte de dialogue, en plus des silhouettes 3D dont le cou et la mâchoire ont été repris. | `portraits.js`, `figure.js` |
+| La testeuse et l'enseignant suggèrent de l'audio. | Lecteur de musique par séquence, coupé par défaut. | `music.js` |
 
 ## 3. Caméra, espace et navigation
 
@@ -81,9 +101,9 @@ Le parcours s'adresse à un public étudiant ou grand public qui n'a jamais étu
 |:---|:---|
 | Caméra libre, guidée ou mixte ? | **Guidée par le défilement, avec une légère parallaxe au pointeur.** Chaque séquence définit une suite de plans de caméra (`CAMERA` dans chaque fichier `sequenceN.js`) interpolés selon la progression du défilement, comme un découpage de film. Une caméra libre ferait perdre les repères à un débutant dans une ville entière. La parallaxe (forte en extérieur, presque nulle en intérieur) donne le volume sans jamais quitter le bon angle. Elle est désactivée si l'utilisateur a demandé à réduire les animations (`prefers-reduced-motion`). |
 | Comment l'utilisateur sait-il où regarder ? | Par le cadrage : la caméra s'approche de l'objet qui compte au moment où il est nommé (par exemple, en séquence 1, elle monte couche par couche le long du bloc pendant qu'Inès décrit données, hash parent et nonce). Par la lumière : seuls les hologrammes sont colorés et brillants. Par le texte : la réplique en cours et la définition du terme apparaissent au même moment que l'objet. |
-| Organisation spatiale et signification des positions | Chaque notion a son lieu, et les lieux sont répartis dans une même ville cohérente : la tour Meridian (le centre de l'ancien système), la tour Kern en face (la rivale), le port à l'écart (l'industrie du minage). Dans les hologrammes, l'axe horizontal représente toujours l'ordre chronologique des blocs, de gauche à droite. En séquence 7, la chaîne publique est en haut et la chaîne secrète en bas, comme au-dessus et au-dessous du sol. |
+| Organisation spatiale et signification des positions | Chaque notion a son lieu, et les lieux sont répartis dans une même ville cohérente : la tour Meridian (le centre de l'ancien système), la tour Kern en face (le rival), le port à l'écart (l'industrie du minage). Dans les hologrammes, l'axe horizontal représente toujours l'ordre chronologique des blocs, de gauche à droite. En séquence 7, la chaîne publique est en haut et la chaîne secrète en bas, comme au-dessus et au-dessous du sol. |
 | Représentation du temps | Trois échelles. L'heure du récit (affichée en haut, de 23 h 47 à 07 h 10) donne le fil de la nuit. L'ordre gauche-droite des blocs donne le temps de la chaîne. Le temps réel est utilisé là où il porte le sens : la propagation qui arrive plus tard aux tours lointaines (séquence 4) et le chronomètre du vrai mineur (séquence 5). |
-| Passage d'une notion à l'autre | Chaque séquence se termine par une question d'un personnage à laquelle la séquence suivante répond (« Et qu'est-ce qui empêche de remplacer tout le bloc ? », « Qui écrit le prochain bloc ? »). Un fondu au noir et un nouvel en-tête heure / lieu marquent le changement. Une mini-chaîne de 9 blocs en bas de l'écran (prologue, 7 notions, épilogue) indique la position, affiche « Notion n/7 » et permet de sauter à n'importe quelle séquence. |
+| Passage d'une notion à l'autre | Chaque séquence se termine par une question d'un personnage à laquelle la séquence suivante répond (« Et qu'est-ce qui empêche de remplacer tout le bloc ? », « Qui écrit le prochain bloc ? »). Un fondu au noir et un nouvel en-tête heure / lieu marquent le changement. Une mini-chaîne de 9 blocs en haut de l'écran (prologue, 7 notions, épilogue) indique la position, affiche « Notion n/7 » et permet de sauter à n'importe quelle séquence. Depuis la v3, la question à laquelle répond la séquence reste affichée sous l'heure et le lieu, la dernière fiche donne la phrase « À retenir », et un bouton « Passer » toujours visible mène à la réplique suivante. La lecture automatique ne démarre que si l'utilisateur la demande. |
 
 ## 4. Fiches des 7 notions obligatoires
 
@@ -96,19 +116,19 @@ Le parcours s'adresse à un public étudiant ou grand public qui n'a jamais étu
 > L'utilisateur doit comprendre qu'un bloc est une page du registre qui regroupe des **données** (les transactions), le **hash du bloc parent** et un **nonce**, et que l'ensemble, passé dans SHA-256, produit le **hash du bloc** : une empreinte de longueur fixe qui change entièrement au moindre caractère modifié.
 
 #### b) Risque de mauvaise compréhension
-> L'utilisateur ne doit pas comprendre que le hash chiffre ou cache les données (elles restent publiques), ni qu'une empreinte garantit que l'information est vraie (elle garantit seulement qu'elle n'a pas changé). Ce risque est traité par le récit lui-même : Alice dit « Donc c'est chiffré », Inès répond « Non. Rien n'est caché », et l'encart « Ce que ça ne prouve pas » le précise.
+> L'utilisateur ne doit pas comprendre que le hash chiffre ou cache les données (elles restent publiques), ni qu'une empreinte garantit que l'information est vraie (elle garantit seulement qu'elle n'a pas changé). Ce risque est traité par le récit lui-même : Léa dit « Donc c'est chiffré », Inès répond « Non. Rien n'est caché », et l'encart « Ce que ça ne prouve pas » le précise.
 
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
 |:---|:---|:---|
-| Forme / géométrie | Un bloc de verre holographique en trois couches superposées (Données, Hash du bloc parent, Nonce), d'où sort le hash du bloc au-dessus. | Sépare les trois composants tout en montrant qu'ils forment un seul objet, et place le hash comme un résultat qui sort du bloc, pas comme une partie cachée. |
-| Taille et échelle | Bloc à hauteur de personnage, posé au milieu de la salle des serveurs, Alice et Inès autour. | Le bloc devient un objet qu'on examine de près, à l'échelle des personnages. |
+| Forme / géométrie | Un bloc de verre au gabarit commun, ouvert en trois couches (Hash du bloc parent, Nonce, Données), d’où sort le hash du bloc au-dessus. | Sépare les trois champs tout en montrant qu’ils forment un seul objet, et place le hash comme un résultat. Les trois couches ont la même teinte bleue : en v2 elles avaient trois couleurs, que l’enseignant a lues comme trois chaînes ou trois mineurs différents. |
+| Taille et échelle | Bloc à hauteur de personnage, posé au milieu de la salle des serveurs, Léa et Inès autour. | Le bloc devient un objet qu'on examine de près, à l'échelle des personnages. |
 | Couleur / matériau / texture | Verre bleu information, faces qui affichent les vraies valeurs en `IBM Plex Mono`, décor de la salle mat et sombre. | Le contraste verre lumineux / décor mat isole l'objet technique. |
 | Position | Au centre de la salle, puis décalé à droite quand le panneau « À vous » s'ouvre à gauche. | L'objet reste visible pendant qu'on le manipule. |
 | Mouvement / animation | Les couches apparaissent une par une, la caméra monte le long du bloc pendant qu'Inès nomme chaque couche, puis le hash sort par le haut. | L'ordre d'apparition suit l'ordre de l'explication : on voit chaque élément au moment où on l'entend nommé. |
-| Interaction et retour visuel | Panneau « À vous : modifiez le bloc » : champ Données (`Alice → Bob : 5 jetons`) et champ Nonce. Le hash est recalculé en vrai SHA-256 à chaque frappe. Un clic sur une couche du bloc 3D affiche sa définition. | L'utilisateur constate seul qu'un caractère change tout le hash, et que le nonce, « un nombre qui ne veut rien dire », change aussi le hash : c'est ce qu'exploiteront les mineurs en séquence 5. |
-| Son, si utilisé | Aucun. | Le parcours doit fonctionner sans audio en salle de TP. Tous les retours sont visuels et textuels (`aria-live`). |
-| Texte d'accompagnement | Dialogue Alice / Inès, encarts de définition (Bloc, Hash du bloc parent, Nonce, Hash, Empreinte cryptographique, Ce que ça ne prouve pas). Les définitions reprennent celles du glossaire du sujet. | Utiliser exactement les définitions du sujet garantit la conformité à la liste commune. |
+| Interaction et retour visuel | « Retrouve la transaction » : six transactions presque identiques, une seule donne l’empreinte cible. Le hash est recalculé en vrai SHA-256 à chaque essai, et le nonce se règle avec + et −. Un clic sur une couche du bloc 3D affiche sa définition. | L’utilisateur constate seul qu’un caractère change tout le hash et qu’aucun indice ne dit s’il s’approche de la cible. Un seul geste, le clic : le glisser-déposer de la v2 a été retiré pour ne pas multiplier les manipulations. |
+| Son, si utilisé | Musique de fond optionnelle, une piste par séquence, coupée par défaut (lecteur en place, pistes à déposer). | Le parcours reste complet sans audio, pour la salle de TP. La musique répond à une demande du test utilisateur et à une suggestion de l’enseignant. |
+| Texte d'accompagnement | Dialogue Léa / Inès, encarts de définition (Bloc, Hash du bloc parent, Nonce, Hash, Empreinte cryptographique, Ce que ça ne prouve pas). Les définitions reprennent celles du glossaire du sujet. | Utiliser exactement les définitions du sujet garantit la conformité à la liste commune. |
 
 #### d) Correspondance avec la réalité technique
 | Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
@@ -126,7 +146,7 @@ Le parcours s'adresse à un public étudiant ou grand public qui n'a jamais étu
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | (Test v1) Des testeurs n'osaient pas modifier le champ, le prenant pour un exemple statique. | Invite explicite conservée dans la v2 : « Remplace 5 par 6 et regarde le hash. » | #18, #19 |
-| À compléter : test de la séquence 1 du récit avec au moins 2 personnes extérieures. | | |
+| (Revue de l’enseignant, v2) Le bloc de la séquence 1 n’avait ni la forme ni les couleurs des blocs suivants, et ses trois couleurs étaient lues comme trois chaînes. | Gabarit unique, couches de même teinte, mêmes champs dans le même ordre sur tous les blocs. | à créer |
 
 #### g) Limites assumées
 Le bloc regroupe transactions et racine de Merkle sous « Données » et omet version, horodatage et cible. C'est acceptable car la séquence vise le lien entre contenu, nonce et empreinte, et l'encart « Ce que ça ne prouve pas » signale qu'un vrai bloc contient davantage de champs.
@@ -142,7 +162,7 @@ Le bloc regroupe transactions et racine de Merkle sous « Données » et omet ve
 > L'utilisateur doit comprendre que chaque bloc contient le **hash de son parent**, que ce lien dépend du contenu entier du bloc précédent (et donc, de proche en proche, de toute l'histoire), et qu'une modification rompt le lien avec le bloc suivant.
 
 #### b) Risque de mauvaise compréhension
-> L'utilisateur ne doit pas croire que le lien est un simple numéro de page indépendant du contenu (Alice le propose, Inès corrige). Il ne doit pas non plus croire que le chaînage suffit à protéger la chaîne : sans coût, on peut tout recalculer. Ce risque est traité volontairement par l'interaction (voir c) et par l'encart « Le chaînage ne suffit pas ».
+> L'utilisateur ne doit pas croire que le lien est un simple numéro de page indépendant du contenu (Léa le propose, Inès corrige). Il ne doit pas non plus croire que le chaînage suffit à protéger la chaîne : sans coût, on peut tout recalculer. Ce risque est traité volontairement par l'interaction (voir c) et par l'encart « Le chaînage ne suffit pas ».
 
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
@@ -152,8 +172,8 @@ Le bloc regroupe transactions et racine de Merkle sous « Données » et omet ve
 | Couleur / matériau / texture | Liens et blocs bleus quand tout est cohérent ; un lien rompu et le bloc qui attendait l'ancien hash passent en rouge. | Le rouge désigne exactement l'endroit où le hash parent ne correspond plus. |
 | Position | Alignement gauche-droite le long de la passerelle, dans l'ordre chronologique. | La passerelle, qui relie deux tours, est elle-même une image du lien. |
 | Mouvement / animation | Les blocs se révèlent un par un de gauche à droite. | L'ordre d'apparition suit l'ordre de la chaîne. |
-| Interaction et retour visuel | Panneau « À vous : modifiez le bloc 2 » : modifier le texte rompt le lien 2-3, qui passe au rouge, avec le message « le bloc 3 contient l'ancien hash ». Le bouton « Recopier le nouveau hash dans le bloc suivant » répare un lien à la fois ; la rupture se déplace alors vers le lien suivant, jusqu'à la fin de la chaîne. Une fois tout réparé, le panneau affiche : « Tous les hashes suivants ont dû être recalculés. Sans coût, rien n'empêche de le faire. » | Ce bouton est un choix délibéré : il fait **éprouver** que le chaînage seul ne protège rien, puisque l'utilisateur répare lui-même la chaîne en quelques clics. Cela prépare la question de Mallory en séquence 3 (« Il suffit donc de corriger tous les hashes ») et la réponse de la séquence 5, où chaque bloc coûte des milliers d'essais. |
-| Son, si utilisé | Aucun. | Parcours silencieux. |
+| Interaction et retour visuel | Panneau « À vous : modifiez le bloc 2 » : modifier le texte rompt le lien 2-3, qui passe au rouge, avec le message « le bloc 3 contient l'ancien hash ». Le bouton « Recopier le nouveau hash dans le bloc suivant » répare un lien à la fois ; la rupture se déplace alors vers le lien suivant, jusqu'à la fin de la chaîne. Une fois tout réparé, le panneau affiche : « Tous les hashes suivants ont dû être recalculés. Sans coût, rien n'empêche de le faire. » | Ce bouton est un choix délibéré : il fait **éprouver** que le chaînage seul ne protège rien, puisque l'utilisateur répare lui-même la chaîne en quelques clics. Cela prépare la question de Maxime en séquence 3 (« Il suffit donc de corriger tous les hashes ») et la réponse de la séquence 5, où chaque bloc coûte des milliers d'essais. |
+| Son, si utilisé | Musique de fond optionnelle, une piste par séquence, coupée par défaut (lecteur en place, pistes à déposer). | Le parcours reste complet sans audio, pour la salle de TP. La musique répond à une demande du test utilisateur et à une suggestion de l’enseignant. |
 | Texte d'accompagnement | Dialogue (« Un numéro de page ? Non. Un numéro ne dépend pas du contenu »), encarts Chaînage cryptographique, Empreinte cryptographique, Le chaînage ne suffit pas. | L'encart final renvoie explicitement à la séquence 5. |
 
 #### d) Correspondance avec la réalité technique
@@ -171,7 +191,7 @@ Le bloc regroupe transactions et racine de Merkle sous « Données » et omet ve
 #### f) Tests utilisateurs
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| À compléter : vérifier qu'un testeur extérieur comprend, après avoir tout réparé, que la protection ne vient pas du chaînage seul. | | |
+| (Test v2, personne non initiée) Le parcours est jugé « terriblement long » : plus l’histoire s’allonge, plus on perd le fil. | Répliques resserrées (5 au lieu de 7 dans cette séquence), question d’ouverture et phrase « À retenir » affichées. | à créer |
 
 #### g) Limites assumées
 Nous ne représentons pas le chaînage interne des transactions (une entrée qui pointe vers une sortie antérieure), pour ne pas confondre la chaîne des blocs et le graphe des transactions.
@@ -181,31 +201,31 @@ Nous ne représentons pas le chaînage interne des transactions (une entrée qui
 ### 4.3 — Immutabilité et détection de falsification
 
 **Issues liées :** #13, #24  
-**Séquence(s) concernée(s) :** Séquence 3, 04 h 15, bureau de Mallory Kern, tour Kern (`src/recit/sequence3.js`)
+**Séquence(s) concernée(s) :** Séquence 3, 04 h 15, bureau de Maxime Kern, tour Kern (`src/recit/sequence3.js`)
 
 #### a) Objectif pédagogique
 > L'utilisateur doit comprendre que chacun peut modifier **sa** copie, mais que la modification change le hash du bloc, rompt le lien avec le bloc suivant, et que tous les autres nœuds, en recalculant, voient l'incohérence et gardent leur propre copie. L'immutabilité est pratique, pas physique.
 
 #### b) Risque de mauvaise compréhension
-> L'utilisateur ne doit pas croire qu'une blockchain est physiquement infalsifiable (Mallory le croit, la voix off répond « Faux »), ni que le rejet est un vote à la majorité : un seul nœud honnête, en recalculant, détecte la fraude. Il ne doit pas croire non plus que l'immutabilité est toujours une qualité (encart « Le revers » : erreurs, vols, données personnelles, The DAO).
+> L'utilisateur ne doit pas croire qu'une blockchain est physiquement infalsifiable (Maxime le croit, la voix off répond « Faux »), ni que le rejet est un vote à la majorité : un seul nœud honnête, en recalculant, détecte la fraude. Il ne doit pas croire non plus que l'immutabilité est toujours une qualité (encart « Le revers » : erreurs, vols, données personnelles, The DAO).
 
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
 |:---|:---|:---|
-| Forme / géométrie | La même chaîne de cinq blocs qu'en séquence 2, projetée dans le bureau de Mallory, plus une rangée de 14 carrés représentant les 14 copies du réseau. | Garder la même chaîne isole la variable : seule la modification change. |
+| Forme / géométrie | La même chaîne de cinq blocs qu’en séquence 2, projetée dans le bureau de Maxime. Au-dessus, les 14 copies du réseau sont alignées en 3D, une mini-chaîne par nœud ; la première est celle de Maxime. | Garder la même chaîne isole la variable : seule la modification change. Montrer les 14 copies en parallèle répond à la remarque de l’enseignant : en v2, elles n’étaient que 14 carrés dans un panneau. |
 | Taille et échelle | Identique à la séquence 2. | Continuité visuelle. |
-| Couleur / matériau / texture | Le bloc 3 modifié et les liens qui suivent passent au rouge. Dans la rangée de nœuds, le carré de Mallory passe au rouge, les 13 autres restent verts. | On voit en même temps où est la fraude dans la chaîne et qui la détient dans le réseau. |
-| Position | Bureau vitré de la tour Kern, en face de Meridian. | Le lieu de la rivale situe l'attaque chez un participant comme les autres, qui détient sa copie « comme tout le monde ». |
+| Couleur / matériau / texture | Le bloc 3 modifié et les liens qui suivent passent au rouge. Dans la rangée de nœuds, le carré de Maxime passe au rouge, les 13 autres restent verts. | On voit en même temps où est la fraude dans la chaîne et qui la détient dans le réseau. |
+| Position | Bureau vitré de la tour Kern, en face de Meridian. | Le lieu du rival situe l'attaque chez un participant comme les autres, qui détient sa copie « comme tout le monde ». |
 | Mouvement / animation | Le rouge progresse d'un maillon à l'autre (cascade). | Montre la relation de cause à effet de gauche à droite. |
-| Interaction et retour visuel | Panneau « À vous : falsifiez le bloc 3 » : l'utilisateur remplace 5 par 500 dans la copie de Mallory. Le panneau affiche le nouveau hash du bloc 3, le hash que le bloc 4 attendait, et indique que les 13 autres nœuds gardent leur copie et rejettent celle de Mallory. | L'utilisateur commet lui-même la fraude et constate qu'elle se voit immédiatement, avec les deux hashes sous les yeux. |
-| Son, si utilisé | Aucun. | Parcours silencieux. |
-| Texte d'accompagnement | Voix off d'Inès sur Mallory, encarts Détection de falsification (« n'importe quel nœud le voit en recalculant »), Immutabilité (définition du sujet), Le revers. | « N'importe quel nœud » corrige l'idée d'un vote. |
+| Interaction et retour visuel | Panneau « À vous : falsifiez le bloc 3 » : l'utilisateur remplace 5 par 500 dans la copie de Maxime. Le panneau affiche le nouveau hash du bloc 3, le hash que le bloc 4 attendait, et indique que les 13 autres nœuds gardent leur copie et rejettent celle de Maxime. | L'utilisateur commet lui-même la fraude et constate qu'elle se voit immédiatement, avec les deux hashes sous les yeux. |
+| Son, si utilisé | Musique de fond optionnelle, une piste par séquence, coupée par défaut (lecteur en place, pistes à déposer). | Le parcours reste complet sans audio, pour la salle de TP. La musique répond à une demande du test utilisateur et à une suggestion de l’enseignant. |
+| Texte d'accompagnement | Voix off d'Inès sur Maxime, encarts Détection de falsification (« n'importe quel nœud le voit en recalculant »), Immutabilité (définition du sujet), Le revers. | « N'importe quel nœud » corrige l'idée d'un vote. |
 
 #### d) Correspondance avec la réalité technique
 | Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
 |:---|:---|:---|
 | Hash du bloc 3 qui ne correspond plus au hash parent du bloc 4 | Bloc invalide rejeté par la vérification de chaque nœud | **Exacte** sur la logique. |
-| 13 nœuds qui « rejettent » la copie de Mallory | Chaque nœud vérifie seul et ignore les blocs invalides, sans vote | **Simplifiée** (la rangée de 14 carrés peut évoquer un décompte ; le texte précise que chaque nœud vérifie seul). |
+| 13 nœuds qui « rejettent » la copie de Maxime | Chaque nœud vérifie seul et ignore les blocs invalides, sans vote | **Simplifiée** (la rangée de 14 carrés peut évoquer un décompte ; le texte précise que chaque nœud vérifie seul). |
 
 #### e) Alternative écartée
 | Alternative | Raison du rejet |
@@ -216,10 +236,10 @@ Nous ne représentons pas le chaînage interne des transactions (une entrée qui
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | (Test v1) En défilant vite, des testeurs voyaient la fin de chaîne rouge sans voir que cela partait du bloc 3. | Dans la v2, la falsification est faite par l'utilisateur lui-même dans le panneau, ce qui désigne sans ambiguïté le bloc d'origine. | #13, #19 |
-| À compléter : test sur le récit. | | |
+| (Revue de l’enseignant) Les copies en parallèle ne se voyaient pas ; or tricher, c’est devoir l’emporter sur la copie de tous. | Les 14 copies sont affichées en 3D ; seule celle de Maxime passe au rouge. | à créer |
 
 #### g) Limites assumées
-Ici, Mallory modifie un bloc sans recalculer la suite. Ce qui l'arrête vraiment, c'est l'obligation de refaire la preuve de travail de chaque bloc plus vite que le reste du réseau. C'est la réplique de fin (« Il suffit donc de corriger tous les hashes ») et la réponse est donnée en séquences 5 et 7.
+Ici, Maxime modifie un bloc sans recalculer la suite. Ce qui l'arrête vraiment, c'est l'obligation de refaire la preuve de travail de chaque bloc plus vite que le reste du réseau. C'est la réplique de fin (« Il suffit donc de corriger tous les hashes ») et la réponse est donnée en séquences 5 et 7.
 
 ---
 
@@ -243,7 +263,7 @@ Ici, Mallory modifie un bloc sans recalculer la suite. Ce qui l'arrête vraiment
 | Position | Caméra au-dessus du quartier de nuit. | La hauteur donne la vue d'ensemble qu'aucun personnage n'a. |
 | Mouvement / animation | Une impulsion part d'une tour et se propage le long du graphe ; plus une tour est loin en nombre de sauts, plus l'impulsion arrive tard (parcours en largeur, un délai par saut). Puis Meridian s'éteint et l'impulsion suivante contourne la tour éteinte. | Le délai par saut montre que personne ne reçoit l'information au même moment. Le contournement montre l'absence de centre. |
 | Interaction et retour visuel | Panneau « À vous : testez le réseau » : cliquer sur une tour pour la couper, couper la tour Meridian, émettre une transaction depuis une tour au hasard et voir le compteur « Nœuds qui l'ont reçue » (sur 14), tout rallumer. | L'utilisateur peut chercher lui-même à casser le réseau et constater qu'il faut couper beaucoup de tours pour isoler une partie du registre. |
-| Son, si utilisé | Aucun. | Parcours silencieux. |
+| Son, si utilisé | Musique de fond optionnelle, une piste par séquence, coupée par défaut (lecteur en place, pistes à déposer). | Le parcours reste complet sans audio, pour la salle de TP. La musique répond à une demande du test utilisateur et à une suggestion de l’enseignant. |
 | Texte d'accompagnement | Voix off d'Inès, encarts Nœud, Propagation, Décentralisation, Le revers. | |
 
 #### d) Correspondance avec la réalité technique
@@ -262,8 +282,8 @@ Ici, Mallory modifie un bloc sans recalculer la suite. Ce qui l'arrête vraiment
 #### f) Tests utilisateurs
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| (Test v1) Le passage de la falsification au réseau paraissait abrupt. | Dans la v2, la transition passe par une question d'Alice (« Si tout le monde a le registre… ») et par le lieu : on sort de la tour Kern pour monter au-dessus du quartier. | #14, #19 |
-| À compléter : test sur le récit. | | |
+| (Test v1) Le passage de la falsification au réseau paraissait abrupt. | Dans la v2, la transition passe par une question d'Léa (« Si tout le monde a le registre… ») et par le lieu : on sort de la tour Kern pour monter au-dessus du quartier. | #14, #19 |
+| (Revue de l’enseignant, v1) L’information sur le stockage arrivait trop tard. | Le prologue pose le registre unique dès la première minute, et la séquence 4 dit que chaque nœud garde une copie complète, qui ne fait que grossir. | à créer |
 
 #### g) Limites assumées
 Les 14 nœuds ont le même rôle (stocker, vérifier, relayer). La distinction entre nœuds complets, clients légers et mineurs est faite par le texte, et les mineurs sont présentés à part en séquence 5.
@@ -279,7 +299,7 @@ Les 14 nœuds ont le même rôle (stocker, vérifier, relayer). La distinction e
 > L'utilisateur doit distinguer deux métiers : la **validation** (tous les nœuds vérifient signatures et fonds) et le **minage** (gagner le droit de proposer le bloc suivant). Il doit comprendre que miner consiste à changer le nonce et recalculer le hash jusqu'à passer sous une **cible**, que plus la **difficulté** est élevée plus il faut d'essais, et que trouver est très coûteux alors que vérifier ne prend qu'un hash.
 
 #### b) Risque de mauvaise compréhension
-> L'utilisateur ne doit pas croire que les mineurs résolvent des problèmes mathématiques utiles (Alice : « Elles résolvent quoi ? », Théo : « Rien. C'est une loterie. »), ni que seuls les mineurs valident (encart Validation : « tous les nœuds la font »).
+> L'utilisateur ne doit pas croire que les mineurs résolvent des problèmes mathématiques utiles (Léa : « Elles résolvent quoi ? », Théo : « Rien. C'est une loterie. »), ni que seuls les mineurs valident (encart Validation : « tous les nœuds la font »).
 
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
@@ -289,9 +309,9 @@ Les 14 nœuds ont le même rôle (stocker, vérifier, relayer). La distinction e
 | Couleur / matériau / texture | Orange pour l'effort et les essais, vert pour l'essai qui passe. | Code couleur constant : orange = effort. |
 | Position | Le bloc candidat d'un côté, les essais face à la barre de l'autre. | Sépare l'objet du travail et la loterie. |
 | Mouvement / animation | Chaque essai saute à la hauteur que son hash lui donne, selon la vraie loi : chaque zéro de plus en tête est 16 fois plus rare. | Même l'animation suit la distribution réelle. |
-| Interaction et retour visuel | Panneau « À vous : prenez la machine » : vrai mineur SHA-256 dans le navigateur, difficulté réglable de 2 à 5 zéros, nonces qui défilent, nombre d'essais et temps. Puis bouton « Vérifier comme un nœud (un seul hash) ». | L'utilisateur ressent le temps qui explose quand on ajoute un zéro, puis constate qu'il suffit d'un seul calcul pour vérifier. C'est l'asymétrie qui rend la falsification chère pour Mallory. |
-| Son, si utilisé | Aucun. | Parcours silencieux. |
-| Texte d'accompagnement | Dialogue Inès / Théo / Alice, encarts Validation, Récompense et frais, Preuve de travail, Difficulté (« s'ajuste pour garder environ un bloc toutes les 10 minutes »), Le revers (environ 138 TWh par an, Cambridge). | |
+| Interaction et retour visuel | Panneau « À vous : prenez la machine » : vrai mineur SHA-256 dans le navigateur, difficulté réglable de 2 à 5 zéros, nonces qui défilent, nombre d'essais et temps. Puis bouton « Vérifier comme un nœud (un seul hash) ». | L'utilisateur ressent le temps qui explose quand on ajoute un zéro, puis constate qu'il suffit d'un seul calcul pour vérifier. C'est l'asymétrie qui rend la falsification chère pour Maxime. |
+| Son, si utilisé | Musique de fond optionnelle, une piste par séquence, coupée par défaut (lecteur en place, pistes à déposer). | Le parcours reste complet sans audio, pour la salle de TP. La musique répond à une demande du test utilisateur et à une suggestion de l’enseignant. |
+| Texte d'accompagnement | Dialogue Inès / Théo / Léa, encarts Validation, Récompense et frais, Preuve de travail, Difficulté (« s'ajuste pour garder environ un bloc toutes les 10 minutes »), Le revers (environ 138 TWh par an, Cambridge). | |
 
 #### d) Correspondance avec la réalité technique
 | Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
@@ -309,7 +329,7 @@ Les 14 nœuds ont le même rôle (stocker, vérifier, relayer). La distinction e
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | (Test v1) Les testeurs ne réalisaient pas que tous les essais précédents étaient jetés. | Repris dans la v2 : après chaque bloc trouvé, le panneau affiche « Les X autres essais ont été jetés, avec l'énergie qu'ils ont coûtée ». | #15, #19 |
-| À compléter : test sur le récit. | | |
+| (Test v2, personne non initiée) Les exercices sont appréciés : « comprendre par nous-mêmes ». | Exercice conservé tel quel ; seul le vocabulaire est allégé (fiche « Récompense et frais » retirée). | à créer |
 
 #### g) Limites assumées
 La récompense et les frais sont expliqués par le texte, pas représentés en 3D. L'extra nonce et le détail de la cible `nBits` sont omis, pour garder l'interaction centrée sur le lien entre difficulté, nombre d'essais et énergie.
@@ -325,18 +345,18 @@ La récompense et les frais sont expliqués par le texte, pas représentés en 3
 > L'utilisateur doit comprendre qu'il existe plusieurs façons de décider qui écrit le bloc suivant, par la puissance de calcul (**PoW**), par une mise bloquée (**PoS**) ou par une liste de signataires autorisés (**PoA**), que chacune repose sur une ressource différente, et qu'aucune n'est la meilleure partout.
 
 #### b) Risque de mauvaise compréhension
-> L'utilisateur ne doit pas croire que toutes les blockchains consomment autant que Bitcoin, ni qu'un consensus est parfait. La PoS donne plus de poids au capital, la PoA réintroduit la confiance envers quelques signataires (Inès : « on sort à peine de chez Meridian »).
+> L'utilisateur ne doit pas croire que toutes les blockchains consomment autant que Bitcoin, ni qu'un consensus est parfait. La PoS donne plus de poids au capital, la PoA suppose que la majorité des signataires reste honnête.
 
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
 |:---|:---|:---|
-| Forme / géométrie | Trois hologrammes posés sur des socles projecteurs autour de la table du conseil, cinq participants A à E chacun : PoW en tours d'énergie proportionnelles à la puissance, PoS en piles de jetons proportionnelles à la mise, PoA en piliers pour les trois signataires autorisés et socles bas pour les deux exclus. | La forme dit la ressource : des machines, de l'argent bloqué, un statut. |
+| Forme / géométrie | Trois hologrammes posés sur des socles projecteurs autour de la table du conseil, cinq participants A à E chacun : PoW en tours d'énergie proportionnelles à la puissance, PoS en piles de jetons proportionnelles à la mise, PoA en cinq piliers égaux, un par signataire, qui écrivent à tour de rôle. | La forme dit la ressource : des machines, de l'argent bloqué, un statut. |
 | Taille et échelle | Même échelle pour les trois ; parts de départ communes : A 40 %, B 25 %, C 15 %, D 12 %, E 8 %. | Comparer à ressources égales isole l'effet de la règle. |
 | Couleur / matériau / texture | Orange (PoW), turquoise (PoS), violet (PoA), gris pour les exclus. | Les mêmes couleurs dans la scène, les barres de résultat et le tableau. |
 | Position | Les trois côte à côte sur la table, face à la caméra. | Comparaison d'un seul regard. |
 | Mouvement / animation | Seule la PoW s'agite en permanence ; PoS et PoA restent calmes. | Montre sans un mot pourquoi seule la PoW consomme en continu. |
-| Interaction et retour visuel | Panneau « À vous : produisez 100 blocs » : simulation de 100 blocs avec chaque méthode (tirage pondéré par la puissance en PoW, tirage pondéré avec réinvestissement des gains en PoS, tour de rôle entre A, B et C en PoA), barres de résultat et phrase de synthèse. Tableau comparatif : ressource, énergie, ouverture, ce que coûte la triche, limite. | La simulation fait apparaître deux effets : en PoS, A dépasse souvent sa part parce qu'il réinvestit ; en PoA, D et E n'écrivent jamais. |
-| Son, si utilisé | Aucun. | Parcours silencieux. |
+| Interaction et retour visuel | Panneau « À vous : produisez 100 blocs » : simulation de 100 blocs avec chaque méthode (tirage pondéré par la puissance en PoW, tirage pondéré avec réinvestissement des gains en PoS, tour de rôle entre les cinq signataires en PoA), barres de résultat et phrase de synthèse. Tableau comparatif : ressource, énergie, ouverture, ce que coûte la triche, limite. | La simulation fait apparaître deux effets : en PoS, A dépasse souvent sa part parce qu'il réinvestit ; en PoA, chacun écrit 20 blocs. Un second geste permet de corrompre des signataires : à un ou deux, le faux bloc est refusé ; à trois, il passe, mais il a fallu acheter la majorité d'acteurs connus. |
+| Son, si utilisé | Musique de fond optionnelle, une piste par séquence, coupée par défaut (lecteur en place, pistes à déposer). | Le parcours reste complet sans audio, pour la salle de TP. La musique répond à une demande du test utilisateur et à une suggestion de l’enseignant. |
 | Texte d'accompagnement | Débat entre personnages, chacun défendant une méthode ; encarts Consensus, PoW, PoS, PoA (avec avantage et limite pour chacun), Pas de meilleur absolu. | Faire porter chaque méthode par un personnage différent rend la comparaison vivante et contradictoire. |
 
 #### d) Correspondance avec la réalité technique
@@ -354,7 +374,7 @@ La récompense et les frais sont expliqués par le texte, pas représentés en 3
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | (Test v1) Les testeurs ne comprenaient pas pourquoi A gagnait plus en PoS qu'en PoW. | Phrase de synthèse conservée dans la v2 : « A a écrit X blocs en PoW et Y en PoS, parce qu'il réinvestit ses gains. En PoA, D et E n'écrivent jamais. » | #16, #19 |
-| À compléter : test sur le récit. | | |
+| (Revue de l’enseignant) L’autorité peut se déléguer et tourner : comme ce ne sont pas toujours les mêmes qui écrivent, il faudrait corrompre tout le monde, ce qui coûte plus cher que de jouer le jeu. | Cinq signataires à tour de rôle, et exercice « corrompre des signataires ». | à créer |
 
 #### g) Limites assumées
 Le slashing (perte de la mise d'un tricheur) est dit dans l'encart PoS mais pas représenté, et les comités d'attestation d'Ethereum ne sont pas détaillés, pour garder la question centrale : qui écrit, et selon quelle règle.
@@ -370,19 +390,19 @@ Le slashing (perte de la mise d'un tricheur) est dit dans l'encart PoS mais pas 
 > L'utilisateur doit comprendre les étapes d'un paiement (création et signature, propagation et validation, attente dans le mempool, inclusion dans un bloc, confirmations successives), et pourquoi il faut attendre plusieurs blocs : un attaquant peut miner en secret une autre histoire où il récupère son paiement (**double dépense**), puis la dévoiler si elle représente plus de travail.
 
 #### b) Risque de mauvaise compréhension
-> L'utilisateur ne doit pas croire qu'un paiement est acquis dès qu'il apparaît, ni que l'attaque à 51 % est un seuil tout ou rien : avec 30 % de la puissance, Mallory a encore des chances si Bob attend peu (le panneau le dit : « Pas de seuil magique à 51 % »). Il ne doit pas croire non plus que l'attaquant peut voler n'importe qui (encart « Les limites de l'attaque » : elle ne peut annuler que ses propres paiements récents).
+> L'utilisateur ne doit pas croire qu'un paiement est acquis dès qu'il apparaît, ni que l'attaque à 51 % est un seuil tout ou rien : avec 30 % de la puissance, Maxime a encore des chances si Julien attend peu (le panneau le dit : « Pas de seuil magique à 51 % »). Il ne doit pas croire non plus que l'attaquant peut voler n'importe qui (encart « Les limites de l'attaque » : il ne peut annuler que ses propres paiements récents).
 
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
 |:---|:---|:---|
-| Forme / géométrie | Un hologramme central encadré par un portique : la chaîne publique en haut, la chaîne secrète de Mallory en bas. Une salle d'attente (mempool) où flottent des transactions, celle d'Alice en bleu. Au fond du parking, les machines cachées de Mallory, en rouge. | La chaîne secrète se mine littéralement « sous » la chaîne publique, dans un sous-sol : le lieu dit que l'attaque est invisible. |
-| Taille et échelle | Les deux chaînes partent d'un ancêtre commun (le bloc 4) ; le paiement de Mallory à Bob est dans le bloc 5 de la chaîne publique. | Le point de bifurcation est visible : tout ce qui suit le bloc 4 peut être remplacé. |
-| Couleur / matériau / texture | Chaîne publique verte, chaîne secrète rouge, transaction d'Alice en bleu dans le mempool. | Couleurs constantes : vert = valide, rouge = attaque, bleu = donnée. |
+| Forme / géométrie | Un hologramme central encadré par un portique : la chaîne publique en haut, la chaîne secrète de Maxime en bas. Une salle d'attente (mempool) où flottent des transactions, celle d'Léa en bleu. Au fond du parking, les machines cachées de Maxime, en rouge. Entre les deux chaînes, une rangée montre les 14 copies du réseau. | La chaîne secrète se mine littéralement « sous » la chaîne publique, dans un sous-sol : le lieu dit que l'attaque est invisible. |
+| Taille et échelle | Les deux chaînes partent d'un ancêtre commun (le bloc 4) ; le paiement de Maxime à Julien est dans le bloc 5 de la chaîne publique. | Le point de bifurcation est visible : tout ce qui suit le bloc 4 peut être remplacé. |
+| Couleur / matériau / texture | Chaîne publique verte, chaîne secrète rouge, transaction d'Léa en bleu dans le mempool. | Couleurs constantes : vert = valide, rouge = attaque, bleu = donnée. |
 | Position | Publique en haut, secrète en bas. | Superposition des deux histoires concurrentes. |
-| Mouvement / animation | La transaction d'Alice traverse les étapes (signée, propagée, en attente, dans un bloc), puis les blocs s'empilent et un compteur affiche le nombre de confirmations. Ensuite, la chaîne secrète s'allonge en bas. | L'empilement montre ce qu'est une confirmation ; la course montre la double dépense. |
-| Interaction et retour visuel | Panneau « À vous : décidez pour Bob » : calculateur fondé sur la formule de la section 11 du livre blanc de Nakamoto (`attackerSuccessProbability` dans `src/lib/blockchain.js`). Deux curseurs : puissance de Mallory de 5 à 60 % (30 % par défaut) et blocs attendus par Bob de 1 à 12 (6 par défaut). Au-delà de 50 %, le panneau affiche 100 % et explique qu'elle finit toujours par rattraper la chaîne publique. | L'utilisateur prend la décision de Bob et voit le risque baisser à chaque bloc attendu et monter avec la puissance de Mallory. Par exemple, à 10 % de puissance, le risque passe de 20 % pour 1 bloc à 0,02 % pour 6 blocs ; à 30 %, il reste de 13 % à 6 blocs et descend à 2,4 % à 12 blocs. |
-| Son, si utilisé | Aucun. | Parcours silencieux. |
-| Texte d'accompagnement | Explication du cycle de vie par Inès, scène Bob / Alice / Mallory, encarts Clé privée et signature, Mempool, Confirmation, Double dépense, Réorganisation (« la chaîne qui représente le plus de travail cumulé »), Les limites de l'attaque. | |
+| Mouvement / animation | La transaction d'Léa traverse les étapes (signée, propagée, en attente, dans un bloc), puis les blocs s'empilent et un compteur affiche le nombre de confirmations. Ensuite, la chaîne secrète s'allonge en bas. | L'empilement montre ce qu'est une confirmation ; la course montre la double dépense. |
+| Interaction et retour visuel | Panneau « À vous : décidez pour Julien » : calculateur fondé sur la formule de la section 11 du livre blanc de Nakamoto (`attackerSuccessProbability` dans `src/lib/blockchain.js`). Deux curseurs : puissance de Maxime de 5 à 60 % (30 % par défaut) et blocs attendus par Julien de 1 à 12 (6 par défaut). Au-delà de 50 %, le panneau affiche 100 % et explique qu'il finit toujours par rattraper la chaîne publique. | L'utilisateur prend la décision de Julien et voit le risque baisser à chaque bloc attendu et monter avec la puissance de Maxime. Par exemple, à 10 % de puissance, le risque passe de 20 % pour 1 bloc à 0,02 % pour 6 blocs ; à 30 %, il reste de 13 % à 6 blocs et descend à 2,4 % à 12 blocs. |
+| Son, si utilisé | Musique de fond optionnelle, une piste par séquence, coupée par défaut (lecteur en place, pistes à déposer). | Le parcours reste complet sans audio, pour la salle de TP. La musique répond à une demande du test utilisateur et à une suggestion de l’enseignant. |
+| Texte d'accompagnement | Explication du cycle de vie par Inès, scène Julien / Léa / Maxime, encarts Clé privée et signature, Mempool, Confirmation, Double dépense, Réorganisation (« la chaîne qui représente le plus de travail cumulé »), Les limites de l'attaque. | |
 
 #### d) Correspondance avec la réalité technique
 | Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
@@ -395,16 +415,16 @@ Le slashing (perte de la mise d'un tricheur) est dit dans l'encart PoS mais pas 
 #### e) Alternative écartée
 | Alternative | Raison du rejet |
 |:---|:---|
-| Illustrer une attaque par vol de la clé privée d'Alice | Relève de la sécurité informatique générale (hameçonnage, logiciel malveillant) et ne montre rien de propre à la blockchain, contrairement à la double dépense par course de chaînes. |
+| Illustrer une attaque par vol de la clé privée d'Léa | Relève de la sécurité informatique générale (hameçonnage, logiciel malveillant) et ne montre rien de propre à la blockchain, contrairement à la double dépense par course de chaînes. |
 
 #### f) Tests utilisateurs
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | (Test v1) Des testeurs ne comprenaient pas pourquoi la chaîne rouge devenait la chaîne officielle. | Dans la v2, la règle est donnée par l'encart Réorganisation et par la voix off (« elle dévoile une chaîne qui représente plus de travail. Les nœuds basculent »). | #17, #19 |
-| À compléter : test sur le récit, en particulier la lecture du calculateur. | | |
+| (Revue de l’enseignant) L’attaque ne montrait pas les copies : il faut voir que le tricheur doit l’emporter sur tout le réseau. | Rangée des 14 copies entre la chaîne publique et la chaîne secrète ; elles basculent une à une si la chaîne secrète l’emporte. | à créer |
 
 #### g) Limites assumées
-La signature est expliquée par le texte et un encart, sans visualiser la cryptographie à clé publique. Le scénario suppose que Mallory contrôle une part notable de la puissance de calcul, ce qui sur Bitcoin représenterait une installation bien plus grande qu'un parking ; c'est une licence narrative, signalée dans `sources.html`.
+La signature est expliquée par le texte et un encart, sans visualiser la cryptographie à clé publique. Le scénario suppose que Maxime contrôle une part notable de la puissance de calcul, ce qui sur Bitcoin représenterait une installation bien plus grande qu'un parking ; c'est une licence narrative, signalée dans `sources.html`.
 
 ---
 
@@ -413,7 +433,7 @@ La signature est expliquée par le texte et un encart, sans visualiser la crypto
 | Question | Réponse |
 |:---|:---|
 | Les codes visuels sont-ils constants ? | **Oui.** Bleu = information, vert = valide ou confirmé, rouge = falsification ou attaque, orange = effort de minage, turquoise = enjeu, violet = autorité, sur les 7 séquences. Le décor reste toujours mat et sombre ; seuls les objets techniques brillent. |
-| Un même élément est-il représenté de la même façon partout ? | **Oui pour les objets techniques :** un bloc est toujours un bloc de verre à faces chiffrées, une chaîne toujours une suite de blocs de gauche à droite, un nœud toujours une tour du quartier. **Point à surveiller :** les transactions d'exemple varient d'une séquence à l'autre (Alice vers Bob, puis Bob vers Mallory, puis Mallory vers Bob), et le récit utilise « jetons » à la fois pour l'ancien registre central et pour la blockchain. |
+| Un même élément est-il représenté de la même façon partout ? | **Oui pour les objets techniques :** un bloc est toujours un bloc de verre à faces chiffrées, au même gabarit depuis la v3, une chaîne toujours une suite de blocs de gauche à droite, un nœud toujours une tour du quartier. **Point à surveiller :** les transactions d'exemple varient d'une séquence à l'autre (Léa vers Julien, puis Julien vers Maxime, puis Maxime vers Julien), et le récit utilise « jetons » à la fois pour l'ancien registre central et pour la blockchain. |
 | L'ordre des séquences est-il progressif ? | **Oui.** Le prologue pose le problème du registre unique. On entre dans un bloc (1), on en relie plusieurs (2), on teste leur solidité (3), on élargit à ceux qui détiennent les copies (4), on voit comment on gagne le droit d'écrire (5) et quelles autres règles existent (6), puis on suit un paiement face à une attaque (7). L'épilogue fait le bilan honnête. Chaque séquence se termine par la question à laquelle la suivante répond. |
 | Quelle notion est la moins bien représentée ? | **Le mempool** (notion 7) : il est montré comme une salle d'attente unique, alors que chaque nœud a le sien, et il passe vite au milieu d'une séquence très dense. Plus largement, la séquence 7 concentre trop de texte avant l'interaction. |
 | Quelle décision reverriez-vous avec une semaine de plus ? | **L'équilibre lecture / action.** Dans chaque séquence, le dialogue est lu en entier avant que le panneau « À vous » s'ouvre. Avec plus de temps, nous découperions les explications longues en étapes où chaque phrase déclenche une manipulation, pour que l'utilisateur agisse avant qu'on lui explique le résultat. Nous aurions aussi changé de direction plus tôt : le passage du Grand Registre au récit urbain a coûté plusieurs semaines. |
@@ -426,7 +446,8 @@ Conformément aux consignes, nous déclarons l'usage des outils d'IA générativ
   1. *Sources douteuses écartées :* une première ébauche citait des prépublications non vérifiées et une revue peu fiable (`ijnrd.org`) ; elles ont été rejetées au profit de sources primaires.
   2. *Dates obsolètes :* les montants de récompense de bloc de la documentation Bitcoin dataient de 2017 ; nous ne citons pas de montant fixe.
   3. *Direction artistique :* nous avons écarté les propositions génériques d'interface sombre et néon des sites crypto. La v1 a adopté un livre de comptes papier, puis la v2 un récit urbain nocturne où le décor reste mat et où seuls les objets techniques brillent.
-  4. *Relecture du scénario :* une relecture critique assistée par IA (Claude, Gemini) a relevé des formulations risquées dans les dialogues (par exemple la probabilité de réussite de Mallory à six confirmations). Chaque remarque a été vérifiée par le groupe, notamment en relançant la formule de Nakamoto du projet.
+  4. *Relecture du scénario :* une relecture critique assistée par IA (Claude, Gemini) a relevé des formulations risquées dans les dialogues (par exemple la probabilité de réussite de Maxime à six confirmations). Chaque remarque a été vérifiée par le groupe, notamment en relançant la formule de Nakamoto du projet.
+- **Version 3 (Claude Code, 12 novembre 2026) :** comparaison de la v1 et de la v2 avec les retours de l'enseignant, réécriture des dialogues, gabarit de bloc unique, portraits 2D, fenêtre des sources et lecteur de musique. Deux propositions de l'IA ont été refusées par le groupe : remplacer notre histoire par un récit de chaîne de production, et simplifier les vêtements et les mains des personnages alors que le défaut venait du cou et de la mâchoire.
 - **Développement 3D et intégration (Antigravity et Claude Code) :** aide à la génération de la ville et de ses shaders (`src/recit/city.js`), des personnages (`src/recit/figure.js`), des séquences et des widgets pédagogiques. Tout le code a été relu, compris et testé par Rahim Tamhaev et Nicolas Rapuzzi.
 
 ## 7. Sources

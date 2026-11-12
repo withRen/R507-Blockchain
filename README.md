@@ -14,7 +14,7 @@
 
 - **Public visé :** des personnes qui n'ont jamais étudié la blockchain, sans explication orale préalable.
 - **Objectif :** qu'à la fin du parcours l'utilisateur comprenne ce qu'est un bloc, comment les blocs sont reliés, pourquoi une falsification se repère, et comment un réseau décentralisé se met d'accord.
-- **Fil rouge narratif :** « Le Registre », une enquête d'une nuit (23 h 47 à 07 h 10) dans un quartier d'affaires. Alice Vasseur, auditrice, découvre que 40 millions ont disparu d'un registre central tenu par un seul administrateur. Avec Inès, elle découvre au fil de la nuit comment une blockchain répond à ce problème, face à Mallory Kern qui tente de tricher.
+- **Fil rouge narratif :** « Le Registre », une enquête d'une nuit (23 h 47 à 07 h 10) dans un quartier d'affaires. Léa Vasseur, auditrice, découvre que 40 millions ont disparu d'un registre central tenu par un seul administrateur. Avec Inès, elle découvre au fil de la nuit comment une blockchain répond à ce problème, face à Maxime Kern qui tente de tricher.
 
 ## Notions abordées
 
@@ -22,19 +22,19 @@ Chaque notion est associée à une animation ou une interaction visible, pas seu
 
 | # | Notion | Interaction prévue |
 |---|---|---|
-| 1 | Structure d'un bloc (données, hash, hash parent, nonce) | Séq. 1, salle des serveurs : un bloc de verre en trois couches ; on modifie les données ou le nonce et le hash SHA-256 est recalculé en direct ; clic sur une couche pour sa définition |
+| 1 | Structure d'un bloc | Séq. 1, salle des serveurs : un bloc de verre ouvert en trois couches ; on clique une couche pour sa définition, puis on retrouve parmi six transactions celle qui donne l'empreinte cible (vrai SHA-256) |
 | 2 | Chaînage cryptographique | Séq. 2, passerelle vitrée : cinq blocs reliés ; modifier le bloc 2 rompt le lien 2-3 (rouge), puis on répare la chaîne en recopiant les hashes, sans aucun coût |
-| 3 | Immutabilité et détection de falsification | Séq. 3, bureau de Mallory : on change 5 en 500 dans le bloc 3 de sa copie ; son nœud passe au rouge, les 13 autres gardent leur copie |
+| 3 | Immutabilité et détection de falsification | Séq. 3, bureau de Maxime : on change 5 en 500 dans le bloc 3 de sa copie ; parmi les 14 copies affichées, seule la sienne passe au rouge |
 | 4 | Réseau et décentralisation | Séq. 4, au-dessus de la ville : les 14 tours sont les nœuds ; on coupe des tours (dont Meridian) et on émet une transaction qui se propage de voisin en voisin |
-| 5 | Validation et minage (PoW, nonce, difficulté) | Séq. 5, ferme de minage du port : vrai mineur SHA-256 dans le navigateur (2 à 5 zéros), puis vérification du bloc trouvé en un seul hash |
-| 6 | Comparaison de consensus (PoW vs PoS / PoA) | Séq. 6, salle du conseil : trois hologrammes (tours d'énergie, piles de jetons, piliers d'autorité) et simulation de 100 blocs pour 5 participants |
-| 7 | Cycle de vie d'une transaction et scénario d'attaque | Séq. 7, parking de la tour Kern : voyage du paiement jusqu'aux confirmations, chaîne secrète de Mallory, et calculateur (formule de Nakamoto) pour décider combien de blocs Bob doit attendre |
+| 5 | Validation et minage | Séq. 5, ferme de minage du port : vrai mineur SHA-256 dans le navigateur (2 à 5 zéros), puis vérification du bloc trouvé en un seul hash |
+| 6 | Comparaison d'au moins deux mécanismes de consensus | Séq. 6, salle du conseil : trois hologrammes (travail, enjeu, autorité), simulation de 100 blocs, puis tentative de corrompre les cinq signataires de l'autorité |
+| 7 | Cycle de vie d'une transaction et scénario d'attaque illustré | Séq. 7, parking de la tour Kern : voyage du paiement jusqu'aux confirmations, chaîne secrète de Maxime face aux 14 copies, et calculateur (formule de Nakamoto) pour décider combien de blocs Julien doit attendre |
 
-**Concept :** un récit 3D à faire défiler (`index.html`), en 9 séquences : un prologue, une séquence par notion, un épilogue. Chaque notion a son lieu dans la même ville, son heure dans la nuit, et se termine par un panneau « À vous » où l'utilisateur manipule la notion avec de vrais calculs. Chaque séquence finit sur la question à laquelle la suivante répond. Les encarts « Le revers » donnent les limites réelles, et l'épilogue fait un bilan honnête. Les sources sont sur une page dédiée : [`sources.html`](sources.html).
+**Concept :** un récit 3D à faire défiler (`index.html`), en 9 séquences : un prologue, une séquence par notion, un épilogue. Chaque séquence s'ouvre sur une question affichée à l'écran, propose un exercice « À toi de jouer » avec de vrais calculs, et se ferme sur une phrase « À retenir » suivie de son revers. Un premier exercice arrive dès le prologue. Un bouton « Passer » reste toujours visible, et la lecture automatique est un choix. Les sources de la séquence en cours s'ouvrent dans une fenêtre, sans quitter le récit ; la liste complète est sur [`sources.html`](sources.html).
 
-Charte : une ville de nuit, mate et sombre, construite entièrement en code (aucune texture ni modèle externe, voir [`docs/ASSETS.md`](docs/ASSETS.md)). Seuls les objets techniques brillent : des blocs de verre holographiques qui affichent leurs vraies valeurs. Couleurs : bleu = information, vert = valide, rouge = falsifié ou attaque, orange = effort de minage, turquoise = enjeu, violet = autorité. Dialogues en Roboto, données en IBM Plex Mono. Navigation par une mini-chaîne de 9 blocs.
+Charte : une ville de nuit, mate et sombre, construite entièrement en code (aucune texture ni modèle externe, voir [`docs/ASSETS.md`](docs/ASSETS.md)). Seuls les objets techniques brillent : des blocs de verre au gabarit unique, qui affichent leurs vraies valeurs. Une couleur n'a qu'un sens, rappelé par une légende permanente : bleu = information, vert = valide, rouge = falsifié ou attaque, orange = minage, turquoise = enjeu, violet = autorité. Les personnages apparaissent en silhouettes 3D dans les décors et en portraits 2D dans la boîte de dialogue. Dialogues en Roboto, données en IBM Plex Mono. Navigation par une mini-chaîne de 9 blocs. Une musique par séquence peut être activée (pistes à déposer dans `public/audio/`).
 
-La première version du projet (« Grand Registre », 1 800 cubes sur une interface de livre de comptes) reste dans l'historique Git (branche `main` avant la fusion du récit) ; elle est documentée comme alternative écartée dans le livrable de modélisation.
+Le projet a connu trois versions. La v1 (« Grand Registre », 1 800 cubes sur une interface de livre de comptes) reste dans l'historique Git et est documentée comme alternative écartée. La v2 a introduit le récit « Le Registre ». La v3 garde cette histoire et la réécrit à partir de la revue de l'enseignant et d'un test utilisateur : les retours et les décisions sont dans [`docs/TESTS-UTILISATEURS.md`](docs/TESTS-UTILISATEURS.md).
 
 Les choix de représentation sont justifiés dans [`docs/MMI-R507-projet-blockchain-CHOIX-MODELISATION.md`](docs/MMI-R507-projet-blockchain-CHOIX-MODELISATION.md) et s'appuient sur la fiche de recherche [`docs/MMI-R507-projet-blockchain-FICHE-RECHERCHE.md`](docs/MMI-R507-projet-blockchain-FICHE-RECHERCHE.md).
 
@@ -72,9 +72,12 @@ R507-Blockchain/
 │       ├── SEMAINE-02.md
 │       ├── SEMAINE-03.md
 │       └── SEMAINE-04.md
-├── src/                                                   # code Three.js, SHA-256 et widgets
-├── index.html                                             # parcours scénarisé en 7 chapitres
-├── sources.html                                           # page dédiée aux sources par chapitre
+│   ├── SCENARIO-V3.md                                     # scénario de la v3
+│   └── TESTS-UTILISATEURS.md                              # retours reçus et décisions
+├── public/audio/                                          # musiques par séquence (à déposer)
+├── src/                                                   # récit Three.js (src/recit) et calculs réels (src/lib)
+├── index.html                                             # le récit en 9 séquences
+├── sources.html                                           # page dédiée aux sources par notion
 └── README.md
 ```
 
@@ -114,6 +117,7 @@ Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code géné
 | Claude (Claude Code) | Première version du parcours scénarisé en 7 chapitres (scènes Three.js, textes, inconvénients, recherche et vérification des sources) |
 | Claude (Claude Code) | Branche `test-alternate` : scénario « Le Registre » et récit 3D en 9 séquences (`src/recit/`), décors construits en code, sans asset externe |
 | Antigravity | Rédaction des livrables (`CHOIX-MODELISATION.md`, `GRILLE-AUTOEVAL.md`, fiches de suivi hebdomadaire `SEMAINE-02` à `SEMAINE-04`) et synchronisation avec la fiche de recherche |
+| Claude (Claude Code) | Version 3 : comparaison des deux premières versions avec les retours de l'enseignant et d'une testeuse, réécriture des dialogues, gabarit de bloc unique, portraits 2D, fenêtre des sources, lecteur de musique, mise à jour des livrables |
 
 ## Sources
 
