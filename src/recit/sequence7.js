@@ -11,7 +11,8 @@ const L = (x, y, z) => [x + OX, y + OY, z];
 const MONO = '"IBM Plex Mono", Menlo, monospace';
 const STEPS = ['Création', 'Propagation', 'Validation', 'Inclusion dans un bloc', 'Confirmation'];
 
-const boxCubeGeo = new THREE.BoxGeometry(0.92, 0.92, 0.92);
+// Le bloc en petit : memes proportions que le gabarit commun (3,05 x 2,1 x 0,85)
+const boxCubeGeo = new THREE.BoxGeometry(1.2, 0.83, 0.33);
 
 function cube(tint) {
   const glass = new THREE.Mesh(boxCubeGeo, new THREE.MeshBasicMaterial({ color: tint, transparent: true, opacity: 0.3, depthWrite: false }));
@@ -76,7 +77,7 @@ export function createSequence7(ctx) {
   lines.box(31.2, 0.01, 0.08, 0x858e9e, { p: [0, 0.012, 6.7] });
   group.add(lines.mesh(new THREE.MeshBasicMaterial({ vertexColors: true }), { cast: false }));
 
-  // Les machines cachees de Mallory, au fond a droite, en rouge, et le portique metallique de l'hologramme
+  // Les machines cachees de Maxime, au fond a droite, en rouge, et le portique metallique de l'hologramme
   const rack = new Kit();
   const fronts = [];
   for (let i = 0; i < 6; i++) {
@@ -117,8 +118,17 @@ export function createSequence7(ctx) {
     group.add(p.mesh);
     return p;
   };
+  // Les 14 copies du reseau : chacune suit la chaine qui represente le plus de travail
+  const copies = Array.from({ length: 14 }, (_, i) => {
+    const c = cube(COLORS.ok);
+    c.group.scale.setScalar(0.3);
+    c.group.position.set(X0 + 4.2 + i * 0.62, 2.03, -3);
+    group.add(c.group);
+    return c;
+  });
+  const lblCopies = rowLabel('LES 14 COPIES DU RÉSEAU', '#c9d2e2', 2.06);
   const lblPub = rowLabel('CHAÎNE PUBLIQUE', '#7bf0b8', 3.56);
-  const lblSec = rowLabel('CHAÎNE SECRÈTE DE MALLORY', '#ff8b82', 0.5);
+  const lblSec = rowLabel('CHAÎNE SECRÈTE DE MAXIME', '#ff8b82', 0.5);
 
   const counter = plate(2.8, 0.52, 840, 156);
   counter.mesh.position.set(5.2, 3.72, -2.5);
@@ -136,7 +146,7 @@ export function createSequence7(ctx) {
     counter.tex.needsUpdate = true;
   };
 
-  // Le mempool : des transactions qui attendent, et celle d'Alice en bleu
+  // Le mempool : des transactions qui attendent, et celle d'Léa en bleu
   const tiles = new Kit();
   const r = (i, m) => { const s = Math.sin(i * 12.9 + m * 78.2) * 43758.5; return s - Math.floor(s); };
   const TILE_POS = [];
@@ -156,7 +166,7 @@ export function createSequence7(ctx) {
   a.strokeRect(4, 4, 712, 192);
   a.fillStyle = '#ffffff';
   a.font = `600 44px ${MONO}`;
-  a.fillText('Alice → Bob : 5', 34, 76);
+  a.fillText('Léa → Julien : 5', 34, 76);
   a.font = `500 30px ${MONO}`;
   a.fillStyle = '#c9d4ff';
   a.fillText('signé par sa clé privée', 34, 146);
@@ -164,18 +174,19 @@ export function createSequence7(ctx) {
   group.add(aliceTx.mesh);
 
   // ---------- Etapes du cycle de vie ----------
-  const stepsEl = ctx.panel(`<h2>Le voyage du paiement d’Alice</h2><ol class="steps">${STEPS.map((s) => `<li>${s}</li>`).join('')}</ol>`, 'lab steps-panel');
+  const stepsEl = ctx.panel(`<h2>Le voyage du paiement d’Léa</h2><ol class="steps">${STEPS.map((s) => `<li>${s}</li>`).join('')}</ol>`, 'lab steps-panel');
   const stepItems = [...stepsEl.querySelectorAll('li')];
   let lastStep = -2;
 
-  // ---------- Panneau : la decision de Bob ----------
+  // ---------- Panneau : la decision de Julien ----------
   const panel = ctx.panel(`
-    <h2>À vous : décidez pour Bob</h2>
-    <label for="o-q">Puissance de Mallory : <span id="o-q-out"></span></label>
+    <h2>Décide pour Julien</h2>
+    <p class="lab-hint">Les 14 copies suivent la chaîne la plus longue. Pour imposer sa version, Maxime doit donc dépasser la chaîne publique : plus Julien attend, plus c’est difficile.</p>
+    <label for="o-q">Puissance de Maxime : <span id="o-q-out"></span></label>
     <input id="o-q" type="range" min="5" max="60" value="30">
-    <label for="o-z">Blocs attendus par Bob : <span id="o-z-out"></span></label>
+    <label for="o-z">Blocs attendus par Julien : <span id="o-z-out"></span></label>
     <input id="o-z" type="range" min="1" max="12" value="6">
-    <p class="lab-out-label">Chances de réussite de Mallory</p>
+    <p class="lab-out-label">Chances de réussite de Maxime</p>
     <output id="o-out" class="big-num"></output>
     <p id="o-state" class="lab-state" aria-live="polite"></p>`);
   const $ = (s) => panel.querySelector(s);
@@ -187,8 +198,8 @@ export function createSequence7(ctx) {
     const p = attackerSuccessProbability(q, z);
     $('#o-out').textContent = p >= 0.995 ? '100 %' : p < 0.001 ? '< 0,1 %' : `${(p * 100).toFixed(p < 0.1 ? 1 : 0).replace('.', ',')} %`;
     $('#o-state').textContent = q >= 0.5
-      ? 'Avec la majorité de la puissance, elle finit toujours par rattraper la chaîne publique.'
-      : 'Pas de seuil magique à 51 % : le risque baisse à chaque bloc attendu, et monte avec la puissance de Mallory. Formule du livre blanc de Bitcoin, section 11.';
+      ? 'Avec la majorité de la puissance, il finit toujours par rattraper la chaîne publique.'
+      : 'Pas de seuil magique à 51 % : le risque baisse à chaque bloc attendu, et monte avec la puissance de Maxime. Formule du livre blanc de Bitcoin, section 11.';
   };
   $('#o-q').addEventListener('input', refresh);
   $('#o-z').addEventListener('input', refresh);
@@ -196,16 +207,17 @@ export function createSequence7(ctx) {
 
   return {
     name: 'Transaction et attaque',
+    QUESTION: 'Quand un paiement est-il vraiment sûr ?',
     lights: [{ p: [-1, 3.8, 3.5], color: 0xc9d6ff, i: 3.5, d: 22 }, { p: [12, 2.8, -3], color: 0xff5b4c, i: 2.8, d: 16 }, { p: [-10, 3.8, 3], color: 0xc9d6ff, i: 2.2, d: 16 }],
     groups: [group],
     panelEl: panel,
     LAB: { from: 0.8, to: 0.94 },
     parent: group,
     actorsDef: {
-      alice: { track: [{ t: 0, x: -6.5, z: 2.8, face: 2.9 }, { t: 0.4, x: -6.5, z: 2.8, face: 2.9 }, { t: 0.44, x: 3.6, z: 2.8, face: -1 }, { t: 1, x: 3.6, z: 2.8, face: -1 }] },
+      lea: { track: [{ t: 0, x: -6.5, z: 2.8, face: 2.9 }, { t: 0.4, x: -6.5, z: 2.8, face: 2.9 }, { t: 0.44, x: 3.6, z: 2.8, face: -1 }, { t: 1, x: 3.6, z: 2.8, face: -1 }] },
       ines: { track: [{ t: 0, x: -8, z: 3, face: 2.7 }, { t: 1, x: -8, z: 3, face: 2.7 }] },
-      bob: { track: [{ t: 0.3, x: 10, z: 8, face: -2.6 }, { t: 0.4, x: 5.2, z: 3, face: 1.1 }, { t: 1, x: 5.2, z: 3, face: -2 }] },
-      mallory: { track: [{ t: 0.3, x: 13, z: -1, face: -1.4 }, { t: 0.46, x: 10.6, z: -2.2, face: -1.25 }, { t: 1, x: 10.6, z: -2.2, face: -1.25 }] }
+      julien: { track: [{ t: 0.3, x: 10, z: 8, face: -2.6 }, { t: 0.4, x: 5.2, z: 3, face: 1.1 }, { t: 1, x: 5.2, z: 3, face: -2 }] },
+      maxime: { track: [{ t: 0.3, x: 13, z: -1, face: -1.4 }, { t: 0.46, x: 10.6, z: -2.2, face: -1.25 }, { t: 1, x: 10.6, z: -2.2, face: -1.25 }] }
     },
     CAMERA: [
       { t: 0, pos: L(-5.1, 2.2, 13), look: L(-5.1, 2.1, -3), fov: 42 },
@@ -218,27 +230,25 @@ export function createSequence7(ctx) {
     ],
     SLUGS: [{ from: 0.005, to: 1, time: '06 h 40', place: 'Parking de la tour Kern' }],
     LINES: [
-      { from: 0.02, to: 0.09, who: 'Inès', text: 'D’abord, la création : Alice écrit son paiement et le signe avec sa clé privée. Cela prouve qu’il vient d’elle.' },
-      { from: 0.095, to: 0.16, who: 'Inès', text: 'Puis la propagation et la validation : il passe de nœud en nœud, et chacun vérifie la signature et les fonds.' },
-      { from: 0.165, to: 0.23, who: 'Inès', text: 'Validé, il attend dans le mempool, la salle d’attente des paiements, qu’un mineur le choisisse.' },
+      { from: 0.02, to: 0.09, who: 'Inès', text: 'Suivons un paiement. Création : Léa l’écrit et le signe avec sa clé privée.' },
+      { from: 0.095, to: 0.16, who: 'Inès', text: 'Propagation et validation : il passe de nœud en nœud, et chacun vérifie la signature et les fonds.' },
+      { from: 0.165, to: 0.23, who: 'Inès', text: 'Il attend ensuite qu’un mineur le choisisse.' },
       { from: 0.235, to: 0.3, who: 'Inès', text: 'Inclusion dans un bloc : première confirmation. Chaque bloc ajouté ensuite en donne une de plus.' },
-      { from: 0.31, to: 0.39, who: 'Bob', text: 'Mallory m’achète ma flotte de camions pour 500 jetons. Le paiement apparaît déjà. Je livre.' },
-      { from: 0.4, to: 0.47, who: 'Alice', text: 'Attendez. Regardez d’abord ce qu’il y a sous vos pieds.' },
-      { from: 0.48, to: 0.56, who: 'Inès', vo: true, text: 'Au sous-sol, Mallory mine en secret une autre histoire, où ces 500 jetons lui reviennent : une double dépense.' },
-      { from: 0.565, to: 0.655, who: 'Inès', vo: true, text: 'Si Bob livre trop tôt : elle dévoile une chaîne qui représente plus de travail. Les nœuds basculent, et son paiement disparaît.' },
-      { from: 0.67, to: 0.785, who: 'Inès', vo: true, text: 'Si Bob attend six confirmations : la chaîne publique, plus puissante, prend de l’avance. Mallory abandonne et perd l’électricité dépensée.' },
-      { from: 0.945, to: 1, who: 'Mallory', text: 'Tant de calcul, pour rien.' }
+      { from: 0.31, to: 0.39, who: 'Julien', text: 'Maxime m’achète mes camions pour 500 jetons. Le paiement apparaît déjà. Je livre.' },
+      { from: 0.4, to: 0.47, who: 'Léa', text: 'Attends. Regarde ce qu’il prépare au sous-sol.' },
+      { from: 0.48, to: 0.56, who: 'Inès', vo: true, text: 'En secret, Maxime mine une autre version de l’histoire, où ces 500 jetons lui reviennent : une double dépense.' },
+      { from: 0.565, to: 0.655, who: 'Inès', vo: true, text: 'Si Julien livre trop tôt, Maxime dévoile sa chaîne, plus longue. Toutes les copies basculent, et le paiement disparaît.' },
+      { from: 0.67, to: 0.785, who: 'Inès', vo: true, text: 'Si Julien attend plusieurs confirmations, la chaîne publique prend de l’avance. Le plus souvent, Maxime n’arrive pas à la rattraper : il abandonne, et perd son électricité.' },
+      { from: 0.945, to: 1, who: 'Maxime', text: 'Tant de calcul, pour rien.' }
     ],
     TERMS: [
       { from: 0.03, to: 0.09, label: 'Notion', title: 'Clé privée et signature', def: 'La clé privée signe la transaction : tout le monde peut vérifier la signature, personne ne peut la refaire sans la clé.' },
-      { from: 0.17, to: 0.23, label: 'Notion', title: 'Mempool', def: 'La liste des transactions valides en attente. Y figurer ne veut pas dire que le paiement est acquis.' },
       { from: 0.24, to: 0.39, label: 'Notion', title: 'Confirmation', def: 'Le bloc de la transaction compte pour 1, chaque bloc au-dessus ajoute 1. Plus il y en a, plus l’annulation est improbable.' },
-      { from: 0.485, to: 0.56, label: 'Notion', title: 'Double dépense', def: 'Dépenser deux fois les mêmes fonds. Seule une version de l’histoire sera retenue par le réseau.' },
-      { from: 0.57, to: 0.655, label: 'Notion', title: 'Réorganisation', def: 'Les nœuds suivent la chaîne qui représente le plus de travail cumulé. S’ils changent de branche, les blocs de l’autre branche sont abandonnés.' },
-      { from: 0.945, to: 1, label: 'Note d’audit', title: 'Les limites de l’attaque', def: 'Attendre plusieurs confirmations réduit fortement le risque. Et l’attaquant ne peut annuler que ses propres paiements récents, sans créer de monnaie ni voler n’importe qui.' }
+      { from: 0.485, to: 0.56, label: 'Notion', title: 'Double dépense', def: 'Dépenser deux fois les mêmes fonds. Une seule version de l’histoire sera retenue par le réseau.' },
+      { from: 0.945, to: 1, label: 'À retenir', title: 'Un paiement devient sûr peu à peu', def: 'Chaque confirmation réduit le risque, sans jamais l’annuler. Et l’attaquant ne peut reprendre que ses propres paiements récents.' }
     ],
     update(t, time) {
-      // Cycle de vie : panneau d'etapes et trajet de la transaction d'Alice
+      // Cycle de vie : panneau d'etapes et trajet de la transaction d'Léa
       const stepTimes = [0.02, 0.095, 0.13, 0.235, 0.27];
       let step = -1;
       stepTimes.forEach((s, i) => { if (t >= s) step = i; });
@@ -266,7 +276,7 @@ export function createSequence7(ctx) {
       let reorg = 0;
       let abandon = 0;
       if (t >= 0.305 && t < 0.66) {
-        // Paiement de Mallory : le bloc 5 de la chaine publique. Elle mine depuis le bloc 4.
+        // Paiement de Maxime : le bloc 5 de la chaine publique. Elle mine depuis le bloc 4.
         forkAt = 4;
         nPub = 5 + Math.floor(curve([[0.36, 0], [0.56, 1.9]], t));
         nSec = Math.floor(curve([[0.46, 0], [0.62, 4.9]], t));
@@ -294,6 +304,10 @@ export function createSequence7(ctx) {
       lblPub.mesh.material.opacity = t > 0.2 ? 1 : 0;
       lblSec.mesh.visible = t > 0.46;
       lblPub.mesh.visible = t > 0.2;
+      // Si la chaine secrete l'emporte, les copies basculent une a une ; sinon elles ne bougent pas
+      const showCopies = t > 0.46;
+      copies.forEach((c, i) => c.set(reorg > 0.3 + i * 0.05 ? COLORS.bad : COLORS.ok, showCopies ? 1 : 0));
+      lblCopies.mesh.visible = showCopies;
       const conf = t >= 0.66 ? nPub - 4 : t >= 0.305 ? nPub - 4 : Math.max(0, nPub - 3);
       counter.mesh.visible = t > 0.235;
       drawCounter(reorg > 0.5 ? 0 : conf);

@@ -66,7 +66,7 @@ export function createSequence5(ctx) {
 
           
   // Le bloc candidat
-  const cand = glassBlock({ w: 3.2, h: 2.1, d: 1.2, tint: COLORS.effort });
+  const cand = glassBlock();
   cand.group.position.set(-1.6, 2.6, -2);
   group.add(cand.group);
 
@@ -111,12 +111,12 @@ export function createSequence5(ctx) {
 
   // ---------- Panneau : le vrai mineur ----------
   const panel = ctx.panel(`
-    <h2>À vous : prenez la machine</h2>
+    <h2>Mine un bloc</h2>
     <label for="m-diff">Difficulté : <span id="m-diff-out"></span></label>
     <input id="m-diff" type="range" min="2" max="5" value="3">
     <button id="m-go" type="button">Miner ce bloc</button>
     <div class="stats"><div><small>Essais</small><output id="m-count">0</output></div><div><small>Temps</small><output id="m-time">0,0 s</output></div></div>
-    <p id="m-state" class="lab-state" aria-live="polite">Votre navigateur va calculer de vrais SHA-256.</p>
+    <p id="m-state" class="lab-state" aria-live="polite">Ton navigateur va calculer de vrais SHA-256.</p>
     <button id="m-verify" type="button" class="ghost" disabled>Vérifier comme un nœud (un seul hash)</button>`);
   const $ = (s) => panel.querySelector(s);
   const fr = (n) => n.toLocaleString('fr-FR');
@@ -140,7 +140,7 @@ export function createSequence5(ctx) {
   $('#m-diff').addEventListener('input', () => { difficulty = Number($('#m-diff').value); showDiff(); });
   $('#m-go').addEventListener('click', () => {
     if (mining) return;
-    foundBlock = { index: 42, parent: '00000a91f3', data: `Alice → Bob : 5 jetons · ${Date.now()}`, nonce: 0 };
+    foundBlock = { index: 42, parent: '00000a91f3', data: `Léa → Julien : 5 jetons · ${Date.now()}`, nonce: 0 };
     miner = createMiner(foundBlock, difficulty);
     const start = performance.now();
     mining = true;
@@ -186,7 +186,7 @@ export function createSequence5(ctx) {
     x.fillText(found ? 'BLOC VALIDE' : 'BLOC CANDIDAT', 34, 62);
     x.fillStyle = '#f2ece2';
     x.font = `500 36px ${MONO}`;
-    ['Récompense → Théo', 'Alice → Bob : 5 jetons', 'Clara → Théo : 12 jetons', 'Frais → Théo'].forEach((s, i) => x.fillText(s, 34, 138 + i * 66));
+    ['Récompense → Théo', 'Léa → Julien : 5 jetons', 'Clara → Théo : 12 jetons', 'Frais → Théo'].forEach((s, i) => x.fillText(s, 34, 138 + i * 66));
     tex.needsUpdate = true;
   };
   drawCand(false);
@@ -200,6 +200,7 @@ export function createSequence5(ctx) {
 
   return {
     name: 'Validation et minage',
+    QUESTION: 'Qui écrit le prochain bloc ?',
     lights: [{ p: [0, 7, 4], color: 0xffc98d, i: 4.5, d: 24 }, { p: [-9, 6, -6], color: 0xffb478, i: 2.8, d: 18 }, { p: [9, 6, -6], color: 0xffb478, i: 2.8, d: 18 }],
     groups: [group],
     panelEl: panel,
@@ -211,7 +212,7 @@ export function createSequence5(ctx) {
         armRx: [[0.2, 0], [0.24, 0.5], [0.5, 0.5], [0.54, 0]],
         elbowR: [[0.2, 0.18], [0.24, 1.1], [0.5, 1.1], [0.54, 0.18]]
       },
-      alice: { track: [{ t: 0, x: -7, z: 9, face: 2.7 }, { t: 0.1, x: -6.3, z: 0.4, face: 0.9 }, { t: 1, x: -6.3, z: 0.4, face: 0.9 }] },
+      lea: { track: [{ t: 0, x: -7, z: 9, face: 2.7 }, { t: 0.1, x: -6.3, z: 0.4, face: 0.9 }, { t: 1, x: -6.3, z: 0.4, face: 0.9 }] },
       ines: { track: [{ t: 0, x: -9, z: 8.5, face: 2.7 }, { t: 0.12, x: -7.8, z: 1, face: 0.8 }, { t: 1, x: -7.8, z: 1, face: 0.8 }] }
     },
     CAMERA: [
@@ -226,20 +227,19 @@ export function createSequence5(ctx) {
     ],
     SLUGS: [{ from: 0.005, to: 1, time: '05 h 20', place: 'Entrepôt du port, ferme de minage' }],
     LINES: [
-      { from: 0.03, to: 0.13, who: 'Inès', text: 'Deux métiers. La validation : tous les nœuds vérifient les signatures et que les fonds n’ont pas déjà été dépensés.' },
-      { from: 0.14, to: 0.26, who: 'Inès', text: 'Le minage : gagner le droit de proposer le bloc suivant. C’est le travail de Théo Marchetti.' },
-      { from: 0.27, to: 0.38, who: 'Théo', text: 'Je prends les transactions en attente, je fais un bloc candidat. Si je gagne, je touche une récompense et les frais.' },
-      { from: 0.39, to: 0.5, who: 'Alice', text: 'Et vos machines, elles résolvent quoi ?' },
-      { from: 0.5, to: 0.6, who: 'Théo', text: 'Rien. Je change le nonce, je recalcule le hash, je recommence, jusqu’à passer sous la cible. C’est une loterie.' },
-      { from: 0.6, to: 0.68, who: 'Inès', text: 'Trouver prend des milliards d’essais. Vérifier ne prend qu’un hash. Voilà ce qui coûte si cher à Mallory : refaire ce travail.' },
-      { from: 0.93, to: 1, who: 'Alice', text: 'Et tout ça consomme combien ?' }
+      { from: 0.03, to: 0.13, who: 'Inès', text: 'D’abord la validation : chaque nœud vérifie les signatures, et que l’argent n’a pas déjà été dépensé.' },
+      { from: 0.14, to: 0.26, who: 'Inès', text: 'Ensuite, il faut choisir qui écrit le bloc. Sur Bitcoin, on le joue au calcul : c’est le minage, le métier de Théo.' },
+      { from: 0.27, to: 0.38, who: 'Théo', text: 'Je rassemble les transactions en attente dans un bloc candidat.' },
+      { from: 0.39, to: 0.5, who: 'Léa', text: 'Et vos machines calculent quoi ?' },
+      { from: 0.5, to: 0.6, who: 'Théo', text: 'Rien d’utile. Je change le nonce, je recalcule le hash, et je recommence jusqu’à ce qu’il commence par assez de zéros.' },
+      { from: 0.6, to: 0.68, who: 'Inès', text: 'Trouver demande des milliards d’essais. Vérifier, un seul. Pour tricher, Maxime devrait refaire tout ce travail.' },
+      { from: 0.93, to: 1, who: 'Léa', text: 'Et tout ça consomme combien ?' }
     ],
     TERMS: [
       { from: 0.04, to: 0.13, label: 'Notion', title: 'Validation', def: 'La vérification d’une transaction ou d’un bloc. Tous les nœuds la font, pas seulement les mineurs.' },
-      { from: 0.27, to: 0.38, label: 'Bitcoin', title: 'Récompense et frais', def: 'Le mineur gagnant reçoit de nouveaux bitcoins et les frais des transactions. Sans cela, personne ne paierait l’électricité.' },
-      { from: 0.5, to: 0.6, label: 'Notion', title: 'Preuve de travail (PoW)', def: 'Chercher un nonce qui donne un hash assez petit. La seule méthode est d’essayer, encore et encore.' },
-      { from: 0.6, to: 0.68, label: 'Notion', title: 'Difficulté', def: 'Plus elle est élevée, plus il faut d’essais. Sur Bitcoin, elle s’ajuste pour garder environ un bloc toutes les 10 minutes.' },
-      { from: 0.93, to: 1, label: 'Note d’audit', title: 'Le revers', def: 'Environ 138 TWh par an pour Bitcoin selon Cambridge, soit environ 0,5 % de l’électricité mondiale. Tout ce qui ne franchit pas la cible est jeté.' }
+      { from: 0.5, to: 0.6, label: 'Notion', title: 'Preuve de travail (PoW)', def: 'Chercher un nonce qui donne un hash respectant la difficulté. La seule méthode est d’essayer, encore et encore.' },
+      { from: 0.6, to: 0.68, label: 'Notion', title: 'Difficulté', def: 'Le nombre de zéros exigés en tête du hash. Plus elle est élevée, plus il faut d’essais.' },
+      { from: 0.93, to: 1, label: 'À retenir', title: 'Trouver est long, vérifier est immédiat', def: 'Le revers : environ 138 TWh par an pour Bitcoin selon Cambridge. Presque tous les essais sont jetés.' }
     ],
     update(t, time) {
       const speed = mining ? 3.2 : 1;

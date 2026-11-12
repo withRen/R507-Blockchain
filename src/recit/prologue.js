@@ -14,11 +14,11 @@ export const CAMERA = [
   { t: 0.19, pos: [34, 190, 118], look: [2, 175, 10], fov: 36 },
   // On traverse la baie vitree
   { t: 0.245, pos: L(5.2, 1.85, 16.5), look: L(4.3, 1.45, 0), fov: 40 },
-  // Dans le dos d'Alice
+  // Dans le dos d'Léa
   { t: 0.3, pos: L(2.7, 1.74, 1.7), look: L(4.3, 1.28, -3), fov: 40 },
   { t: 0.345, pos: L(3.05, 1.68, 0.9), look: L(4.3, 1.32, -3), fov: 38 },
   // L'ecran : la ligne qui a change
-  { t: 0.39, pos: L(4.2, 1.5, -1.25), look: L(4, 1.4, -2.76), fov: 34 },
+  { t: 0.37, pos: L(4.2, 1.5, -1.25), look: L(4, 1.4, -2.76), fov: 34 },
   { t: 0.47, pos: L(4.14, 1.42, -1.62), look: L(4.02, 1.31, -2.76), fov: 34 },
   // Elle rattrape Gaspard devant l'ascenseur
   { t: 0.51, pos: L(-3.2, 1.65, -5.9), look: L(-6.7, 1.35, -11), fov: 36 },
@@ -38,10 +38,13 @@ export const CAMERA = [
 const CUT = 0.6205;
 
 export const ACTORS = {
-  alice: {
+  lea: {
     track: [
-      { t: 0, x: 4.85, z: -1.95, face: -2.75 },
-      { t: 0.43, x: 4.85, z: -1.95, face: -2.75 },
+      { t: 0, x: 4.85, z: -1.75, face: -2.75 },
+      { t: 0.475, x: 4.85, z: -1.75, face: -2.75 },
+      // Elle contourne les bureaux par les allees au lieu de les traverser
+      { t: 0.49, x: 1.75, z: -1.5 },
+      { t: 0.515, x: 1.75, z: -8.6 },
       { t: 0.54, x: -4.2, z: -9.7, face: -2.5 },
       { t: CUT, x: -4.2, z: -9.7, face: -2.5 },
       { t: CUT + 0.0005, x: -4.45, z: 6.2, face: 1.2 },
@@ -54,7 +57,7 @@ export const ACTORS = {
     elbowR: [[0.34, 0.18], [0.36, 1.25], [0.43, 1.25], [0.45, 0.18]],
     headPitch: [[0.25, 0], [0.34, 0.12], [0.44, 0.12], [0.47, 0], [0.545, 0.03]]
   },
-  bob: {
+  julien: {
     from: CUT,
     track: [
       { t: CUT + 0.0005, x: -0.45, z: 6.2, face: -1.2 },
@@ -79,7 +82,8 @@ export const ACTORS = {
     track: [
       { t: 0, x: -12, z: -3.8, face: 1.5 },
       { t: 0.415, x: -12, z: -3.8, face: 1.5 },
-      { t: 0.46, x: -8.9, z: -4.1, face: 1.5 },
+      { t: 0.43, x: -12, z: -2.4 },
+      { t: 0.46, x: -8.6, z: -2.4 },
       { t: 0.525, x: -7.8, z: -12.3, face: 0 },
       { t: 1, x: -7.8, z: -12.3, face: 0 }
     ],
@@ -88,7 +92,7 @@ export const ACTORS = {
 };
 
 export const SCENE = {
-  ledger: 0.395,
+  ledger: 0.36,
   lift: [[0.46, 0], [0.515, 1], [0.585, 1], [0.613, 0]]
 };
 
@@ -98,37 +102,27 @@ export const SLUGS = [
 ];
 
 export const LINES = [
-  { from: 0.02, to: 0.095, who: 'Inès', vo: true, text: 'Cette nuit-là, toute la ville payait grâce à un seul registre.' },
-  { from: 0.115, to: 0.2, who: 'Inès', vo: true, text: 'Une seule base de données. Un seul administrateur. Personne n’y voyait de problème.' },
-  { from: 0.27, to: 0.345, who: 'Inès', vo: true, text: 'Alice Vasseur, audit interne. La dernière encore à son poste.' },
-  { from: 0.405, to: 0.47, who: 'Alice', text: 'Lemoine Logistique. Quarante millions à zéro, à 23 h 12. Rien dans les journaux.' },
-  { from: 0.535, to: 0.565, who: 'Alice', text: 'Gaspard. Qui a un accès en écriture sur le registre ?' },
-  { from: 0.567, to: 0.602, who: 'Gaspard', text: 'Moi. C’est précisément pour ça qu’on nous fait confiance.' },
-  { from: 0.635, to: 0.682, who: 'Bob', text: 'J’avais quarante millions.' },
-  { from: 0.684, to: 0.725, who: 'Alice', text: 'Le registre dit zéro. Et c’est le seul qui existe.' },
-  { from: 0.727, to: 0.775, who: 'Inès', text: 'Un seul registre, c’est aussi un seul témoin.' },
-  { from: 0.815, to: 0.88, who: 'Inès', text: 'Et si chaque tour de cette ville en tenait une copie ?' },
-  { from: 0.905, to: 0.94, who: 'Inès', vo: true, text: 'L’idée existait déjà. Elle a un nom : la blockchain.' },
-  { from: 0.943, to: 0.977, who: 'Inès', vo: true, text: 'Bitcoin fonctionne ainsi depuis 2009. Personne ne le possède.' }
+  { from: 0.02, to: 0.095, who: 'Inès', vo: true, text: 'Cette nuit-là, toute la ville tenait ses comptes dans un seul registre.' },
+  { from: 0.115, to: 0.2, who: 'Inès', vo: true, text: 'Un seul registre, un seul administrateur. Personne n’y voyait de problème.' },
+  { from: 0.27, to: 0.345, who: 'Inès', vo: true, text: 'Léa Vasseur, audit interne. Sur son écran, une ligne vient de changer.' },
+  { from: 0.475, to: 0.525, who: 'Léa', text: 'Lemoine Logistique : quarante millions à zéro. Et aucune trace de qui l’a fait.' },
+  { from: 0.535, to: 0.565, who: 'Léa', text: 'Gaspard. Qui peut écrire dans le registre ?' },
+  { from: 0.567, to: 0.602, who: 'Gaspard', text: 'Moi seul. C’est pour ça qu’on nous fait confiance.' },
+  { from: 0.635, to: 0.682, who: 'Julien', text: 'J’avais quarante millions.' },
+  { from: 0.684, to: 0.725, who: 'Léa', text: 'Le registre dit zéro. Et c’est le seul qui existe.' },
+  { from: 0.815, to: 0.88, who: 'Inès', text: 'Et si chaque tour de cette ville en gardait une copie ?' },
+  { from: 0.905, to: 0.975, who: 'Inès', vo: true, text: 'Cette idée a un nom : la blockchain.' }
 ];
 
 export const TERMS = [
-  {
-    from: 0.135, to: 0.215, label: 'Point de départ', title: 'Registre centralisé',
-    def: 'Une seule organisation détient le registre. Elle est la seule à pouvoir y écrire, et personne ne peut vérifier ce qu’elle en fait.'
-  },
-  {
-    from: 0.735, to: 0.8, label: 'Le problème', title: 'Centre unique',
-    def: 'Si le seul détenteur ment, tombe en panne ou disparaît, il ne reste aucune copie pour le contredire.'
-  },
-  {
-    from: 0.905, to: 0.94, label: 'Le mot', title: 'Blockchain',
-    def: 'Un registre public découpé en blocs, chaînés par des empreintes. Des nœuds indépendants en gardent chacun une copie, sans centre unique.'
-  },
-  {
-    from: 0.943, to: 0.977, label: 'L’exemple', title: 'Bitcoin',
-    def: 'La monnaie numérique décrite en 2008 par Satoshi Nakamoto. Aucune banque ne la gère : elle n’existe que comme lignes dans sa blockchain.'
-  }
+  { from: 0.135, to: 0.215, label: 'Point de départ', title: 'Registre centralisé', def: 'Une seule organisation détient le registre. Elle est la seule à pouvoir y écrire, et personne ne peut vérifier ce qu’elle en fait.' },
+  { from: 0.735, to: 0.8, label: 'À retenir', title: 'Un seul registre, c’est un seul témoin', def: 'S’il ment, tombe en panne ou disparaît, il ne reste aucune copie pour le contredire.' },
+  { from: 0.905, to: 0.975, label: 'Le mot', title: 'Blockchain', def: 'Un registre découpé en blocs, chaînés par des empreintes. Des nœuds indépendants en gardent chacun une copie. Bitcoin, lancé en 2009, en est l’exemple le plus connu.' }
 ];
 
+// Premiere interaction, des la premiere minute : retrouver la ligne modifiee du registre
+export const LAB = { from: 0.375, to: 0.47 };
+
 export const NEXT = { label: 'Séquence suivante', text: '03 h 05 — La structure d’un bloc' };
+
+export const QUESTION = 'Que se passe-t-il quand un seul registre fait foi ?';

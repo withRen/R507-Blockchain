@@ -3,11 +3,11 @@
 // de son contenu et n'y est pas stocke.
 import * as THREE from 'three';
 import { Kit, flat } from './kit.js';
-import { closedRoom, plate, rackFaces } from './stage.js';
+import { BLOCK, closedRoom, plate, rackFaces } from './stage.js';
 
 const FIELD = {
-  parent: { label: 'HASH DU BLOC PARENT', sub: 'LE LIEN AVEC LE BLOC PRÉCÉDENT', color: '#b9c3d8', tint: 0x7f8ba3 },
-  nonce: { label: 'NONCE', sub: 'UN NOMBRE QUE LES MINEURS FONT VARIER', color: '#ffb54d', tint: 0xe89a2c },
+  parent: { label: 'HASH DU BLOC PARENT', sub: 'LE LIEN AVEC LE BLOC PRÉCÉDENT', color: '#9db0ff', tint: 0x5b74ff },
+  nonce: { label: 'NONCE', sub: 'UN NOMBRE QUE LES MINEURS FONT VARIER', color: '#ffb54d', tint: 0x5b74ff },
   data: { label: 'DONNÉES · TRANSACTIONS', sub: 'LISIBLES PAR TOUS', color: '#9db0ff', tint: 0x5b74ff }
 };
 
@@ -81,13 +81,14 @@ export function createServerRoom(scene) {
   const block = new THREE.Group();
   block.position.set(0, 2.05, 0);
   group.add(block);
-  const SW = 3.3;
-  const SH = 0.68;
-  const SD = 1.9;
+  // Meme gabarit que les blocs des autres sequences (3,05 x 2,1 x 0,85), ouvert en trois couches
+  const SW = BLOCK.w;
+  const SH = 0.66;
+  const SD = BLOCK.d;
     const boxGeo = new THREE.BoxGeometry(SW, SH, SD);
   const edgeGeo = new THREE.EdgesGeometry(boxGeo);
   const layers = {};
-  const homeY = { parent: 0.82, nonce: 0, data: -0.82 };
+  const homeY = { parent: 0.72, nonce: 0, data: -0.72 };
   Object.entries(FIELD).forEach(([key, f]) => {
     const g = new THREE.Group();
     g.position.y = homeY[key];
@@ -188,7 +189,7 @@ export function createServerRoom(scene) {
     hashPlate.mesh.material.opacity = h;
     beam.visible = h > 0.003;
     beam.material.opacity = h;
-    const y0 = block.position.y + 1.2;
+    const y0 = block.position.y + 1.06;
     const y1 = hashPlate.mesh.position.y - 0.36;
     beam.position.set(0, (y0 + y1) / 2, 0.45);
     beam.scale.y = y1 - y0;

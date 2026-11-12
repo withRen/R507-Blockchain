@@ -70,7 +70,7 @@ export function createSequence2(ctx) {
 
   // ---------- Panneau ----------
   const panel = ctx.panel(`
-    <h2>À vous : modifiez le bloc 2</h2>
+    <h2>Modifie le bloc 2</h2>
     <label for="c-data">Données du bloc 2</label>
     <input id="c-data" type="text" value="${chain.blocks[1].data}" spellcheck="false" autocomplete="off">
     <p id="c-state" class="lab-state" aria-live="polite"></p>
@@ -93,7 +93,7 @@ export function createSequence2(ctx) {
       st.textContent = 'Tous les liens sont rétablis, mais tous les hashes suivants ont dû être recalculés. Sans coût, rien n’empêche de le faire.';
       fix.disabled = true;
     } else {
-      st.textContent = 'Chaque bloc contient le hash de son parent. Changez une seule lettre.';
+      st.textContent = 'Chaque bloc contient le hash de son parent. Change une seule lettre.';
       fix.disabled = true;
     }
   }
@@ -109,6 +109,7 @@ export function createSequence2(ctx) {
 
   return {
     name: 'Chaînage cryptographique',
+    QUESTION: 'Qu’est-ce qui empêche de remplacer un bloc ?',
     lights: [{ p: [0, 4.2, 3.2], color: 0x9bc2ff, i: 1.6, d: 15 }, { p: [-6, 3.8, 3.6], color: 0x7aa5e8, i: 1.1, d: 14 }],
     groups: [group, ctx.cityGroup],
     cityLit: true,
@@ -117,7 +118,7 @@ export function createSequence2(ctx) {
     LAB: { from: 0.62, to: 0.91 },
     actorsDef: {
       ines: { track: [{ t: 0, x: -8.8, z: 1.4, face: 1.5 }, { t: 0.2, x: -5.8, z: 1.4, face: 1.3 }, { t: 1, x: -5.8, z: 1.4, face: 0.9 }], armLx: [[0.34, 0], [0.37, 0.6], [0.56, 0.6], [0.6, 0]], elbowL: [[0.34, 0.18], [0.37, 0.5], [0.56, 0.5], [0.6, 0.18]] },
-      alice: { track: [{ t: 0, x: -10.2, z: 2, face: 1.5 }, { t: 0.22, x: -7.1, z: 2, face: 1.2 }, { t: 1, x: -7.1, z: 2, face: 1.05 }] }
+      lea: { track: [{ t: 0, x: -10.2, z: 2, face: 1.5 }, { t: 0.22, x: -7.1, z: 2, face: 1.2 }, { t: 1, x: -7.1, z: 2, face: 1.05 }] }
     },
     parent: group,
     CAMERA: [
@@ -131,18 +132,15 @@ export function createSequence2(ctx) {
     ],
     SLUGS: [{ from: 0.005, to: 1, time: '03 h 40', place: 'Passerelle vitrée, tour Meridian' }],
     LINES: [
-      { from: 0.03, to: 0.1, who: 'Inès', text: 'Ce qui l’empêche, c’est le bloc suivant. Une blockchain ne se lit que dans l’ordre.' },
-      { from: 0.11, to: 0.2, who: 'Inès', text: 'Chaque bloc contient le hash de son parent. C’est ce lien qui donne son nom à la chaîne.' },
-      { from: 0.21, to: 0.3, who: 'Alice', text: 'Autrement dit, un numéro de page ?' },
-      { from: 0.31, to: 0.43, who: 'Inès', text: 'Non. Un numéro ne dépend pas du contenu. Ici, le lien est l’empreinte de tout le bloc précédent.' },
-      { from: 0.44, to: 0.54, who: 'Inès', text: 'Comme ce bloc contient lui-même le hash du précédent, chaque maillon dépend de toute l’histoire.' },
-      { from: 0.55, to: 0.61, who: 'Inès', text: 'Dans Bitcoin, cette chaîne remonte sans interruption au tout premier bloc.' },
-      { from: 0.93, to: 1, who: 'Inès', text: 'Quelqu’un s’intéresse beaucoup à cette chaîne. Au fonds Kern, une lumière vient de s’allumer.' }
+      { from: 0.03, to: 0.1, who: 'Inès', text: 'Ce qui l’en empêche, c’est le bloc suivant.' },
+      { from: 0.11, to: 0.2, who: 'Inès', text: 'Chaque bloc recopie le hash de son parent. C’est ce lien qui fait la chaîne.' },
+      { from: 0.21, to: 0.3, who: 'Léa', text: 'Comme un numéro de page ?' },
+      { from: 0.31, to: 0.43, who: 'Inès', text: 'Mieux : un numéro ne dépend pas du contenu. Ici, change une lettre dans un bloc, et le lien avec le suivant casse.' },
+      { from: 0.93, to: 1, who: 'Inès', text: 'En face, à la tour Kern, quelqu’un s’intéresse beaucoup à cette chaîne.' }
     ],
     TERMS: [
       { from: 0.12, to: 0.2, label: 'Notion', title: 'Chaînage cryptographique', def: 'Chaque bloc contient le hash de son parent. Toute modification d’un bloc change son hash, et le lien avec le bloc suivant ne correspond plus.' },
-      { from: 0.32, to: 0.43, label: 'Glossaire', title: 'Empreinte cryptographique', def: 'Elle est très sensible à une modification : une seule lettre change, et le hash n’a plus rien à voir.' },
-      { from: 0.92, to: 1, label: 'Note d’audit', title: 'Le chaînage ne suffit pas', def: 'Vous venez de tout recalculer en quelques clics. Ce qui rend cela coûteux en vrai, c’est le travail exigé pour chaque bloc : la séquence 5.' }
+      { from: 0.92, to: 1, label: 'À retenir', title: 'Chaque bloc porte l’empreinte du précédent', def: 'Mais tu viens de tout réparer en quelques clics : le chaînage seul ne suffit pas. Il manque un coût, on le verra au port.' }
     ],
     update(t) {
       blocks.forEach((g, i) => g.setOpacity(curve([[REVEAL[i], 0], [REVEAL[i] + 0.05, 1]], t)));

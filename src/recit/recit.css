@@ -15,7 +15,7 @@ body, input, button, select, textarea { font-family: var(--text); }
 body { color: var(--paper); overflow-x: hidden; }
 
 #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-#track { height: 9000vh; }
+#track { height: 6300vh; }
 
 #stage-ui { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
 
@@ -38,9 +38,36 @@ body { color: var(--paper); overflow-x: hidden; }
 #slug b { font-size: clamp(16px, 1.5vw, 20px); font-weight: 500; letter-spacing: 0.02em; }
 #slug span { font-size: clamp(11px, 0.95vw, 13px); color: var(--soft); letter-spacing: 0.06em; text-transform: uppercase; }
 
+/* La question a laquelle repond la sequence en cours */
+#ask {
+  position: absolute; left: clamp(16px, 3.4vw, 48px); top: calc(clamp(18px, 4vh, 40px) + 34px);
+  max-width: min(520px, calc(100vw - 32px));
+  font: 500 clamp(15px, 1.35vw, 18px) / 1.3 var(--display); color: var(--paper);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 18px rgba(0, 0, 0, 0.9);
+  opacity: 0; transition: opacity 0.5s;
+}
+#ask.on { opacity: 1; }
+
+/* Sequence 6 : les cinq signataires de la preuve d'autorite */
+.signers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.lab .signers button { margin: 0; padding: 8px 0; color: #c3b0ff; background: #14102a; border-color: #8f73ee; }
+.lab .signers button[aria-pressed="true"] { color: #ffd2d2; background: #2a0f12; border-color: #ff4f45; }
+
+/* Prologue : les lignes du registre, a comparer */
+.ledger-rows p, .lab .ledger-rows button {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 8px; width: 100%;
+  margin: 4px 0 0; padding: 7px 8px; text-align: left;
+  font: 500 11px var(--mono); letter-spacing: 0; text-transform: none;
+}
+.ledger-rows p { color: var(--soft); text-transform: uppercase; }
+.lab .ledger-rows button { color: var(--paper); background: #0d1221; border-color: #36415f; }
+.lab .ledger-rows button:hover:not(:disabled) { color: #03060f; }
+.lab .ledger-rows button.tried { color: #8a9bb8; border-style: dashed; }
+.lab .ledger-rows button.good { color: #ff9d94; border-color: #ff4f45; box-shadow: inset 0 0 0 1px #ff4f45; }
+
 /* Sous-titres de film */
 #line {
-  position: absolute; left: 50%; bottom: clamp(38px, 8.5vh, 80px);
+  position: absolute; left: 50%; bottom: clamp(72px, 10.5vh, 104px);
   width: min(840px, calc(100vw - 32px));
   transform: translate(-50%, 6px);
   text-align: center;
@@ -93,7 +120,18 @@ body { color: var(--paper); overflow-x: hidden; }
   pointer-events: none;
   opacity: 0; transform: translate(-10px, -50%); transition: opacity 0.4s, transform 0.4s;
 }
-.lab.on { opacity: 1; transform: translate(0, -50%); pointer-events: auto; }
+.lab.on { opacity: 1; transform: translate(0, -50%); pointer-events: auto; animation: lab-call 1.6s ease-out 0.3s 2; }
+/* Un panneau qui s'ouvre s'annonce : halo qui pulse deux fois et etiquette « A toi de jouer » */
+@keyframes lab-call {
+  0% { box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65), 0 0 0 0 rgba(0, 229, 255, 0.55); }
+  100% { box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65), 0 0 0 22px rgba(0, 229, 255, 0); }
+}
+.lab:not(.steps-panel)::before {
+  content: '● À toi de jouer';
+  display: inline-block; margin-bottom: 10px; padding: 3px 8px;
+  font: 600 11px var(--mono); letter-spacing: 0.1em; text-transform: uppercase;
+  color: #03060f; background: var(--blue); border-radius: 2px;
+}
 .lab h2 { font: 600 24px / 1.2 var(--display); color: #ffffff; letter-spacing: -0.01em; }
 .lab-hint { margin: 8px 0 12px; font: 400 13px / 1.4 var(--text); color: var(--soft); }
 .lab label, .lab-out-label { display: block; margin: 12px 0 6px; font: 500 11px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: #aebcff; }
@@ -196,9 +234,10 @@ body { color: var(--paper); overflow-x: hidden; }
 #title-card p { margin-top: 18px; font: 500 clamp(12px, 1.05vw, 14px) var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--soft); }
 
 #hint {
-  position: absolute; left: 50%; bottom: 22px;
+  position: absolute; left: 50%; bottom: 68px;
   transform: translateX(-50%);
-  font: 500 12px var(--mono); letter-spacing: 0.08em; color: var(--soft);
+  width: max-content; max-width: calc(100vw - 32px); text-align: center;
+  font: 500 13px var(--mono); letter-spacing: 0.08em; color: var(--paper);
   transition: opacity 0.4s;
 }
 #hint.off { opacity: 0; }
@@ -214,15 +253,14 @@ body { color: var(--paper); overflow-x: hidden; }
 #continue.on { opacity: 1; visibility: visible; transform: translate(-50%, 0); pointer-events: auto; }
 #continue:hover { background: #00f0ff; color: #03060f; }
 #auto {
-  position: absolute; right: clamp(16px, 3.4vw, 48px); bottom: 16px; padding: 6px 10px; cursor: pointer;
-  font: 500 11px var(--mono); letter-spacing: 0.06em; color: var(--soft);
+  position: absolute; right: clamp(16px, 3.4vw, 48px); bottom: 18px; padding: 10px 14px; cursor: pointer;
+  font: 500 13px var(--mono); letter-spacing: 0.05em; color: var(--paper);
   background: rgba(3, 6, 14, 0.55); border: 1px solid #36415f; border-radius: 2px;
   pointer-events: auto;
 }
 #auto:hover { color: #fff; border-color: #fff; }
 #auto[aria-pressed="true"] { color: #00f0ff; border-color: #00c8e6; }
 #continue:focus-visible, #auto:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-@media (hover: none) { #hint.started { display: none; } }
 
 #progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(241, 243, 248, 0.12); }
 #progress i { display: block; height: 100%; background: var(--paper); transform: scaleX(0); transform-origin: left; }
@@ -232,7 +270,7 @@ body { color: var(--paper); overflow-x: hidden; }
   .lab.on { transform: none; }
   #chain-nav span { display: none; }
   #slug span { display: none; }
-  .lab-hint { display: none; }
+  #auto { bottom: 64px; padding: 8px 10px; font-size: 12px; }
   #term { top: auto; bottom: 150px; right: 16px; transform: translate(10px, 0); }
   #term.on { transform: none; }
   #term strong { font-size: 23px; }
@@ -240,3 +278,77 @@ body { color: var(--paper); overflow-x: hidden; }
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: 0.01s !important; }
 }
+
+/* Legende des couleurs : une couleur n'a qu'un sens, dans tout le recit */
+#legend {
+  position: absolute; right: clamp(16px, 3.4vw, 48px); top: calc(clamp(18px, 4vh, 40px) + 30px);
+  padding: 8px 10px; pointer-events: auto;
+  font: 500 11px var(--mono); letter-spacing: 0.04em; color: #cdd4e2;
+  background: rgba(3, 6, 14, 0.6); border: 1px solid #283750; border-radius: 2px;
+}
+#legend summary { cursor: pointer; color: var(--soft); text-transform: uppercase; letter-spacing: 0.08em; }
+#legend ul { margin: 6px 0 0; padding: 0; list-style: none; }
+#legend li { display: flex; align-items: center; gap: 8px; line-height: 1.75; }
+#legend li::before { content: ''; width: 10px; height: 10px; background: var(--c); }
+
+/* Sources de la sequence, sans quitter le recit */
+#src-btn {
+  position: absolute; left: clamp(16px, 3.4vw, 48px); bottom: 18px; padding: 10px 14px; cursor: pointer;
+  font: 500 13px var(--mono); letter-spacing: 0.05em; color: var(--paper);
+  background: rgba(3, 6, 14, 0.55); border: 1px solid #36415f; border-radius: 2px; pointer-events: auto;
+}
+#src-btn:hover { color: #fff; border-color: #fff; }
+#src-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+#sources {
+  width: min(620px, calc(100vw - 32px)); max-height: 82vh; margin: auto; padding: 24px 26px; overflow-y: auto;
+  color: var(--paper); background: #070a14; border: 1px solid #36415f; border-left: 2px solid var(--blue);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+}
+#sources::backdrop { background: rgba(0, 0, 0, 0.6); }
+#sources h2 { font: 600 22px / 1.2 var(--display); }
+#sources h3 { margin-top: 18px; font: 600 15px var(--display); color: #aebcff; }
+#sources h3 span { margin-right: 8px; color: var(--soft); }
+#sources ul { margin: 10px 0 0; padding: 0; list-style: none; }
+#sources li { padding: 9px 0; border-top: 1px solid #1c2438; }
+#sources li a { display: block; font: 500 14px / 1.4 var(--text); color: #00e5ff; }
+#sources .meta { display: block; margin-top: 3px; font: 400 12.5px / 1.4 var(--text); color: #a4b6d4; }
+#sources .note { margin-top: 12px; font: 400 12.5px / 1.45 var(--text); color: var(--soft); }
+.sources-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.sources-foot a { font: 500 13px var(--mono); color: #a4b6d4; }
+.sources-close {
+  padding: 9px 16px; cursor: pointer; font: 500 13px var(--mono); color: #00f0ff;
+  background: #091a30; border: 1px solid #00c8e6; border-radius: 2px;
+}
+@media (max-width: 700px) {
+  #src-btn { bottom: 64px; padding: 8px 10px; font-size: 12px; }
+  #legend { top: calc(clamp(18px, 4vh, 40px) + 26px); }
+}
+
+/* Boite de dialogue : le portrait de celui qui parle, puis sa replique */
+#line {
+  display: flex; align-items: center; gap: 16px; text-align: left;
+  padding: 12px 20px 12px 12px;
+  background: rgba(3, 6, 14, 0.86); border: 2px solid #dfe5f2; border-radius: 4px;
+}
+#line p { flex: 1; min-width: 0; }
+#face { flex: none; width: 88px; height: 88px; background: #101829; border: 1px solid #36415f; }
+#face svg { display: block; width: 100%; height: 100%; }
+/* Voix off : le portrait est estompe, la bouche ne bouge pas */
+#line.vo #face { opacity: 0.5; }
+#line.on:not(.vo) .mouth { transform-box: fill-box; transform-origin: center top; animation: talk 0.3s steps(2) infinite; }
+@keyframes talk { 50% { transform: scaleY(2.6); } }
+
+#sound {
+  position: absolute; right: calc(clamp(16px, 3.4vw, 48px) + 158px); bottom: 18px; padding: 10px 14px; cursor: pointer;
+  font: 500 13px var(--mono); letter-spacing: 0.05em; color: var(--paper);
+  background: rgba(3, 6, 14, 0.55); border: 1px solid #36415f; border-radius: 2px; pointer-events: auto;
+}
+#sound:hover { color: #fff; border-color: #fff; }
+#sound[aria-pressed="true"] { color: #00f0ff; border-color: #00c8e6; }
+#sound:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+@media (max-width: 700px) {
+  #line { gap: 10px; padding: 8px 12px 8px 8px; }
+  #face { width: 60px; height: 60px; }
+  #sound { right: 16px; bottom: 106px; padding: 8px 10px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { #line .mouth { animation: none !important; } }

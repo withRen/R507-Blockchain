@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createCity } from './city.js';
-import { createOffice } from './office.js';
+import { createOffice, ROWS } from './office.js';
 import { createServerRoom } from './serverroom.js';
 import { createFigure, CAST } from './figure.js';
 import { curve, sampleTrack, sampleCamera, smooth, clamp01 } from './timeline.js';
@@ -14,6 +14,13 @@ import { createSequence6 } from './sequence6.js';
 import { createSequence7 } from './sequence7.js';
 import { createEpilogue } from './epilogue.js';
 import { createDirector, buildScore } from './director.js';
+import { createSourcesPopup } from './sources-popup.js';
+import { portrait } from './portraits.js';
+import { createMusic } from './music.js';
+
+// Les personnages apparaissent deux fois : en silhouettes 3D dans les decors, et en portraits 2D
+// dans la boite de dialogue. Passer a false pour ne garder que les portraits.
+const SHOW_FIGURES = true;
 import { hashBlock } from '../lib/blockchain.js';
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -84,9 +91,12 @@ async function init() {
   const elSlug = $('#slug');
   const elSlugTime = elSlug.querySelector('b');
   const elSlugPlace = elSlug.querySelector('span');
+  const elAsk = $('#ask');
   const elLine = $('#line');
   const elWho = elLine.querySelector('b');
   const elText = elLine.querySelector('span');
+  const elFace = $('#face');
+  const music = createMusic($('#sound'));
   const elTerm = $('#term');
   const elTermLabel = elTerm.querySelector('small');
   const elTermTitle = elTerm.querySelector('strong');
@@ -103,6 +113,9 @@ async function init() {
     if (sl !== curSlug) {
       curSlug = sl;
       if (sl) { elSlugTime.textContent = sl.time; elSlugPlace.textContent = sl.place; }
+      // La question de la sequence reste affichee sous le lieu : on sait toujours ou on en est
+      elAsk.textContent = seq.QUESTION ?? '';
+      elAsk.classList.toggle('on', !!sl && !!seq.QUESTION);
       elSlug.classList.toggle('on', !!sl);
     }
     const li = seq.LINES.find((l) => t >= l.from && t <= l.to) ?? null;
@@ -111,6 +124,7 @@ async function init() {
       if (li) {
         elWho.textContent = li.vo ? `${li.who}, voix off` : li.who;
         elText.textContent = li.text;
+        elFace.innerHTML = portrait(li.who);
         elLine.classList.toggle('vo', !!li.vo);
       }
       elLine.classList.toggle('on', !!li);
@@ -232,44 +246,8 @@ async function init() {
     b.type = 'button';
     b.textContent = tx;
     b.dataset.tx = tx;
-    let drag = null;
-    let dragged = false;
-    b.addEventListener('pointerdown', (e) => {
-      drag = { x: e.clientX, y: e.clientY, ghost: null };
-      dragged = false;
-      b.setPointerCapture(e.pointerId);
-    });
-    b.addEventListener('pointermove', (e) => {
-      if (!drag) return;
-      if (!drag.ghost && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 6) {
-        drag.ghost = document.createElement('div');
-        drag.ghost.className = 'chip-ghost';
-        drag.ghost.textContent = tx;
-        stageUI.append(drag.ghost);
-        dragged = true;
-      }
-      if (drag.ghost) {
-        drag.ghost.style.left = `${e.clientX}px`;
-        drag.ghost.style.top = `${e.clientY}px`;
-      }
-    });
-    const endDrag = (e, cancelled) => {
-      if (!drag) return;
-      drag.ghost?.remove();
-      if (drag.ghost && !cancelled) {
-        // Lache hors du panneau, la transaction tombe dans le bloc
-        const r = lab.getBoundingClientRect();
-        const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-        if (!inside) dropTx(tx, b);
-      }
-      drag = null;
-    };
-    b.addEventListener('pointerup', (e) => endDrag(e, false));
-    b.addEventListener('pointercancel', (e) => endDrag(e, true));
-    b.addEventListener('click', () => {
-      if (dragged) { dragged = false; return; }
-      dropTx(tx, b);
-    });
+    // Un seul geste : le clic. Le glisser-deposer de la v2 a ete retire.
+    b.addEventListener('click', () => dropTx(tx, b));
     $('#lab-chips').append(b);
     return b;
   });
@@ -296,9 +274,32 @@ async function init() {
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
 
+  // ---------- Prologue : retrouver la ligne du registre qui a change ----------
+  let ledgerFound = false;
+  const fake = ctx.panel(`
+    <h2>Trouve la ligne qui a changé</h2>
+    <p class="lab-hint">Voici le registre central à 22 h, puis à 23 h 47. Clique la ligne qui n’est plus la même.</p>
+    <div class="ledger-rows"><p><span>Compte</span><span>22 h 00</span><span>23 h 47</span></p></div>
+    <p class="lab-state" aria-live="polite">Sept comptes, un seul registre.</p>`);
+  ROWS.forEach(([name, amount]) => {
+    const hit = name.startsWith('LEMOINE');
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = `<span>${name}</span><span>${amount}</span><span>${hit ? '0,00' : amount}</span>`;
+    b.addEventListener('click', () => {
+      if (hit) ledgerFound = true; // l'ecran 3D de Lea surligne alors la ligne en rouge
+      b.classList.add(hit ? 'good' : 'tried');
+      fake.querySelector('.lab-state').textContent = hit
+        ? 'Oui : quarante millions sont passés à zéro. Le registre n’en garde aucune trace, et personne d’autre n’en a de copie.'
+        : 'Cette ligne n’a pas bougé. Compare les deux colonnes.';
+    });
+    fake.querySelector('.ledger-rows').append(b);
+  });
+
   // ---------- Les sequences ----------
   const prologue = {
     name: 'Prologue',
+    panelEl: fake,
     lights: [{ p: [3.5, 3.2, -1.2], color: 0xe8eeff, i: 3.2, d: 16 }, { p: [-5.4, 3.2, -7.5], color: 0xe8eeff, i: 3.4, d: 16 }, { p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 3.6, d: 15 }],
     ...P,
     CAMERA: P.CAMERA,
@@ -313,7 +314,8 @@ async function init() {
       office.group.visible = t > 0.2 && t < 0.92;
       // Camera tournee vers le fond de l'etage : la ville derriere elle n'est pas dessinee
       cityGroup.visible = !(t > 0.285 && t < 0.615);
-      office.setLedgerChanged(t > P.SCENE.ledger);
+      // La ligne ne passe au rouge que lorsque le visiteur l'a trouvee, ou a la fin de l'exercice
+      office.setLedgerChanged(t > P.LAB.to || (ledgerFound && t > P.SCENE.ledger));
       const open = curve(P.SCENE.lift, t);
       office.setLiftOpen(open);
       const start = 0.9;
@@ -332,6 +334,11 @@ async function init() {
     groups: [room.group],
     panelEl: $('#lab'),
     override: () => (sequence1.labOpen && pickedLayer ? S1.LAYER_INFO[pickedLayer] : null),
+    hit(e) {
+      ndc.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+      ray.setFromCamera(ndc, camera);
+      return ray.intersectObjects(room.pickables).length > 0;
+    },
     onClick(e) {
       if (!sequence1.labOpen) return;
       ndc.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
@@ -367,7 +374,7 @@ async function init() {
   const COUNT = sequences.length;
   sequences.forEach((seq) => {
     seq.actors = {};
-    Object.entries(seq.actorsDef ?? {}).forEach(([name, data]) => {
+    Object.entries(SHOW_FIGURES ? seq.actorsDef ?? {} : {}).forEach(([name, data]) => {
       const c = createFigure(CAST[name]);
       seq.parent.add(c.root);
       seq.actors[name] = { ...data, c, name, shadow: office.makeShadow(seq.parent) };
@@ -418,6 +425,16 @@ async function init() {
 
   canvas.addEventListener('click', (e) => active?.onClick?.(e));
 
+  // Sources de la sequence en cours, dans une fenetre ; la lecture auto se met en pause
+  const popup = createSourcesPopup({ onOpen: () => director?.pause() });
+  $('#src-btn').addEventListener('click', () => popup.open(sequences.indexOf(active), active?.name));
+  // Sur petit ecran, la legende demarre repliee
+  if (window.innerWidth < 900 || window.innerHeight < 620) $('#legend').open = false;
+  // Le curseur devient une main au-dessus de ce qui se clique dans la scene 3D
+  canvas.addEventListener('pointermove', (e) => {
+    canvas.style.cursor = active?.labOpen && active.hit?.(e) ? 'pointer' : '';
+  });
+
   const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
   window.addEventListener('pointermove', (e) => {
     pointer.x = e.clientX / window.innerWidth - 0.5;
@@ -457,6 +474,7 @@ async function init() {
     city.setNetwork(null);
     active = seq;
     seq.enter?.();
+    music.setSequence(sequences.indexOf(seq));
     applyLights(seq);
     // On charge la sequence courante et ses voisines, on decharge le reste
     const idx = sequences.indexOf(seq);

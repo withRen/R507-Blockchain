@@ -1,7 +1,7 @@
-// Sequence 3 : 04 h 15, le bureau de Mallory. Immutabilite et detection de falsification.
+// Sequence 3 : 04 h 15, le bureau de Maxime. Immutabilite et detection de falsification.
 // Le decor reprend l'etage vitre : on est dans la tour Kern, en face.
 import * as THREE from 'three';
-import { COLORS, createChain, drawChainFace, filament, glassBlock } from './stage.js';
+import { COLORS, createChain, drawChainFace, filament, glassBlock, plate } from './stage.js';
 import { curve } from './timeline.js';
 import { MERIDIAN } from './city.js';
 import { hashBlock } from '../lib/blockchain.js';
@@ -29,12 +29,45 @@ export function createSequence3(ctx) {
     holo.add(m);
     return m;
   });
+  // Les 14 copies du reseau, cote a cote au-dessus de la chaine : la premiere est celle de Maxime
+  const copies = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(0.34, 0.24, 0.1),
+    new THREE.MeshBasicMaterial({ transparent: true, toneMapped: false }),
+    NODES * 5
+  );
+  const dummy = new THREE.Object3D();
+  for (let c = 0; c < NODES; c++) {
+    for (let j = 0; j < 5; j++) {
+      dummy.position.set(-((c % 7) - 3) * 2.4 - (j - 2) * 0.4, c < 7 ? 2.3 : 1.85, 0);
+      dummy.updateMatrix();
+      copies.setMatrixAt(c * 5 + j, dummy.matrix);
+    }
+  }
+  copies.frustumCulled = false;
+  holo.add(copies);
+  const copyColor = new THREE.Color();
+  let copiesBad = null;
+  const paintCopies = (bad) => {
+    for (let c = 0; c < NODES; c++) {
+      for (let j = 0; j < 5; j++) copies.setColorAt(c * 5 + j, copyColor.setHex(bad && c === 0 && j >= 2 ? COLORS.bad : COLORS.ok));
+    }
+    copies.instanceColor.needsUpdate = true;
+  };
+  const copiesLabel = plate(13, 0.42, 1950, 63);
+  copiesLabel.ctx.fillStyle = '#c9d2e2';
+  copiesLabel.ctx.font = '600 40px "IBM Plex Mono", Menlo, monospace';
+  copiesLabel.ctx.fillText('LES 14 COPIES DU RÉSEAU · LA PREMIÈRE EST CELLE DE MAXIME', 8, 46);
+  copiesLabel.tex.needsUpdate = true;
+  copiesLabel.mesh.position.set(1.6, 2.78, 0);
+  copiesLabel.mesh.rotation.y = Math.PI;
+  holo.add(copiesLabel.mesh);
+
   const honest = chain.blocks.map((b) => b.hash);
   const original = chain.blocks[2].data;
 
   const panel = ctx.panel(`
-    <h2>À vous : falsifiez le bloc 3</h2>
-    <label for="f-data">Données du bloc 3 dans la copie de Mallory</label>
+    <h2>Falsifie le bloc 3</h2>
+    <label for="f-data">Données du bloc 3 dans la copie de Maxime</label>
     <input id="f-data" type="text" value="${original}" spellcheck="false" autocomplete="off">
     <div class="nodes" id="f-nodes" aria-hidden="true">${'<i></i>'.repeat(NODES)}</div>
     <p id="f-state" class="lab-state" aria-live="polite"></p>
@@ -54,8 +87,8 @@ export function createSequence3(ctx) {
     const tampered = chain.blocks[2].hash !== honest[2];
     dots.forEach((d, i) => { d.className = !tampered ? 'ok' : i === 0 ? 'bad' : 'ok'; });
     $('#f-state').textContent = tampered
-      ? `Le hash du bloc 3 devient ${hashBlock(chain.blocks[2]).slice(0, 10)}…, mais le bloc 4 attend ${honest[2].slice(0, 10)}…. Les 13 autres nœuds gardent leur copie et rejettent celle de Mallory.`
-      : 'Les 14 nœuds ont la même chaîne. Le premier carré est la copie de Mallory. Remplacez 5 par 500.';
+      ? `Le hash du bloc 3 devient ${hashBlock(chain.blocks[2]).slice(0, 10)}…, mais le bloc 4 attend ${honest[2].slice(0, 10)}…. Les 13 autres nœuds gardent leur copie et rejettent celle de Maxime.`
+      : 'Les 14 nœuds ont la même chaîne. Le premier carré est la copie de Maxime. Remplace 5 par 500.';
   }
   $('#f-data').addEventListener('input', (e) => { forced = e.target.value; apply(forced); renderPanel(); });
   $('#f-reset').addEventListener('click', () => { forced = original; $('#f-data').value = original; apply(original); renderPanel(); });
@@ -66,6 +99,7 @@ export function createSequence3(ctx) {
 
   return {
     name: 'Immutabilité et falsification',
+    QUESTION: 'Et si quelqu’un modifie sa copie ?',
     lights: [{ p: [-2.4, 3.2, 3.6], color: 0xdbe3ff, i: 3.5, d: 14 }, { p: [-5.4, 3.2, 7], color: 0xe8eeff, i: 2.2, d: 12 }],
     groups: [ctx.office.group, ctx.cityGroup],
     cityLit: true,
@@ -73,7 +107,7 @@ export function createSequence3(ctx) {
     LAB: { from: 0.68, to: 0.92 },
     parent: ctx.office.group,
     actorsDef: {
-      mallory: {
+      maxime: {
         track: [
           { t: 0, x: -7, z: 6.4, face: 1.5 },
           { t: 0.14, x: -4.3, z: 6.75, face: 0.75 },
@@ -93,19 +127,17 @@ export function createSequence3(ctx) {
       { t: 0.92, pos: L(-3.4, 2.1, 4.55), look: L(-3.4, 2.05, 8.15), fov: 44 },
       { t: 1, pos: L(-2.8, 1.95, 3.1), look: L(-2.6, 1.65, 8), fov: 38 }
     ],
-    SLUGS: [{ from: 0.005, to: 1, time: '04 h 15', place: 'Tour Kern, bureau de Mallory Kern' }],
+    SLUGS: [{ from: 0.005, to: 1, time: '04 h 15', place: 'Tour Kern, bureau de Maxime Kern' }],
     LINES: [
-      { from: 0.03, to: 0.14, who: 'Inès', vo: true, text: 'Mallory Kern dirige les opérations d’un fonds. Elle tient une copie de la chaîne, comme tout le monde.' },
-      { from: 0.15, to: 0.26, who: 'Inès', vo: true, text: 'Dans le bloc 3, Bob lui a versé 5 jetons. Elle veut en faire 500.' },
-      { from: 0.27, to: 0.4, who: 'Inès', vo: true, text: 'Le contenu change, donc le hash du bloc 3 change. Le bloc 4 attendait l’ancien.' },
-      { from: 0.41, to: 0.52, who: 'Mallory', text: 'On m’avait dit qu’une blockchain était infalsifiable.' },
-      { from: 0.53, to: 0.66, who: 'Inès', vo: true, text: 'Faux. On peut modifier une copie. Mais les autres nœuds recalculent les hashes, voient l’incohérence et l’ignorent.' },
-      { from: 0.93, to: 1, who: 'Mallory', text: 'Il suffit donc de corriger tous les hashes, partout.' }
+      { from: 0.03, to: 0.14, who: 'Inès', vo: true, text: 'Maxime Kern dirige un fonds. Il garde une copie de la chaîne, comme chaque tour de la ville.' },
+      { from: 0.15, to: 0.26, who: 'Inès', vo: true, text: 'Dans le bloc 3, Julien lui a versé 5 jetons. Il veut en faire 500.' },
+      { from: 0.27, to: 0.4, who: 'Inès', vo: true, text: 'Le contenu change, donc le hash change. Le bloc 4 attendait l’ancien : sa copie devient incohérente.' },
+      { from: 0.53, to: 0.66, who: 'Inès', vo: true, text: 'Les autres nœuds recalculent, voient l’incohérence et rejettent sa copie. Ils gardent la leur.' },
+      { from: 0.93, to: 1, who: 'Maxime', text: 'Il suffirait donc de corriger toutes les copies.' }
     ],
     TERMS: [
-      { from: 0.28, to: 0.4, label: 'Notion', title: 'Détection de falsification', def: 'Une modification rend les empreintes incohérentes. N’importe quel nœud le voit en recalculant, gratuitement et sans contrôleur central.' },
       { from: 0.42, to: 0.66, label: 'Glossaire', title: 'Immutabilité', def: 'Propriété pratique selon laquelle une donnée validée est très difficile à modifier sans rendre la falsification détectable et sans refaire accepter la modification par le réseau ; cela ne signifie pas qu’elle est physiquement impossible à changer.' },
-      { from: 0.93, to: 1, label: 'Note d’audit', title: 'Le revers', def: 'Ce qui est écrit reste écrit : une erreur, un vol, une donnée personnelle (droit à l’effacement, CNIL). Après The DAO en 2016, Ethereum n’a pu revenir en arrière qu’en se scindant.' }
+      { from: 0.93, to: 1, label: 'À retenir', title: 'Une falsification se voit', def: 'Les autres nœuds la rejettent. Le revers : ce qui est écrit reste écrit, erreurs comprises.' }
     ],
     enter() { holo.visible = true; },
     leave() { holo.visible = false; },
@@ -113,7 +145,7 @@ export function createSequence3(ctx) {
       holo.visible = true;
       const tamperedByScroll = t > 0.3 && t < 0.68;
       if (t < 0.68) {
-        if (wasTampered !== tamperedByScroll) { apply(tamperedByScroll ? 'Bob → Mallory : 500 jetons' : original); wasTampered = tamperedByScroll; }
+        if (wasTampered !== tamperedByScroll) { apply(tamperedByScroll ? 'Julien → Maxime : 500 jetons' : original); wasTampered = tamperedByScroll; }
       } else if (wasTampered !== 'lab') {
         apply(forced ?? original);
         renderPanel();
@@ -122,6 +154,9 @@ export function createSequence3(ctx) {
       const o = curve([[0.14, 0], [0.22, 1]], t);
       // La cascade progresse d'un maillon a l'autre
       const bad = chain.blocks[2].hash !== honest[2];
+      if (bad !== copiesBad) { copiesBad = bad; paintCopies(bad); }
+      copies.material.opacity = o;
+      copiesLabel.mesh.material.opacity = o;
       blocks.forEach((g, i) => {
         g.setOpacity(o);
         let col = COLORS.info;

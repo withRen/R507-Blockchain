@@ -17,7 +17,6 @@ export function createFigure(spec) {
   const {
     skin = 0xd9ab8e,
     hair = 0x201814,
-    eyes = 0x3b4d63,
     jacket = 0x1b2130,
     shirt = 0xcfd3db,
     trousers = 0x161a24,
@@ -88,49 +87,30 @@ export function createFigure(spec) {
   const eyeKit = hk;
   const headMetal = hk;
 
-  const skinDark = new THREE.Color(skin).multiplyScalar(0.76).getHex();
-  const skinWarm = new THREE.Color(skin).lerp(new THREE.Color(0xc46b5e), 0.22).getHex();
-  const lipUpper = new THREE.Color(skin).lerp(new THREE.Color(0x8f4642), 0.38).getHex();
-  const lipLower = new THREE.Color(skin).lerp(new THREE.Color(0xa6554e), 0.32).getHex();
+  // Visage volontairement simple : des volumes lisses, sans pommettes ni levres sculptees.
+  // A cette taille, les details fins se lisaient comme des defauts.
+  const mouth = new THREE.Color(skin).multiplyScalar(0.62).getHex();
 
-  // Cou anatomique et base de la gorge
-  hk.add(new THREE.CylinderGeometry(0.05, 0.062, 0.105, 16), skin, { p: [0, 0.046, -0.004] });
-  hk.add(small, skinDark, { p: [0, 0.088, 0.026], s: [0.048, 0.025, 0.048] });
-  // Crane, pommettes, machoire et menton
+  // Cou fin, legerement en retrait, pour qu'il se detache nettement de la machoire
+  hk.add(new THREE.CylinderGeometry(0.04, 0.047, 0.125, 16), skin, { p: [0, 0.05, -0.014] });
+  // Crane, puis une machoire plus etroite et plus haute : elle ne descend plus sur le cou
   hk.add(sphere, skin, { p: [0, 0.178, 0.006], s: [0.091, 0.116, 0.103] });
-  hk.add(medSphere, skin, { p: [0, 0.116, 0.024], s: [0.068, 0.068, 0.075] });
-  hk.add(small, skin, { p: [0, 0.082, 0.066], s: [0.026, 0.022, 0.028] }); // Menton
-  hk.add(small, skinWarm, { p: [0.052, 0.152, 0.068], s: [0.028, 0.024, 0.026] }); // Pommette G
-  hk.add(small, skinWarm, { p: [-0.052, 0.152, 0.068], s: [0.028, 0.024, 0.026] }); // Pommette D
+  hk.add(medSphere, skin, { p: [0, 0.13, 0.018], s: [0.063, 0.058, 0.07] });
+  hk.add(small, skin, { p: [0, 0.094, 0.058], s: [0.021, 0.017, 0.021] });
 
-  // Nez sculpté : arête, pointe et ailes
-  hk.box(0.016, 0.042, 0.024, skin, { p: [0, 0.174, 0.098], r: [-0.22, 0, 0] });
-  hk.add(small, skinWarm, { p: [0, 0.156, 0.111], s: [0.013, 0.012, 0.015] });
-  hk.add(small, skin, { p: [0.011, 0.154, 0.103], s: [0.008, 0.008, 0.01] });
-  hk.add(small, skin, { p: [-0.011, 0.154, 0.103], s: [0.008, 0.008, 0.01] });
+  // Nez : une simple arete
+  hk.box(0.016, 0.042, 0.024, skin, { p: [0, 0.172, 0.098], r: [-0.22, 0, 0] });
 
-  // Oreilles sculptees (pavillon, lobe)
-  hk.add(small, skin, { p: [0.092, 0.168, -0.004], r: [0, -0.18, 0.08], s: [0.012, 0.031, 0.021] });
-  hk.add(small, skinDark, { p: [0.089, 0.168, -0.002], s: [0.007, 0.018, 0.011] });
-  hk.add(small, skin, { p: [-0.092, 0.168, -0.004], r: [0, 0.18, -0.08], s: [0.012, 0.031, 0.021] });
-  hk.add(small, skinDark, { p: [-0.089, 0.168, -0.002], s: [0.007, 0.018, 0.011] });
+  // Oreilles
+  hk.add(small, skin, { p: [0.092, 0.168, -0.004], s: [0.012, 0.031, 0.021] });
+  hk.add(small, skin, { p: [-0.092, 0.168, -0.004], s: [0.012, 0.031, 0.021] });
 
-  // Arcades sourcilières et paupières
-  hk.add(small, skin, { p: [0.036, 0.2, 0.093], r: [0, -0.15, -0.05], s: [0.028, 0.008, 0.013] });
-  hk.add(small, skin, { p: [-0.036, 0.2, 0.093], r: [0, 0.15, 0.05], s: [0.028, 0.008, 0.013] });
-  hk.add(small, skinDark, { p: [0.036, 0.19, 0.095], s: [0.016, 0.005, 0.009] });
-  hk.add(small, skinDark, { p: [-0.036, 0.19, 0.095], s: [0.016, 0.005, 0.009] });
+  // Bouche : un trait discret
+  hk.add(small, mouth, { p: [0, 0.128, 0.094], s: [0.019, 0.0035, 0.007] });
 
-  // Bouche : lèvre supérieure et lèvre inférieure
-  hk.add(small, lipUpper, { p: [0, 0.131, 0.093], s: [0.023, 0.0045, 0.009] });
-  hk.add(small, lipLower, { p: [0, 0.124, 0.092], s: [0.021, 0.0055, 0.009] });
-
-  // Yeux : sclère blanche, iris coloré et pupille
+  // Yeux : deux points sombres
   [1, -1].forEach((sgn) => {
-    const ex = sgn * 0.035;
-    eyeKit.add(small, 0xf2f4f8, { p: [ex, 0.185, 0.092], s: [0.0135, 0.0085, 0.009] });
-    eyeKit.add(small, eyes, { p: [ex, 0.185, 0.0975], s: [0.0072, 0.0072, 0.004] });
-    eyeKit.add(small, 0x07090d, { p: [ex, 0.185, 0.0998], s: [0.0038, 0.0038, 0.0025] });
+    eyeKit.add(small, 0x14161b, { p: [sgn * 0.035, 0.186, 0.094], s: [0.008, 0.0095, 0.006] });
   });
 
   // Sourcils dans le maillage capillaire
@@ -247,12 +227,12 @@ export function createFigure(spec) {
 
 // ---------- La distribution ----------
 export const CAST = {
-  // Alice Vasseur : auditrice. Long manteau anthracite, echarpe bleue, carre net
-  alice: {
+  // Léa Vasseur : auditrice. Long manteau anthracite, echarpe bleue, carre net
+  lea: {
     seed: 0.41, height: 0.98, shoulders: 0.88, skin: 0xe0b69e, hair: 0x181315, eyes: 0x4a6b8c, jacket: 0x1d222d, trousers: 0x12141a, shirt: 0xcfd3db,
     style: {
       torso(k, { hipY, torsoH, sw }) {
-        k.add(new THREE.CylinderGeometry(0.076, 0.088, 0.078, 16, 1, false, Math.PI * 0.15, Math.PI * 1.7), 0x161a22, { p: [0, hipY + torsoH + 0.025, -0.008] });
+        k.add(new THREE.CylinderGeometry(0.058, 0.072, 0.05, 16, 1, false, Math.PI * 0.15, Math.PI * 1.7), 0x161a22, { p: [0, hipY + torsoH + 0.014, -0.012] });
         k.add(new THREE.CylinderGeometry(sw * 0.78, sw * 1.08, 0.58, 20), 0x1e232e, { p: [0, hipY - 0.22, 0], s: [1, 1, 0.66] });
         k.box(0.062, 0.26, 0.018, 0x283870, { p: [0.038, hipY + torsoH - 0.12, sw * 0.6], r: [0, 0, -0.06] });
       },
@@ -264,8 +244,8 @@ export const CAST = {
       }
     }
   },
-  // Bob Lemoine : dirigeant. Grand, costume marine ouvert, cravate ardoise, cheveux gris courts
-  bob: {
+  // Julien Lemoine : dirigeant. Grand, costume marine ouvert, cravate ardoise, cheveux gris courts
+  julien: {
     seed: 0.77, height: 1.06, shoulders: 1.16, skin: 0xc99a7c, hair: 0x74767c, eyes: 0x4e6478, jacket: 0x1b2743, trousers: 0x172036, shirt: 0xe6e6e6,
     style: {
       torso(k, { hipY, torsoH, sw, metal }) {
@@ -309,8 +289,8 @@ export const CAST = {
       }
     }
   },
-  // Mallory Kern : directrice des operations. Long manteau rouge bordeaux, haut col structure, double boutonnage or
-  mallory: {
+  // Maxime Kern : directeur des operations. Long manteau rouge bordeaux, haut col structure, cheveux courts
+  maxime: {
     seed: 0.62, height: 1.0, shoulders: 0.9, skin: 0xdcb7a1, hair: 0x120d0d, eyes: 0x3b593f, jacket: 0x5e1519, trousers: 0x151014, shirt: 0x21181a, buckle: 0xd4af6a,
     style: {
       torso(k, { hipY, torsoH, sw, leather, metal }) {
@@ -324,10 +304,8 @@ export const CAST = {
         });
       },
       head(k, { hair }) {
-        k.add(sphere, hair, { p: [0, 0.202, -0.018], s: [0.1, 0.112, 0.108] });
-        k.add(sphere, hair, { p: [0, 0.112, -0.058], s: [0.098, 0.135, 0.068] });
-        k.add(medSphere, hair, { p: [0.078, 0.135, 0.012], s: [0.028, 0.095, 0.048] });
-        k.add(medSphere, hair, { p: [-0.078, 0.135, 0.012], s: [0.028, 0.095, 0.048] });
+        k.add(sphere, hair, { p: [0, 0.208, -0.016], s: [0.097, 0.096, 0.104] });
+        k.add(medSphere, hair, { p: [0, 0.25, 0.02], s: [0.08, 0.034, 0.076] });
       }
     }
   },
@@ -353,7 +331,7 @@ export const CAST = {
         k.add(sphere, hair, { p: [0, 0.206, -0.014], s: [0.098, 0.096, 0.104] });
         k.add(medSphere, hair, { p: [0, 0.248, 0.025], s: [0.082, 0.038, 0.075] });
         // Barbe complete et moustache sculptees
-        k.add(medSphere, hair, { p: [0, 0.114, 0.046], s: [0.076, 0.062, 0.068] });
+        k.add(medSphere, hair, { p: [0, 0.124, 0.028], s: [0.067, 0.054, 0.068] });
         k.add(small, hair, { p: [0, 0.138, 0.094], s: [0.028, 0.008, 0.012] });
       }
     }

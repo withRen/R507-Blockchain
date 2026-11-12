@@ -85,8 +85,9 @@ export function createEpilogue(ctx) {
     <button id="e-top" type="button" class="ghost">Revoir depuis le début</button>`);
   panel.querySelector('#e-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'auto' }));
 
-  return {
+  const seq = {
     name: 'Épilogue',
+    QUESTION: 'Et les quarante millions ?',
     lights: [
       { p: [-1, 3.6, 7.2], color: 0xc8d6ff, i: 3.6, d: 18 },
       { p: [6, 3.2, 11.5], color: 0xffb87a, i: 2.6, d: 16 },
@@ -100,8 +101,8 @@ export function createEpilogue(ctx) {
     labStop: 0.98,
     parent: group,
     actorsDef: {
-      alice: { track: [{ t: 0, x: -1.3, z: 9.2, face: 2.9 }, { t: 0.06, x: -1.3, z: 9.6, face: 0.2 }, { t: 1, x: -1.3, z: 9.6, face: 0.2 }] },
-      bob: { track: [{ t: 0, x: 0.2, z: 9.8, face: -0.5 }, { t: 1, x: 0.2, z: 9.8, face: -0.5 }] },
+      lea: { track: [{ t: 0, x: -1.3, z: 9.2, face: 2.9 }, { t: 0.06, x: -1.3, z: 9.6, face: 0.2 }, { t: 1, x: -1.3, z: 9.6, face: 0.2 }] },
+      julien: { track: [{ t: 0, x: 0.2, z: 9.8, face: -0.5 }, { t: 1, x: 0.2, z: 9.8, face: -0.5 }] },
       ines: { track: [{ t: 0, x: 2.2, z: 11.6, face: 0.1 }, { t: 1, x: 2.2, z: 11.6, face: 0.1 }] }
     },
     CAMERA: [
@@ -112,12 +113,19 @@ export function createEpilogue(ctx) {
     ],
     SLUGS: [{ from: 0.005, to: 1, time: '07 h 10', place: 'Toit de la tour Meridian' }],
     LINES: [
-      { from: 0.03, to: 0.15, who: 'Bob', text: 'Et mes quarante millions ?' },
-      { from: 0.16, to: 0.31, who: 'Alice', text: 'Ils étaient dans l’ancien registre. Une blockchain ne protège que ce qu’on y a écrit.' },
-      { from: 0.32, to: 0.5, who: 'Inès', text: 'Elle ne dit pas la vérité. Elle dit ce qui a été écrit et dans quel ordre, sans demander à personne de le garder.' },
-      { from: 0.51, to: 0.7, who: 'Inès', text: 'Lente, chère, publique, sans recours si on perd sa clé. Si vous avez confiance en un Gaspard, une base de données coûte moins cher.' }
+      { from: 0.03, to: 0.15, who: 'Julien', text: 'Et mes quarante millions ?' },
+      { from: 0.16, to: 0.31, who: 'Léa', text: 'Ils étaient dans l’ancien registre. Une blockchain ne protège que ce qu’on y écrit.' },
+      { from: 0.32, to: 0.5, who: 'Inès', text: 'Mais rejouons 23 h 12 avec 14 copies : la ligne modifiée ne correspond plus aux 13 autres. Elle est rejetée, et tout le monde le voit.' },
+      { from: 0.51, to: 0.7, who: 'Inès', text: 'Ce n’est pas magique : c’est lent, coûteux, sans recours si on perd sa clé. Si tu fais confiance à un Gaspard, une simple base de données suffit.' }
     ],
-    TERMS: [],
-    update() {}
+    TERMS: [
+      { from: 0.32, to: 0.5, label: 'Et avec une blockchain ?', title: 'La modification est rejetée', def: 'Treize copies sur quatorze disent encore quarante millions. La copie modifiée est seule contre toutes : la tour qui clignote.' }
+    ],
+    update(t, time) {
+      // On rejoue 23 h 12 : une tour porte la copie modifiee, elle clignote seule face aux 13 autres
+      const replay = t > 0.32 && t < 0.5;
+      seq.heroLevel = (i) => (replay && i === 5 ? 0.12 + 0.12 * Math.sin(time * 9) : 0.9);
+    }
   };
+  return seq;
 }

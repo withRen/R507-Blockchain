@@ -21,7 +21,10 @@ export function plate(w, h, cw, ch) {
 }
 
 // Un bloc de verre : un volume teinte, ses aretes et une face ou s'affiche son contenu
-export function glassBlock({ w = 3, h = 1.9, d = 0.85, tint = COLORS.info } = {}) {
+// Le gabarit unique du bloc : memes proportions dans toutes les sequences
+export const BLOCK = { w: 3.05, h: 2.1, d: 0.85 };
+
+export function glassBlock({ w = BLOCK.w, h = BLOCK.h, d = BLOCK.d, tint = COLORS.info } = {}) {
   const group = new THREE.Group();
   const geo = new THREE.BoxGeometry(w, h, d);
   const glass = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: tint, transparent: true, opacity: 0.14, depthWrite: false }));
@@ -34,8 +37,8 @@ export function glassBlock({ w = 3, h = 1.9, d = 0.85, tint = COLORS.info } = {}
   group.add(glass, edges, face.mesh);
   return {
     group, glass, edges, face,
+    // L'etat du bloc se lit sur ses aretes : le verre garde toujours la meme teinte
     setTint(hex) {
-      glass.material.color.setHex(hex);
       edges.material.color.setHex(hex).multiplyScalar(1.6);
     },
     setOpacity(o) {
@@ -82,16 +85,18 @@ export function drawChainFace(block, b, i, { parentOk = true, editedData = false
     ctx.fillStyle = color;
     ctx.fillText(value, 44, y + 46);
   };
-  const step = (H - 110) / 3;
-  row('Hash du bloc parent', shortHash(b.parent), 110 + step * 0.32, parentOk ? '#c9d2e2' : '#ff5a50');
-  row('Données', b.data, 110 + step * 1.32, editedData ? '#ffb347' : '#ffffff');
-  row('Hash du bloc', shortHash(b.hash), 110 + step * 2.32, state);
+  // Les memes champs, dans le meme ordre que le bloc de la sequence 1
+  const step = (H - 100) / 4;
+  row('Hash du bloc parent', shortHash(b.parent), 100 + step * 0.3, parentOk ? '#c9d2e2' : '#ff5a50');
+  row('Nonce', String(b.nonce), 100 + step * 1.3, '#ffb54d');
+  row('Données', b.data, 100 + step * 2.3, editedData ? '#ff5a50' : '#ffffff');
+  row('Hash du bloc', shortHash(b.hash), 100 + step * 3.3, state);
 
   tex.needsUpdate = true;
 }
 
 // Une petite chaine reelle : les hashes sont vraiment calcules
-export const TXS = ['Alice → Bob : 5 jetons', 'Clara → Théo : 12 jetons', 'Bob → Mallory : 5 jetons', 'Théo → Alice : 3 jetons', 'Hélène → Clara : 8 jetons'];
+export const TXS = ['Léa → Julien : 5 jetons', 'Clara → Théo : 12 jetons', 'Julien → Maxime : 5 jetons', 'Théo → Léa : 3 jetons', 'Hélène → Clara : 8 jetons'];
 export function createChain(txs = TXS) {
   const blocks = [];
   let parent = '0'.repeat(64);

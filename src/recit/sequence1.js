@@ -14,17 +14,17 @@ export const CAMERA = [
   { t: 0.53, pos: L(-0.2, 2.15, 4.3), look: L(0, 2.05, 0.9), fov: 34 },
   // Le hash sort du bloc
   { t: 0.6, pos: L(0, 3.1, 6.2), look: L(0, 3.35, 0.9), fov: 38 },
-  // Alice : "c'est chiffre"
+  // Léa : "c'est chiffre"
   { t: 0.66, pos: L(0.6, 1.9, 7.2), look: L(-0.6, 1.9, 0.6), fov: 38 },
   { t: 0.73, pos: L(0.5, 1.95, 7.5), look: L(-0.4, 2, 0.6), fov: 38 },
-  // A vous : le bloc occupe la droite, le panneau la gauche
+  // Exercice : le bloc occupe la droite, le panneau la gauche
   { t: 0.78, pos: L(-1.75, 2.75, 8.5), look: L(-1.75, 2.72, 0), fov: 38 },
   { t: 0.93, pos: L(-1.75, 2.75, 8.5), look: L(-1.75, 2.72, 0), fov: 38 },
   { t: 1, pos: L(0.6, 2.3, 8.4), look: L(0, 2.2, 0), fov: 40 }
 ];
 
 export const ACTORS = {
-  alice: {
+  lea: {
     track: [
       { t: 0, x: 3.1, z: 10.2, face: 3 },
       { t: 0.09, x: 3.05, z: 3.1, face: -1.05 },
@@ -61,44 +61,41 @@ export const LAB = { from: 0.755, to: 0.94 };
 export const SLUGS = [{ from: 0.005, to: 1, time: '03 h 05', place: 'Tour Meridian, salle des serveurs' }];
 
 export const LINES = [
-  { from: 0.03, to: 0.09, who: 'Alice', text: 'Ce que vous décrivez, ça existe vraiment ?' },
-  { from: 0.095, to: 0.17, who: 'Inès', text: 'Oui. Ça s’appelle une blockchain. Bitcoin fonctionne comme ça depuis 2009, sans banque et sans propriétaire.' },
-  { from: 0.175, to: 0.235, who: 'Alice', text: 'Et concrètement, c’est quoi ?' },
-  { from: 0.24, to: 0.31, who: 'Inès', text: 'Un registre découpé en blocs. Un bloc, c’est une page : un lot de transactions.' },
-  { from: 0.315, to: 0.39, who: 'Inès', text: 'Ici, votre paiement à Bob. Sur Bitcoin, ces données sont publiques : n’importe qui peut les lire.' },
-  { from: 0.395, to: 0.46, who: 'Inès', text: 'Au-dessus, l’empreinte du bloc précédent. C’est le lien avec le passé.' },
-  { from: 0.465, to: 0.53, who: 'Inès', text: 'Et le nonce : un simple nombre, qui ne veut rien dire. Les mineurs le font varier.' },
-  { from: 0.535, to: 0.6, who: 'Inès', text: 'On passe l’ensemble dans SHA-256, la fonction de hachage de Bitcoin. Il en sort le hash du bloc.' },
-  { from: 0.605, to: 0.66, who: 'Alice', text: 'Donc c’est chiffré.' },
-  { from: 0.665, to: 0.74, who: 'Inès', text: 'Non. Rien n’est caché. Le hash résume le bloc, et on ne peut pas retrouver le bloc à partir de lui.' },
-  { from: 0.95, to: 1, who: 'Alice', text: 'Et qu’est-ce qui empêche de remplacer tout le bloc, avec un nouveau hash ?' }
+  { from: 0.03, to: 0.09, who: 'Léa', text: 'Un registre que personne ne peut réécrire en douce. Ça existe ?' },
+  { from: 0.095, to: 0.17, who: 'Inès', text: 'Oui. Prenons un petit paiement, 5 jetons, et regardons comment il est protégé.' },
+  { from: 0.24, to: 0.31, who: 'Inès', text: 'Le registre est découpé en blocs. Un bloc, c’est une page : ici, les données, ton paiement à Julien.' },
+  { from: 0.395, to: 0.46, who: 'Inès', text: 'Au-dessus, l’empreinte du bloc précédent : c’est le lien avec le passé.' },
+  { from: 0.465, to: 0.53, who: 'Inès', text: 'Puis le nonce : un simple nombre. On verra au port à quoi il sert.' },
+  { from: 0.535, to: 0.6, who: 'Inès', text: 'On passe le tout dans une fonction de hachage. Il en sort le hash du bloc : son empreinte.' },
+  { from: 0.605, to: 0.66, who: 'Léa', text: 'Donc c’est chiffré.' },
+  { from: 0.665, to: 0.74, who: 'Inès', text: 'Non, tout reste lisible. Le hash résume le bloc, et la moindre modification le change complètement.' },
+  { from: 0.95, to: 1, who: 'Léa', text: 'Et si quelqu’un remplace le bloc entier, avec un nouveau hash ?' }
 ];
 
 export const TERMS = [
-  { from: 0.1, to: 0.17, label: 'Le mot', title: 'Blockchain', def: 'Un registre public découpé en blocs. Chaque bloc porte l’empreinte du précédent, et des nœuds indépendants en gardent chacun une copie.' },
-  { from: 0.245, to: 0.39, label: 'Structure', title: 'Bloc', def: 'Un lot de transactions, accompagné d’un en-tête. Une transaction dit qui transfère quoi à qui.' },
-  { from: 0.4, to: 0.46, label: 'Structure', title: 'Hash du bloc parent', def: 'Le hash du bloc précédent, recopié dans celui-ci. C’est ce qui relie les blocs entre eux.' },
   { from: 0.47, to: 0.53, label: 'Glossaire', title: 'Nonce', def: 'Valeur, souvent numérique, modifiée pendant une recherche de preuve de travail afin d’obtenir un hash respectant une difficulté donnée.' },
   { from: 0.54, to: 0.6, label: 'Glossaire', title: 'Hash', def: 'Résultat de l’application d’une fonction de hachage à des données ; il sert notamment à produire une représentation de longueur fixe et à relier des blocs.' },
   { from: 0.67, to: 0.74, label: 'Glossaire', title: 'Empreinte cryptographique', def: 'Hash utilisé comme identifiant vérifiable de données. Elle est très sensible à une modification et ne permet pas, en pratique, de retrouver les données originales.' },
-  { from: 0.945, to: 1, label: 'Note d’audit', title: 'Ce que ça ne prouve pas', def: 'Une empreinte montre que le contenu n’a pas changé, pas qu’il est vrai. Ce bloc est simplifié : un vrai bloc Bitcoin contient davantage de champs.' }
+  { from: 0.945, to: 1, label: 'À retenir', title: 'Le hash résume le bloc', def: 'La moindre modification le change complètement. Mais une empreinte prouve que rien n’a changé, pas que c’était vrai au départ.' }
 ];
 
 // Definitions affichees quand le visiteur clique sur une couche du bloc
 export const LAYER_INFO = {
-  data: { label: 'Couche cliquée', title: 'Données', def: 'Les transactions du bloc, lisibles par tous. Dépose-en une dans le bloc : le hash change.' },
+  data: { label: 'Couche cliquée', title: 'Données', def: 'Les transactions du bloc, lisibles par tous. Choisis-en une dans le panneau : le hash change.' },
   parent: { label: 'Couche cliquée', title: 'Hash du bloc parent', def: 'L’empreinte du bloc précédent. Si le passé change, ce lien ne correspond plus.' },
   nonce: { label: 'Couche cliquée', title: 'Nonce', def: 'Un simple nombre. Change-le avec + et − : tout le hash change aussi, et c’est ce qu’exploitent les mineurs.' }
 };
 
 // L'animation qui montre le hash changer tout seul, avant le mini-jeu
-export const DEMO = ['Alice → Bob : 5 jetons', 'Alice → Bob : 6 jetons', 'Alice → Bob : 50 jetons', 'Alice → Bob : 5 jeton'];
+export const DEMO = ['Léa → Julien : 5 jetons', 'Léa → Julien : 6 jetons', 'Léa → Julien : 50 jetons', 'Léa → Julien : 5 jeton'];
 
 // Le mini-jeu : des transactions presque identiques, une seule donne l'empreinte cible
 export const GAME = {
-  answer: 'Alice → Bob : 5 jetons',
+  answer: 'Léa → Julien : 5 jetons',
   nonce: 48211,
-  chips: ['Alice → Bob : 6 jetons', 'Alice → Bod : 5 jetons', 'Alice → Bob : 5 jetons', 'Alice → Bob : 50 jetons', 'alice → Bob : 5 jetons', 'Alice → Bob : 5 jeton']
+  chips: ['Léa → Julien : 6 jetons', 'Léa → Julian : 5 jetons', 'Léa → Julien : 5 jetons', 'Léa → Julien : 50 jetons', 'léa → Julien : 5 jetons', 'Léa → Julien : 5 jeton']
 };
 
 export const PARENT = '000a3f1c9e27d46b';
+
+export const QUESTION = 'De quoi est fait un bloc ?';

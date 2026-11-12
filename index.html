@@ -17,11 +17,12 @@
     <div id="fade"></div>
     <p id="loading">Chargement de la ville…</p>
     <p id="slug" aria-live="polite"><b></b><span></span></p>
+    <p id="ask" aria-live="polite"></p>
     <aside id="term" aria-live="polite"><small></small><strong></strong><p></p></aside>
-    <p id="line" aria-live="polite"><b></b><span></span></p>
+    <div id="line" aria-live="polite"><div id="face" aria-hidden="true"></div><p><b></b><span></span></p></div>
     <section id="lab" class="lab" aria-label="Retrouve la transaction">
-      <h2>À toi : retrouve la transaction</h2>
-      <p class="lab-hint">Une seule donne l’empreinte cible. Clique dessus ou glisse-la dans le bloc. Clique aussi sur une couche du bloc pour savoir à quoi elle sert.</p>
+      <h2>Retrouve la transaction</h2>
+      <p class="lab-hint">Une seule de ces transactions donne l’empreinte cible : clique pour essayer. Tu peux aussi cliquer une couche du bloc pour savoir à quoi elle sert.</p>
       <div id="lab-chips" class="chips" role="group" aria-label="Transactions candidates"></div>
       <p class="lab-out-label">Empreinte cible</p>
       <output id="lab-target" class="hash-out"></output>
@@ -40,12 +41,33 @@
       <h1>Le Registre</h1>
       <p>Prologue · Suite à 03 h 05 : la structure d’un bloc</p>
     </div>
-    <p id="hint">Fais défiler ou appuie sur Espace pour commencer</p>
-    <button id="continue" type="button">Continuer · Espace</button>
+    <p id="hint">Fais défiler pour commencer</p>
+    <button id="continue" type="button">Passer ▸</button>
     <button id="auto" type="button" aria-pressed="false">Lecture auto ▶</button>
+    <button id="sound" type="button" aria-pressed="false">Son ♪ coupé</button>
+    <button id="src-btn" type="button">Sources de cette séquence</button>
     <nav id="chain-nav" aria-label="Séquences"></nav>
+    <details id="legend" open>
+      <summary>Légende des couleurs</summary>
+      <ul>
+        <li style="--c:#5b74ff">Information</li>
+        <li style="--c:#35c98a">Valide</li>
+        <li style="--c:#ff4f45">Falsifié ou attaque</li>
+        <li style="--c:#e89a2c">Minage (travail)</li>
+        <li style="--c:#1fb4ba">Enjeu</li>
+        <li style="--c:#8f73ee">Autorité</li>
+      </ul>
+    </details>
     <div id="progress"><i></i></div>
   </div>
+  <dialog id="sources" aria-labelledby="sources-title">
+    <h2 id="sources-title">Sources</h2>
+    <div class="sources-body"></div>
+    <p class="sources-foot">
+      <a href="./sources.html" target="_blank" rel="noopener">Toutes les sources ↗</a>
+      <button class="sources-close" type="button">Fermer</button>
+    </p>
+  </dialog>
   <div id="track" aria-hidden="true"></div>
   <script type="module" src="/src/recit/main.js"></script>
 </body>

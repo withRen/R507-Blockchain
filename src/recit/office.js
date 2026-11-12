@@ -13,7 +13,7 @@ function ledgerCanvas() {
   return c;
 }
 
-const ROWS = [
+export const ROWS = [
   ['ATELIERS DUVAL', '1 204 500,00', '09:41:12', 'TX_OK · SIG_VALID'],
   ['BANQUE DU CANAL', '86 310 000,00', '10:02:55', 'TX_OK · SIG_VALID'],
   ['CLINIQUE SAINT-ROCH', '2 740 180,00', '14:18:03', 'TX_OK · SIG_VALID'],
@@ -23,7 +23,7 @@ const ROWS = [
   ['TRANSPORTS ORTEGA', '3 118 750,00', '19:50:31', 'TX_OK · SIG_VALID']
 ];
 
-// L'ecran d'Alice : une base centrale ordinaire. Pas de hash ni de noeuds ici, ils n'arrivent
+// L'ecran d'Léa : une base centrale ordinaire. Pas de hash ni de noeuds ici, ils n'arrivent
 // que plus tard dans l'histoire : c'est justement ce qui manque a ce registre.
 function drawLedger(c, changed) {
   const x = c.getContext('2d');
@@ -211,7 +211,7 @@ export function createOffice(scene) {
   deskSpots.forEach(([x, z], i) => {
     screens.box(0.42, 0.012, 0.15, 0x161922, { p: [x - 0.1, 1.025, z - 0.02] });
     screens.box(0.07, 0.012, 0.11, 0x1e222e, { p: [x + 0.24, 1.025, z - 0.02] });
-    if (x === 4 && z === -2.5) return; // Bureau d'Alice traite a part
+    if (x === 4 && z === -2.5) return; // Bureau d'Léa traite a part
     const tone = i % 3 === 0 ? 0x092648 : i % 2 === 0 ? 0x061836 : 0x08101e;
     screens.box(0.96, 0.56, 0.025, 0x0c0e14, { p: [x - 0.1, 1.33, z - 0.29] });
     screens.box(0.91, 0.51, 0.028, tone, { p: [x - 0.1, 1.33, z - 0.275] });
@@ -231,7 +231,7 @@ export function createOffice(scene) {
   const stripMat = new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(0.85, 0.9, 0.98) });
   group.add(strips.mesh(stripMat, { cast: false }));
 
-  // ---------- LE POSTE D'ALICE ----------
+  // ---------- LE POSTE DE LEA ----------
   // Son ecran
   const canvas = ledgerCanvas();
   drawLedger(canvas, false);

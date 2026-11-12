@@ -60,6 +60,9 @@ export function createDirector({ score, scrollMax, reduceMotion, count }) {
   let lastGesture = 0;
   let inGesture = false; // le geste qui a lance la lecture ne doit pas la remettre en pause
 
+  const touch = window.matchMedia('(hover: none)').matches;
+  let nextLabel = '';
+
   const follow = () => {
     const y = Math.round(p * max());
     if (y === Math.round(lastY)) return;
@@ -72,12 +75,13 @@ export function createDirector({ score, scrollMax, reduceMotion, count }) {
     btnAuto.classList.toggle('on', started);
     btnAuto.setAttribute('aria-pressed', String(on));
     btnAuto.textContent = on ? 'Lecture auto ❚❚' : 'Lecture auto ▶';
-    hint.textContent = started ? 'Espace : passer · A : lecture auto' : 'Fais défiler ou appuie sur Espace pour commencer';
-    hint.classList.toggle('started', started);
+    hint.textContent = touch ? 'Fais défiler pour commencer' : 'Fais défiler, ou appuie sur Espace pour passer à la suite';
+    hint.classList.toggle('off', started);
   };
+  // Commencer ne lance plus la lecture auto : le premier geste fait simplement defiler.
+  // La lecture auto ne demarre que si le visiteur la demande (bouton ou touche A).
   const start = () => {
     started = true;
-    on = true;
     phase = 'idle';
     paintUI();
   };
@@ -90,8 +94,8 @@ export function createDirector({ score, scrollMax, reduceMotion, count }) {
     paintUI();
   };
   const toggle = () => {
-    if (!started) { start(); return; }
     if (on) { pause(); return; }
+    started = true;
     on = true;
     phase = 'idle';
     paintUI();
@@ -118,7 +122,7 @@ export function createDirector({ score, scrollMax, reduceMotion, count }) {
   // Molette, toucher, touches de defilement : le visiteur reprend la main
   const onGesture = () => {
     const now = performance.now();
-    if (!started) { start(); inGesture = true; }
+    if (!started) start();
     else if (on && !(inGesture && now - lastGesture < GESTURE_GAP)) pause();
     else if (phase === 'seek') { seekTo = null; phase = 'idle'; }
     lastGesture = now;
@@ -217,9 +221,10 @@ export function createDirector({ score, scrollMax, reduceMotion, count }) {
       if (driving) follow();
 
       const hasNext = !!nextMark(y / max());
-      const showNext = started && hasNext && (on ? phase === 'wait' : labOpen);
-      btnNext.classList.toggle('on', showNext);
-      hint.classList.toggle('off', showNext);
+      // Le bouton reste toujours visible tant qu'il y a une suite : plus besoin de deviner
+      btnNext.classList.toggle('on', hasNext);
+      const label = labOpen || phase === 'wait' ? 'Continuer ▸' : 'Passer ▸';
+      if (label !== nextLabel) { nextLabel = label; btnNext.textContent = label; }
       return driving ? p : null;
     }
   };
