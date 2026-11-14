@@ -8,7 +8,7 @@
   <meta name="description" content="Une enquête d'une nuit dans un quartier d'affaires, pour comprendre la blockchain sans prérequis.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/recit/recit.css">
 </head>
 <body>
@@ -44,10 +44,10 @@
     <p id="hint">Fais défiler pour commencer</p>
     <button id="continue" type="button">Passer ▸</button>
     <button id="auto" type="button" aria-pressed="false">Lecture auto ▶</button>
-    <button id="sound" type="button" aria-pressed="false">Son ♪ coupé</button>
+    <button id="sound" type="button" aria-pressed="false">Son coupé</button>
     <button id="src-btn" type="button">Sources de cette séquence</button>
     <nav id="chain-nav" aria-label="Séquences"></nav>
-    <details id="legend" open>
+    <details id="legend">
       <summary>Légende des couleurs</summary>
       <ul>
         <li style="--c:#5b74ff">Information</li>
@@ -61,6 +61,7 @@
     <div id="progress"><i></i></div>
     <section id="enter" aria-labelledby="enter-title" hidden>
       <div class="enter-box">
+        <div class="bars-test" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <h1 id="enter-title">Le Registre</h1>
         <p>Une nuit dans un quartier d’affaires pour comprendre la blockchain. Musique et bruitages accompagnent le récit : monte un peu le son.</p>
         <button id="enter-sound" type="button">Commencer avec le son ♪</button>

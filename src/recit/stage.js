@@ -51,46 +51,76 @@ export function glassBlock({ w = BLOCK.w, h = BLOCK.h, d = BLOCK.d, tint = COLOR
 }
 
 const shortHash = (h) => `${h.slice(0, 16)}…`;
+const PHOSPHOR = '#ffe9b8';
+const PH_DIM = '#a8946a';
+const DISPLAY = '"VT323", "IBM Plex Mono", monospace';
+
+// Fond d'ecran a tube : noir chaud, lignes de balayage, vignette, coins en equerre
+export function crtBackdrop(ctx, W, H, accent = PHOSPHOR) {
+  ctx.fillStyle = '#080603';
+  ctx.fillRect(0, 0, W, H);
+  const v = ctx.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 0.85);
+  v.addColorStop(0, 'rgba(255, 214, 140, 0.05)');
+  v.addColorStop(1, 'rgba(0, 0, 0, 0.55)');
+  ctx.fillStyle = v;
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1.5);
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 4;
+  const L = 34;
+  const m = 14;
+  [[m, m, 1, 1], [W - m, m, -1, 1], [m, H - m, 1, -1], [W - m, H - m, -1, -1]].forEach(([x, y, sx, sy]) => {
+    ctx.beginPath();
+    ctx.moveTo(x, y + sy * L); ctx.lineTo(x, y); ctx.lineTo(x + sx * L, y);
+    ctx.stroke();
+  });
+}
 
 export function drawChainFace(block, b, i, { parentOk = true, editedData = false } = {}) {
   const { ctx, canvas, tex } = block.face;
   const W = canvas.width;
   const H = canvas.height;
-  const state = parentOk ? '#35c98a' : '#ff5a50';
-  ctx.fillStyle = '#10141c';
-  ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = state;
-  ctx.fillRect(0, 0, W, 8);
+  const state = parentOk ? '#4fe3a1' : '#ff6b60';
+  crtBackdrop(ctx, W, H, parentOk ? PHOSPHOR : '#ff6b60');
 
+  // Bandeau d'en-tete en video inverse, comme un menu de magnetoscope
+  ctx.fillStyle = PHOSPHOR;
+  ctx.fillRect(34, 34, W - 68, 70);
+  ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
-  ctx.fillStyle = '#ffffff';
-  ctx.font = `600 42px ${SANS}`;
-  ctx.fillText(`Bloc ${i + 1}`, 44, 76);
+  ctx.fillStyle = '#0c0905';
+  ctx.font = `400 62px ${DISPLAY}`;
+  ctx.fillText(`BLOC ${String(i + 1).padStart(2, '0')}`, 54, 88);
   ctx.textAlign = 'right';
-  ctx.fillStyle = state;
-  ctx.font = `500 30px ${SANS}`;
-  ctx.fillText(parentOk ? 'Lien valide' : 'Lien rompu', W - 44, 74);
+  ctx.font = `600 26px ${MONO}`;
+  ctx.fillStyle = parentOk ? '#0c0905' : '#9c1b12';
+  ctx.fillText(`${parentOk ? '● LIEN VALIDE' : '✕ LIEN ROMPU'}`, W - 54, 83);
   ctx.textAlign = 'left';
 
   const row = (label, value, y, color) => {
-    ctx.fillStyle = '#8a93a3';
-    ctx.font = `400 26px ${SANS}`;
-    ctx.fillText(label, 44, y);
-    let size = 36;
-    ctx.font = `500 ${size}px ${MONO}`;
-    while (ctx.measureText(value).width > W - 88 && size > 18) {
+    ctx.fillStyle = PH_DIM;
+    ctx.font = `500 22px ${MONO}`;
+    ctx.fillText(`> ${label.toUpperCase()}`, 54, y);
+    let size = 38;
+    ctx.font = `400 ${size * 1.2}px ${DISPLAY}`;
+    while (ctx.measureText(value).width > W - 108 && size > 18) {
       size -= 2;
-      ctx.font = `500 ${size}px ${MONO}`;
+      ctx.font = `400 ${size * 1.2}px ${DISPLAY}`;
     }
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
     ctx.fillStyle = color;
-    ctx.fillText(value, 44, y + 46);
+    ctx.fillText(value, 54, y + 44);
+    ctx.shadowBlur = 0;
   };
   // Les memes champs, dans le meme ordre que le bloc de la sequence 1
-  const step = (H - 100) / 4;
-  row('Hash du bloc parent', shortHash(b.parent), 100 + step * 0.3, parentOk ? '#c9d2e2' : '#ff5a50');
-  row('Nonce', String(b.nonce), 100 + step * 1.3, '#ffb54d');
-  row('Données', b.data, 100 + step * 2.3, editedData ? '#ff5a50' : '#ffffff');
-  row('Hash du bloc', shortHash(b.hash), 100 + step * 3.3, state);
+  const top = 150;
+  const step = (H - top - 40) / 4;
+  row('Hash du bloc parent', shortHash(b.parent), top + step * 0.35, parentOk ? PHOSPHOR : '#ff6b60');
+  row('Nonce', String(b.nonce), top + step * 1.35, '#f2a93b');
+  row('Données', b.data, top + step * 2.35, editedData ? '#ff6b60' : '#ffffff');
+  row('Hash du bloc', shortHash(b.hash), top + step * 3.35, state);
 
   tex.needsUpdate = true;
 }

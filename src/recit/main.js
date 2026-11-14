@@ -18,6 +18,7 @@ import { createSourcesPopup } from './sources-popup.js';
 import { portrait } from './portraits.js';
 import { createMusic } from './music.js';
 import { sfx, installSfx, setSfxMuted, unlockSfx } from './sfx.js';
+import { bravo, hide as hideBravo } from './success.js';
 
 // Les personnages apparaissent deux fois : en silhouettes 3D dans les decors, et en portraits 2D
 // dans la boite de dialogue. Passer a false pour ne garder que les portraits.
@@ -30,7 +31,7 @@ const forcedFromUrl = params.has('seq') || params.has('t') ? true : null;
 const unaccent = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 Promise.race([
-  Promise.all(['400 40px "Newsreader"', '500 20px "Roboto"', '500 16px "IBM Plex Mono"'].map((f) => document.fonts.load(f))),
+  Promise.all(['400 40px "VT323"', '500 20px "IBM Plex Mono"', '600 16px "IBM Plex Mono"'].map((f) => document.fonts.load(f))),
   new Promise((r) => setTimeout(r, 2000))
 ]).finally(() => init());
 
@@ -214,11 +215,24 @@ async function init() {
       outNote.textContent = 'Presque le même texte, et pourtant un hash sans rapport. Aucun indice ne te dit si tu chauffes : essaie encore.';
     }
   }
+  // Verdict sonore ; la premiere bonne combinaison declenche aussi « BIEN JOUE »
+  let solvedShown = false;
+  function verdict() {
+    const ok = gameHash() === target;
+    sfx(ok ? 'success' : 'error');
+    if (ok && !solvedShown) {
+      bravo({
+        what: `Tu as retrouvé la transaction : « ${game.data} ».`,
+        why: 'Même entrée, même empreinte : rien à voir avec la ressemblance, un seul caractère changé donne un hash sans rapport. Et on ne remonte pas du hash aux données, on ne peut qu’essayer. Le minage repose là-dessus.'
+      });
+    }
+    solvedShown = ok;
+  }
   // Les 64 caracteres se figent un a un, de gauche a droite
   function flipHash() {
     room.pulse();
     const token = ++game.token;
-    if (reduceMotion || game.data === null) { showResult(); if (game.data !== null) sfx(gameHash() === target ? 'success' : 'error'); return; }
+    if (reduceMotion || game.data === null) { showResult(); if (game.data !== null) verdict(); return; }
     const h = gameHash();
     const hex = '0123456789abcdef';
     const t0 = performance.now();
@@ -227,7 +241,7 @@ async function init() {
     const run = (now) => {
       if (token !== game.token) return;
       const k = (now - t0) / DURATION;
-      if (k >= 1) { showResult(); sfx(gameHash() === target ? 'success' : 'error'); return; }
+      if (k >= 1) { showResult(); verdict(); return; }
       const settled = Math.floor(k * 64);
       const shownHash = [...h].map((ch, i) => (i < settled ? ch : hex[Math.floor(Math.random() * 16)])).join('');
       outHash.textContent = shownHash;
@@ -280,6 +294,7 @@ async function init() {
 
   // ---------- Prologue : retrouver la ligne du registre qui a change ----------
   let ledgerFound = false;
+  let ledgerCelebrated = false;
   const fake = ctx.panel(`
     <h2>Trouve la ligne qui a changé</h2>
     <p class="lab-hint">Voici le registre central à 22 h, puis à 23 h 47. Clique la ligne qui n’est plus la même.</p>
@@ -295,6 +310,13 @@ async function init() {
       if (hit) ledgerFound = true; // l'ecran 3D de Lea surligne alors la ligne en rouge
       b.classList.add(hit ? 'good' : 'tried');
       sfx(hit ? 'success' : 'error');
+      if (hit && !ledgerCelebrated) {
+        ledgerCelebrated = true;
+        bravo({
+          what: 'Tu as trouvé la ligne : LEMOINE est passé à 0,00.',
+          why: 'Quarante millions ont disparu du registre central sans laisser de trace, et personne d’autre n’en a de copie pour contredire. C’est exactement le problème qu’une blockchain résout.'
+        });
+      }
       fake.querySelector('.lab-state').textContent = hit
         ? 'Oui : quarante millions sont passés à zéro. Le registre n’en garde aucune trace, et personne d’autre n’en a de copie.'
         : 'Cette ligne n’a pas bougé. Compare les deux colonnes.';
@@ -510,6 +532,8 @@ async function init() {
   const quat = new THREE.Quaternion();
   const clock = new THREE.Clock();
   let active = null;
+  let viewK = 0;
+  let viewActive = false;
   // Le mode ?seq= ou ?t= fige l'image : pas de lecture automatique
   const director = forced === null
     ? createDirector({ score: buildScore(sequences), scrollMax, reduceMotion, count: COUNT })
@@ -518,6 +542,7 @@ async function init() {
   function activate(seq) {
     if (active === seq) return;
     active?.leave?.();
+    hideBravo();
     if (active) active.labOpen = false;
     // Tous les panneaux se referment au changement de sequence, y compris ceux
     // qu'une sequence ouvre elle-meme : la sequence active rouvre les siens juste apres
@@ -655,6 +680,23 @@ async function init() {
       resize();
     }
     bar.style.transform = `scaleX(${shown.toFixed(4)})`;
+
+    // Quand la console d'epreuve est ouverte, la scene se recadre dans la zone libre
+    // (a droite de la console, entre la barre du haut et la platine) au lieu de passer dessous
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    const wantConsole = W > 700 && !!stageUI.querySelector('.lab.on:not(.steps-panel)');
+    viewK += ((wantConsole ? 1 : 0) - viewK) * (reduceMotion ? 1 : 1 - Math.exp(-dt * 7));
+    if (viewK < 0.002) {
+      if (viewActive) { camera.clearViewOffset(); viewActive = false; }
+    } else {
+      const C = W <= 960 ? Math.min(360, W) : 410;
+      const s = 1 - 0.16 * viewK;
+      const cx = W / 2 + (C / 2) * viewK;
+      const cy = H / 2 + 15 * viewK;
+      camera.setViewOffset(W * s, H * s, -(cx - (W * s) / 2), -(cy - (H * s) / 2), W, H);
+      viewActive = true;
+    }
 
     renderer.render(scene, camera);
     window.__recitStats = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs.length };

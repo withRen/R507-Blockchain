@@ -25,7 +25,7 @@ export function createMusic(button, onChange = () => {}) {
 
   const paint = () => {
     button.setAttribute('aria-pressed', String(on));
-    button.textContent = !on ? 'Son ♪ coupé' : missing.has(track()) ? 'Son ♪ piste absente' : 'Son ♪ activé';
+    button.textContent = !on ? 'Son coupé' : missing.has(track()) ? 'Son : piste absente' : 'Son activé';
   };
   // Index de la piste jouee par la sequence en cours
   const track = () => (current >= 0 ? TRACKS.indexOf(NAMES[current]) : -1);

@@ -3,7 +3,7 @@
 // de son contenu et n'y est pas stocke.
 import * as THREE from 'three';
 import { Kit, flat } from './kit.js';
-import { BLOCK, closedRoom, plate, rackFaces } from './stage.js';
+import { BLOCK, closedRoom, crtBackdrop, plate, rackFaces } from './stage.js';
 
 const FIELD = {
   parent: { label: 'HASH DU BLOC PARENT', sub: 'LE LIEN AVEC LE BLOC PRÉCÉDENT', color: '#9db0ff', tint: 0x5b74ff },
@@ -119,29 +119,29 @@ export function createServerRoom(scene) {
     const { ctx, canvas, tex } = L.face;
     L.value = value;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = active ? 'rgba(30, 44, 88, 0.52)' : 'rgba(8, 12, 24, 0.72)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = active ? '#8ca4ff' : 'rgba(140, 164, 255, 0.28)';
-    ctx.lineWidth = active ? 3 : 1.5;
-    ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
+    crtBackdrop(ctx, canvas.width, canvas.height, active ? '#ffffff' : '#ffe9b8');
+    if (active) { ctx.fillStyle = 'rgba(255, 233, 184, 0.1)'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
 
-    ctx.fillStyle = L.f.color;
-    ctx.font = '600 28px "IBM Plex Mono", Menlo, monospace';
-    ctx.fillText(L.f.label, 34, 52);
+    ctx.fillStyle = '#ffe9b8';
+    ctx.font = '400 40px "VT323", "IBM Plex Mono", monospace';
+    ctx.fillText(`> ${L.f.label.toUpperCase()}`, 44, 62);
     ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(185, 195, 216, 0.68)';
-    ctx.font = '400 21px "IBM Plex Mono", Menlo, monospace';
-    ctx.fillText(L.f.sub, canvas.width - 34, 50);
+    ctx.fillStyle = '#a8946a';
+    ctx.font = '500 21px "IBM Plex Mono", Menlo, monospace';
+    ctx.fillText(L.f.sub, canvas.width - 44, 56);
     ctx.textAlign = 'left';
 
-    ctx.fillStyle = '#f4f6fb';
-    ctx.font = '500 58px "IBM Plex Mono", Menlo, monospace';
-    let size = 58;
-    while (ctx.measureText(value).width > 950 && size > 24) {
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = L.f.color;
+    ctx.shadowBlur = 14;
+    let size = 76;
+    ctx.font = `400 ${size}px "VT323", "IBM Plex Mono", monospace`;
+    while (ctx.measureText(value).width > 930 && size > 28) {
       size -= 2;
-      ctx.font = `500 ${size}px "IBM Plex Mono", Menlo, monospace`;
+      ctx.font = `400 ${size}px "VT323", "IBM Plex Mono", monospace`;
     }
-    ctx.fillText(value, 34, 144);
+    ctx.fillText(value, 44, 148);
+    ctx.shadowBlur = 0;
     tex.needsUpdate = true;
   };
 
@@ -155,20 +155,16 @@ export function createServerRoom(scene) {
   const drawHash = (hash, previous, solved = false) => {
     const { ctx, canvas, tex } = hashPlate;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(5, 15, 14, 0.88)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = 'rgba(98, 214, 160, 0.5)';
-    ctx.lineWidth = 2.5;
-    ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
-    ctx.fillStyle = '#62d6a0';
-    ctx.font = '600 27px "IBM Plex Mono", Menlo, monospace';
-    ctx.fillText('HASH DU BLOC · SHA-256 · CALCULÉ À PARTIR DU CONTENU', 34, 52);
+    crtBackdrop(ctx, canvas.width, canvas.height, solved ? '#4fe3a1' : '#ffe9b8');
+    ctx.fillStyle = '#ffe9b8';
+    ctx.font = '400 36px "VT323", "IBM Plex Mono", monospace';
+    ctx.fillText('> HASH DU BLOC · SHA-256 · CALCULÉ À PARTIR DU CONTENU', 44, 56);
     ctx.font = '500 39px "IBM Plex Mono", Menlo, monospace';
     const lineChars = 32;
     [...hash].forEach((ch, i) => {
       const row = i < lineChars ? 0 : 1;
       const col = i % lineChars;
-      ctx.fillStyle = solved ? '#7bf0b8' : previous && previous[i] !== ch ? '#ff7a6e' : '#e9f7f0';
+      ctx.fillStyle = solved ? '#7bf0b8' : previous && previous[i] !== ch ? '#ff7a6e' : '#ffe9b8';
       ctx.fillText(ch, 34 + col * 45, 116 + row * 62);
     });
     tex.needsUpdate = true;

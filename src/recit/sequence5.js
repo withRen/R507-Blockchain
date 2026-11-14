@@ -2,10 +2,11 @@
 // La hauteur des essais suit la vraie loi : chaque zero de plus est 16 fois plus rare.
 import * as THREE from 'three';
 import { Kit, flat } from './kit.js';
-import { closedRoom, COLORS, glassBlock, plate, rackFaces } from './stage.js';
+import { closedRoom, COLORS, crtBackdrop, glassBlock, plate, rackFaces } from './stage.js';
 import { curve } from './timeline.js';
 import { createMiner, hashBlock, meetsDifficulty } from '../lib/blockchain.js';
 import { sfx } from './sfx.js';
+import { bravo } from './success.js';
 
 const Y = 20;
 const L = (x, y, z) => [x + 200, y + Y, z];
@@ -157,6 +158,11 @@ export function createSequence5(ctx) {
       drawScreen(foundBlock.nonce, miner.lastHash, done);
       if (!done) { sfx('tick', 70); requestAnimationFrame(tick); return; }
       sfx('found');
+      bravo({
+        sound: false,
+        what: `Bloc trouvé en ${fr(miner.attempts)} essais : son hash commence par ${difficulty} zéros.`,
+        why: 'Il n’y a aucun raccourci : il faut essayer des nonces au hasard. Mais un seul calcul suffit à vérifier le résultat, et c’est ce qui rend la triche coûteuse.'
+      });
       mining = false;
       minedLevel = 1;
       $('#m-go').disabled = false;
@@ -178,16 +184,11 @@ export function createSequence5(ctx) {
 
   const drawCand = (found) => {
     const { ctx: x, canvas, tex } = cand.face;
-    x.clearRect(0, 0, canvas.width, canvas.height);
-    x.fillStyle = 'rgba(14, 10, 7, 0.88)';
-    x.fillRect(0, 0, canvas.width, canvas.height);
-    x.strokeStyle = found ? 'rgba(123, 240, 184, 0.6)' : 'rgba(255, 184, 96, 0.5)';
-    x.lineWidth = 3;
-    x.strokeRect(6, 6, canvas.width - 12, canvas.height - 12);
+    crtBackdrop(x, canvas.width, canvas.height, found ? '#7bf0b8' : '#ffb860');
     x.fillStyle = found ? '#7bf0b8' : '#ffb860';
-    x.font = `600 38px ${MONO}`;
-    x.fillText(found ? 'BLOC VALIDE' : 'BLOC CANDIDAT', 34, 62);
-    x.fillStyle = '#f2ece2';
+    x.font = '400 56px "VT323", "IBM Plex Mono", monospace';
+    x.fillText(found ? '> BLOC VALIDE' : '> BLOC CANDIDAT', 44, 68);
+    x.fillStyle = '#ffe9b8';
     x.font = `500 36px ${MONO}`;
     ['Récompense → Théo', 'Léa → Julien : 5 jetons', 'Clara → Théo : 12 jetons', 'Frais → Théo'].forEach((s, i) => x.fillText(s, 34, 138 + i * 66));
     tex.needsUpdate = true;
