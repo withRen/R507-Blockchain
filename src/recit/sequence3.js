@@ -5,6 +5,7 @@ import { COLORS, createChain, drawChainFace, filament, glassBlock, plate } from 
 import { curve } from './timeline.js';
 import { MERIDIAN } from './city.js';
 import { hashBlock } from '../lib/blockchain.js';
+import { sfx } from './sfx.js';
 
 const F = MERIDIAN.floorY;
 const L = (x, y, z) => [x, y + F, z];
@@ -71,10 +72,11 @@ export function createSequence3(ctx) {
     <input id="f-data" type="text" value="${original}" spellcheck="false" autocomplete="off">
     <div class="nodes" id="f-nodes" aria-hidden="true">${'<i></i>'.repeat(NODES)}</div>
     <p id="f-state" class="lab-state" aria-live="polite"></p>
-    <button id="f-reset" type="button" class="ghost">Remettre le bloc d’origine</button>`);
+    <button id="f-reset" type="button" class="ghost" data-sfx="1">Remettre le bloc d’origine</button>`);
   const $ = (s) => panel.querySelector(s);
   const dots = [...panel.querySelectorAll('.nodes i')];
   let forced = null;
+  let alarmed = false;
 
   function apply(text) {
     chain.blocks[2].data = text;
@@ -85,6 +87,7 @@ export function createSequence3(ctx) {
   }
   function renderPanel() {
     const tampered = chain.blocks[2].hash !== honest[2];
+    if (tampered !== alarmed) { sfx(tampered ? 'error' : 'success'); alarmed = tampered; }
     dots.forEach((d, i) => { d.className = !tampered ? 'ok' : i === 0 ? 'bad' : 'ok'; });
     $('#f-state').textContent = tampered
       ? `Le hash du bloc 3 devient ${hashBlock(chain.blocks[2]).slice(0, 10)}…, mais le bloc 4 attend ${honest[2].slice(0, 10)}…. Les 13 autres nœuds gardent leur copie et rejettent celle de Maxime.`

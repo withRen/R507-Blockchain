@@ -4,6 +4,7 @@ import { Kit, flat } from './kit.js';
 import { COLORS, plate } from './stage.js';
 import { curve } from './timeline.js';
 import { MERIDIAN } from './city.js';
+import { sfx } from './sfx.js';
 
 const F = MERIDIAN.floorY;
 const L = (x, y, z) => [x, y + F, z];
@@ -116,7 +117,7 @@ export function createSequence6(ctx) {
   const panel = ctx.panel(`
     <h2>Produis 100 blocs</h2>
     <p class="lab-hint">Cinq participants, A à E. A pèse 40 %, B 25 %, C 15 %, D 12 % et E 8 %.</p>
-    <button id="k-go" type="button">Produire 100 blocs avec chaque méthode</button>
+    <button id="k-go" type="button" data-sfx="1">Produire 100 blocs avec chaque méthode</button>
     <div id="k-out" class="bars" aria-live="polite"></div>
     <table class="compare"><thead><tr><th></th><th>PoW</th><th>PoS</th><th>PoA</th></tr></thead><tbody>
     <tr><th>Énergie</th><td>Élevée</td><td>Faible</td><td>Faible</td></tr>
@@ -124,13 +125,14 @@ export function createSequence6(ctx) {
     <tr><th>Tricher coûte</th><td>L’électricité</td><td>La mise</td><td>Corrompre la majorité</td></tr>
     </tbody></table>
     <p class="lab-out-label">Autorité : essaie de corrompre des signataires</p>
-    <div id="k-sign" class="signers" role="group" aria-label="Signataires">${'ABCDE'.split('').map((s) => `<button type="button" aria-pressed="false">${s}</button>`).join('')}</div>
+    <div id="k-sign" class="signers" role="group" aria-label="Signataires">${'ABCDE'.split('').map((s) => `<button type="button" aria-pressed="false" data-sfx="1">${s}</button>`).join('')}</div>
     <p id="k-bribe" class="lab-state" aria-live="polite">Les cinq signataires écrivent à tour de rôle. Clique pour en corrompre.</p>`);
   // Corrompre un signataire ne suffit pas : les autres refusent son faux bloc au tour suivant
   const signers = [...panel.querySelectorAll('#k-sign button')];
   signers.forEach((b) => b.addEventListener('click', () => {
     b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
     const n = signers.filter((s) => s.getAttribute('aria-pressed') === 'true').length;
+    sfx(n >= 3 && b.getAttribute('aria-pressed') === 'true' ? 'alarm' : 'click');
     panel.querySelector('#k-bribe').textContent = n === 0
       ? 'Les cinq signataires écrivent à tour de rôle. Clique pour en corrompre.'
       : n < 3
@@ -144,6 +146,7 @@ export function createSequence6(ctx) {
     return weights.length - 1;
   };
   panel.querySelector('#k-go').addEventListener('click', () => {
+    sfx('whoosh');
     const wins = { pow: [0, 0, 0, 0, 0], pos: [0, 0, 0, 0, 0], poa: [0, 0, 0, 0, 0] };
     const stake = [...SHARES];
     for (let k = 0; k < 100; k++) {

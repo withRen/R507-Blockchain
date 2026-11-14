@@ -2,6 +2,7 @@
 // Les impulsions suivent reellement le graphe : plus un noeud est loin, plus elle arrive tard.
 import * as THREE from 'three';
 import { curve } from './timeline.js';
+import { sfx } from './sfx.js';
 
 export function createSequence4(ctx) {
   const graph = ctx.city.graph();
@@ -33,21 +34,26 @@ export function createSequence4(ctx) {
     <p class="lab-out-label">Nœuds qui l’ont reçue</p>
     <output id="n-count" class="big-num">0 / 14</output>
     <p id="n-state" class="lab-state" aria-live="polite">Aucun nœud n’est au centre : chacun garde sa copie et ne parle qu’à quelques voisins.</p>
-    <button id="n-meridian" type="button" class="ghost">Couper la tour Meridian</button>
-    <button id="n-reset" type="button" class="ghost">Tout rallumer</button>`);
+    <button id="n-meridian" type="button" class="ghost" data-sfx="1">Couper la tour Meridian</button>
+    <button id="n-reset" type="button" class="ghost" data-sfx="1">Tout rallumer</button>`);
   const $ = (s) => panel.querySelector(s);
   let now = 0;
+  let userWave = false;
+  let lastReached = 0;
   const send = () => {
     const alive = [];
     for (let i = 0; i < N; i++) if (!cut.has(i)) alive.push(i);
     source = alive[Math.floor(Math.random() * alive.length)] ?? 0;
     bfs();
     waveStart = now;
+    userWave = true;
+    lastReached = 0;
   };
   $('#n-send').addEventListener('click', send);
   const syncMeridian = () => { $('#n-meridian').textContent = cut.has(0) ? 'Rallumer la tour Meridian' : 'Couper la tour Meridian'; };
   const toggle = (i) => {
     if (cut.has(i)) cut.delete(i); else cut.add(i);
+    sfx(cut.has(i) ? 'off' : 'on');
     syncMeridian();
     bfs();
     $('#n-state').textContent = cut.size
@@ -55,7 +61,7 @@ export function createSequence4(ctx) {
       : 'Tous les nœuds sont allumés.';
   };
   $('#n-meridian').addEventListener('click', () => toggle(0));
-  $('#n-reset').addEventListener('click', () => { cut.clear(); syncMeridian(); bfs(); $('#n-state').textContent = 'Tous les nœuds sont allumés.'; });
+  $('#n-reset').addEventListener('click', () => { if (cut.size) sfx('on'); cut.clear(); syncMeridian(); bfs(); $('#n-state').textContent = 'Tous les nœuds sont allumés.'; });
 
   const seq = {
     name: 'Réseau et décentralisation',
@@ -118,6 +124,9 @@ export function createSequence4(ctx) {
       const elapsed = time - waveStart;
       let reached = 0;
       depth.forEach((d) => { if (d >= 0 && elapsed >= d * STEP) reached++; });
+      if (userWave && seq.labOpen && reached > lastReached) sfx('ping', 40);
+      lastReached = reached;
+      if (!seq.labOpen) userWave = false;
       if (waveStart > -99) $('#n-count').textContent = `${reached} / ${N - cut.size}`;
       ctx.city.setNetwork({ depth, elapsed, step: STEP, cut, active: waveStart > -99 && elapsed < 12 });
       seq.heroLevel = (i) => (cut.has(i) ? 0 : waveStart > -99 && elapsed < 12 ? (depth[i] >= 0 && elapsed >= depth[i] * STEP ? 1 : 0.32) : 0.9);

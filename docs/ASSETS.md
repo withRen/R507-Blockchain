@@ -19,3 +19,7 @@ Les musiques sont jouées en fond, au volume 0,25 (sur 1), pour ne pas couvrir l
 |---|---|---|
 | Unraveled | Feldup | https://youtu.be/SsPhCLu9_3U |
 | Investigation/discovery | Feldup | https://youtu.be/5IAnhHgmrAI |
+
+## Bruitages
+
+Aucun fichier. Les bruitages des interactions (clic, bonne ou mauvaise réponse, lien rompu, tour coupée, propagation, minage) sont synthétisés en direct avec Web Audio (`src/recit/sfx.js`), à un volume bas.

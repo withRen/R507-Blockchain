@@ -5,6 +5,7 @@ import { Kit, flat } from './kit.js';
 import { closedRoom, COLORS, glassBlock, plate, rackFaces } from './stage.js';
 import { curve } from './timeline.js';
 import { createMiner, hashBlock, meetsDifficulty } from '../lib/blockchain.js';
+import { sfx } from './sfx.js';
 
 const Y = 20;
 const L = (x, y, z) => [x + 200, y + Y, z];
@@ -117,7 +118,7 @@ export function createSequence5(ctx) {
     <button id="m-go" type="button">Miner ce bloc</button>
     <div class="stats"><div><small>Essais</small><output id="m-count">0</output></div><div><small>Temps</small><output id="m-time">0,0 s</output></div></div>
     <p id="m-state" class="lab-state" aria-live="polite">Ton navigateur va calculer de vrais SHA-256.</p>
-    <button id="m-verify" type="button" class="ghost" disabled>Vérifier comme un nœud (un seul hash)</button>`);
+    <button id="m-verify" type="button" class="ghost" data-sfx="1" disabled>Vérifier comme un nœud (un seul hash)</button>`);
   const $ = (s) => panel.querySelector(s);
   const fr = (n) => n.toLocaleString('fr-FR');
   const showDiff = () => { $('#m-diff-out').textContent = `${$('#m-diff').value} zéros, 1 chance sur ${fr(16 ** Number($('#m-diff').value))}`; setBar(Number($('#m-diff').value)); };
@@ -154,7 +155,8 @@ export function createSequence5(ctx) {
       $('#m-count').textContent = fr(miner.attempts);
       $('#m-time').textContent = `${((performance.now() - start) / 1000).toFixed(1).replace('.', ',')} s`;
       drawScreen(foundBlock.nonce, miner.lastHash, done);
-      if (!done) { requestAnimationFrame(tick); return; }
+      if (!done) { sfx('tick', 70); requestAnimationFrame(tick); return; }
+      sfx('found');
       mining = false;
       minedLevel = 1;
       $('#m-go').disabled = false;
@@ -168,6 +170,7 @@ export function createSequence5(ctx) {
   });
   $('#m-verify').addEventListener('click', () => {
     const h = hashBlock(foundBlock);
+    sfx(meetsDifficulty(h, difficulty) ? 'success' : 'error');
     $('#m-state').textContent = `Un seul calcul : ${h.slice(0, 16)}… commence bien par ${difficulty} zéros (${meetsDifficulty(h, difficulty) ? 'valide' : 'invalide'}). Trouver a demandé ${fr(miner.attempts)} essais.`;
   });
   showDiff();

@@ -17,6 +17,7 @@ import { createDirector, buildScore } from './director.js';
 import { createSourcesPopup } from './sources-popup.js';
 import { portrait } from './portraits.js';
 import { createMusic } from './music.js';
+import { sfx, installSfx } from './sfx.js';
 
 // Les personnages apparaissent deux fois : en silhouettes 3D dans les decors, et en portraits 2D
 // dans la boite de dialogue. Passer a false pour ne garder que les portraits.
@@ -97,6 +98,7 @@ async function init() {
   const elText = elLine.querySelector('span');
   const elFace = $('#face');
   const music = createMusic($('#sound'));
+  installSfx();
   const elTerm = $('#term');
   const elTermLabel = elTerm.querySelector('small');
   const elTermTitle = elTerm.querySelector('strong');
@@ -214,7 +216,7 @@ async function init() {
   function flipHash() {
     room.pulse();
     const token = ++game.token;
-    if (reduceMotion || game.data === null) { showResult(); return; }
+    if (reduceMotion || game.data === null) { showResult(); if (game.data !== null) sfx(gameHash() === target ? 'success' : 'error'); return; }
     const h = gameHash();
     const hex = '0123456789abcdef';
     const t0 = performance.now();
@@ -223,7 +225,7 @@ async function init() {
     const run = (now) => {
       if (token !== game.token) return;
       const k = (now - t0) / DURATION;
-      if (k >= 1) { showResult(); return; }
+      if (k >= 1) { showResult(); sfx(gameHash() === target ? 'success' : 'error'); return; }
       const settled = Math.floor(k * 64);
       const shownHash = [...h].map((ch, i) => (i < settled ? ch : hex[Math.floor(Math.random() * 16)])).join('');
       outHash.textContent = shownHash;
@@ -285,10 +287,12 @@ async function init() {
     const hit = name.startsWith('LEMOINE');
     const b = document.createElement('button');
     b.type = 'button';
+    b.dataset.sfx = '1';
     b.innerHTML = `<span>${name}</span><span>${amount}</span><span>${hit ? '0,00' : amount}</span>`;
     b.addEventListener('click', () => {
       if (hit) ledgerFound = true; // l'ecran 3D de Lea surligne alors la ligne en rouge
       b.classList.add(hit ? 'good' : 'tried');
+      sfx(hit ? 'success' : 'error');
       fake.querySelector('.lab-state').textContent = hit
         ? 'Oui : quarante millions sont passés à zéro. Le registre n’en garde aucune trace, et personne d’autre n’en a de copie.'
         : 'Cette ligne n’a pas bougé. Compare les deux colonnes.';
@@ -345,6 +349,7 @@ async function init() {
       ray.setFromCamera(ndc, camera);
       const hit = ray.intersectObjects(room.pickables)[0];
       pickedLayer = hit ? hit.object.userData.layer : null;
+      if (hit) sfx('click');
       paintGame();
     },
     update(t, time) {

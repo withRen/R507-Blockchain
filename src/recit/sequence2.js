@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Kit, flat } from './kit.js';
 import { COLORS, createChain, drawChainFace, filament, glassBlock } from './stage.js';
 import { curve } from './timeline.js';
+import { sfx } from './sfx.js';
 
 const Y = 168;
 const L = (x, y, z) => [x, y + Y, z];
@@ -74,14 +75,18 @@ export function createSequence2(ctx) {
     <label for="c-data">Données du bloc 2</label>
     <input id="c-data" type="text" value="${chain.blocks[1].data}" spellcheck="false" autocomplete="off">
     <p id="c-state" class="lab-state" aria-live="polite"></p>
-    <button id="c-fix" type="button">Recopier le nouveau hash dans le bloc suivant</button>
+    <button id="c-fix" type="button" data-sfx="1">Recopier le nouveau hash dans le bloc suivant</button>
     <button id="c-reset" type="button" class="ghost">Tout remettre</button>`);
   const $ = (s) => panel.querySelector(s);
   const edited = new Set();
+  let wasBroken = false;
   function render() {
     chain.rehash();
     chain.blocks.forEach((b, i) => drawChainFace(blocks[i], b, i, { parentOk: i === 0 || chain.linkOk(i - 1), editedData: edited.has(i) }));
     let bad = chain.firstBroken();
+    if (bad >= 0 && !wasBroken) sfx('error');
+    if (bad < 0 && wasBroken) sfx('success');
+    wasBroken = bad >= 0;
     links.forEach((m, i) => m.material.color.setHex(chain.linkOk(i) ? COLORS.ok : COLORS.bad).multiplyScalar(1.7));
     blocks.forEach((g, i) => g.setTint(i > 0 && !chain.linkOk(i - 1) ? COLORS.bad : COLORS.info));
     const st = $('#c-state');
