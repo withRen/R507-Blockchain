@@ -9,16 +9,14 @@ Aucun. Les personnages 3D, les portraits 2D, la ville, les décors et les blocs 
 
 ## Musiques
 
-Le récit peut jouer une piste par séquence (`src/recit/music.js`). Les fichiers se déposent dans `public/audio/`, avec les noms listés dans `public/audio/LISEZMOI.md`.
-
-Chaque piste déposée doit être déclarée ici, avec son auteur et sa licence.
+Le récit joue une musique de fond par séquence (`src/recit/music.js`), à partir des fichiers de `public/audio/` (voir `public/audio/LISEZMOI.md`).
 
 Les musiques sont jouées en fond, au volume 0,25 (sur 1), pour ne pas couvrir les dialogues.
 
-| Titre | Auteur | Source |
-|---|---|---|
-| Unraveled | Feldup | https://youtu.be/SsPhCLu9_3U |
-| Investigation/discovery | Feldup | https://youtu.be/5IAnhHgmrAI |
+| Fichier | Titre | Auteur | Séquences | Source |
+|---|---|---|---|---|
+| `investigation-discovery.mp3` | Investigation/discovery | Feldup | Prologue, 1 à 4 | https://youtu.be/5IAnhHgmrAI |
+| `unraveled.mp3` | Unraveled | Feldup | 5 à 7, épilogue | https://youtu.be/SsPhCLu9_3U |
 
 ## Bruitages
 

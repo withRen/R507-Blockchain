@@ -1,7 +1,19 @@
-// Musique de fond : une piste par sequence, enchainees en fondu.
-// Les fichiers ne sont pas dans le depot : ils se deposent dans public/audio/ (voir LISEZMOI.md).
+// Musique de fond : chaque sequence joue une piste de public/audio/ (voir LISEZMOI.md).
+// Deux sequences qui partagent la meme piste la laissent continuer ; sinon, fondu enchaine.
 // Le son est coupe au depart : un navigateur ne joue rien avant un clic du visiteur.
-const NAMES = ['prologue', 'sequence-1', 'sequence-2', 'sequence-3', 'sequence-4', 'sequence-5', 'sequence-6', 'sequence-7', 'epilogue'];
+// Musiques de Feldup (credits dans sources.html et docs/ASSETS.md).
+const NAMES = [
+  'investigation-discovery', // prologue
+  'investigation-discovery', // 1. structure d'un bloc
+  'investigation-discovery', // 2. chainage
+  'investigation-discovery', // 3. falsification
+  'investigation-discovery', // 4. reseau
+  'unraveled', // 5. minage
+  'unraveled', // 6. consensus
+  'unraveled', // 7. transaction et attaque
+  'unraveled' // epilogue
+];
+const TRACKS = [...new Set(NAMES)];
 const FADE = 1.5; // duree du fondu, en secondes
 const VOLUME = 0.25; // musique de fond : volume bas pour laisser la place aux dialogues
 
@@ -13,11 +25,13 @@ export function createMusic(button) {
 
   const paint = () => {
     button.setAttribute('aria-pressed', String(on));
-    button.textContent = !on ? 'Son ♪ coupé' : missing.has(current) ? 'Son ♪ piste absente' : 'Son ♪ activé';
+    button.textContent = !on ? 'Son ♪ coupé' : missing.has(track()) ? 'Son ♪ piste absente' : 'Son ♪ activé';
   };
+  // Index de la piste jouee par la sequence en cours
+  const track = () => (current >= 0 ? TRACKS.indexOf(NAMES[current]) : -1);
   const player = (i) => {
     if (!players.has(i)) {
-      const a = new Audio(`${import.meta.env.BASE_URL}audio/${NAMES[i]}.mp3`);
+      const a = new Audio(`${import.meta.env.BASE_URL}audio/${TRACKS[i]}.mp3`);
       a.loop = true;
       a.volume = 0;
       // Piste non deposee : la sequence reste simplement silencieuse
@@ -40,9 +54,9 @@ export function createMusic(button) {
     a.raf = requestAnimationFrame(run);
   };
   const apply = () => {
-    if (on && current >= 0) player(current);
+    if (on && track() >= 0) player(track());
     players.forEach((a, i) => {
-      const target = on && i === current ? VOLUME : 0;
+      const target = on && i === track() ? VOLUME : 0;
       if (target > 0) a.play().catch(() => {});
       fade(a, target);
     });
