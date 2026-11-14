@@ -13,6 +13,9 @@ Le récit peut jouer une piste par séquence (`src/recit/music.js`). Les fichier
 
 Chaque piste déposée doit être déclarée ici, avec son auteur et sa licence.
 
-| Fichier | Titre | Auteur | Licence | Source |
-|---|---|---|---|---|
-| (aucune piste déposée pour l'instant) | | | | |
+Les musiques sont jouées en fond, au volume 0,25 (sur 1), pour ne pas couvrir les dialogues.
+
+| Titre | Auteur | Source |
+|---|---|---|
+| Unraveled | Feldup | https://youtu.be/SsPhCLu9_3U |
+| Investigation/discovery | Feldup | https://youtu.be/5IAnhHgmrAI |

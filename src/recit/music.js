@@ -3,7 +3,7 @@
 // Le son est coupe au depart : un navigateur ne joue rien avant un clic du visiteur.
 const NAMES = ['prologue', 'sequence-1', 'sequence-2', 'sequence-3', 'sequence-4', 'sequence-5', 'sequence-6', 'sequence-7', 'epilogue'];
 const FADE = 1.5; // duree du fondu, en secondes
-const VOLUME = 0.5;
+const VOLUME = 0.25; // musique de fond : volume bas pour laisser la place aux dialogues
 
 export function createMusic(button) {
   const players = new Map();
