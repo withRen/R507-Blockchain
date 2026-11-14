@@ -93,8 +93,8 @@ Les points perdus viennent surtout des tests de la v2 (1.3, 1.7, 2.7), de la mes
 
 | Nom / prénom | Contribution, apprentissages, usage de l'IA, difficulté pour la soutenance |
 |:---|:---|
-| Rahim Tamhaev | v1 : mise en place du dépôt et du GitHub Project, recherche documentaire primaire (`FICHE-RECHERCHE.md`), implémentation cryptographique (SHA-256, formule de Nakamoto), rédaction de `CHOIX-MODELISATION.md`, tests de performance et formulaire testeurs. v2 : à compléter. |
-| Nicolas Rapuzzi | v1 : récit 3D à défiler (`formations.js`, `logo.js`, `main.js`), direction artistique « Livre de comptes », vulgarisation des 7 chapitres et des sections « Le revers », création de `sources.html`. v2 : à compléter. |
+| Rahim Tamhaev | v1 : mise en place du dépôt et du GitHub Project, recherche documentaire primaire (`FICHE-RECHERCHE.md`), implémentation cryptographique (SHA-256, formule de Nakamoto), rédaction de `CHOIX-MODELISATION.md`, tests de performance et formulaire testeurs. v2 et v3 : UI/UX en binôme avec Nicolas, recherche et intégration des musiques et des bruitages, mise en place du questionnaire de retours. |
+| Nicolas Rapuzzi | v1 : récit 3D à défiler (`formations.js`, `logo.js`, `main.js`), direction artistique « Livre de comptes », vulgarisation des 7 chapitres et des sections « Le revers », création de `sources.html`. v2 et v3 : rédaction de l'histoire (v2 et réécriture v3), UI/UX en binôme avec Rahim, refonte de l'interface en style télé à tube (`2428bf3`). |
 
 | Les 3 actions prioritaires | Responsable | Échéance |
 |:---|:---|:---|

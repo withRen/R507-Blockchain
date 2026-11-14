@@ -54,8 +54,10 @@ La v3 n'a pas encore été testée par une personne extérieure : aucune notion 
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| Rahim Tamhaev | Musiques et bruitages, écran d'entrée, interactions plus visibles, création et fermeture des issues de retours | #29, #30, #31 | 5 |
-| Nicolas Rapuzzi | Réécriture de la v3, mise à jour des livrables, notes de la revue de l'enseignant, refonte en style télé à tube | #29, #31 | 3 |
+| Rahim Tamhaev | Interface et UX à deux avec Nicolas. Recherche et intégration des musiques et des sons, réécriture et mise en place du questionnaire Google, participation à la réécriture de l'histoire | #29, #30, #19 | 5 |
+| Nicolas Rapuzzi | Interface et UX à deux avec Rahim. Rédaction principale de l'histoire de la v3, mise à jour des livrables, notes de la revue de l'enseignant | #29, #31 | 3 |
+
+L'interface et l'UX ont été faites à deux. L'histoire de la v3 a surtout été rédigée par Nicolas. Rahim a cherché et intégré les musiques et les sons, et a mis en place le questionnaire Google.
 
 ## 3. GitHub Projects
 
