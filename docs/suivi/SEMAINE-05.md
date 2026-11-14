@@ -52,10 +52,12 @@
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| Rahim Tamhaev | Fusion dans `main`, récit « Le Registre » en 9 séquences, déploiement GitHub Pages, corrections des glitchs Three.js, lecture automatique des dialogues | #7, #14, #15, #17 (fermées le 4 novembre) | 9 (dont 1 merge et 1 commit de fiches) |
-| Nicolas Rapuzzi | À compléter | #11, #12, #13, #16 (fermées le 4 novembre) | 0 sur `main` |
+| Rahim Tamhaev | En binôme avec Nicolas : fusion dans `main`, récit « Le Registre » en 9 séquences, déploiement GitHub Pages, corrections des glitchs Three.js, lecture automatique des dialogues | #7, #14, #15, #17 (fermées le 4 novembre) | 9 (dont 1 merge et 1 commit de fiches) |
+| Nicolas Rapuzzi | En binôme avec Rahim, sur les mêmes tâches | #11, #12, #13, #16 (fermées le 4 novembre) | 0 sur `main` |
 
 Issues fermées le 4 novembre et assignées aux deux membres : #3, #8, #9, #10, #18, #21. Issue #5 assignée à Nicolas.
+
+Cette semaine, le travail s'est fait à deux, en présentiel, sur le poste de Rahim. Tous les commits sont donc au nom de Rahim et ne reflètent pas la répartition réelle.
 
 ## 3. GitHub Projects
 
@@ -103,12 +105,12 @@ Issues fermées le 4 novembre et assignées aux deux membres : #3, #8, #9, #10, 
 ## 8. Signaux d'alerte
 
 - [ ] Le board n'a été mis à jour qu'aujourd'hui.
-- [x] La répartition est fortement déséquilibrée et non expliquée.
+- [ ] La répartition est fortement déséquilibrée et non expliquée.
 - [x] Nous n'avons pas encore atteint les 2 testeurs extérieurs requis.
 - [ ] Un choix de modélisation important n'est pas justifié.
 - [ ] Une notion n'a pas avancé depuis 2 semaines.
 
-**Répartition :** tous les commits de la semaine sur `main` sont de Rahim. La part de Nicolas est à compléter.
+**Répartition :** tous les commits sont au nom de Rahim parce que le binôme a travaillé ensemble sur son poste. La répartition réelle est équilibrée.
 
 **Règle vérifiable d'absence d'avancement depuis 2 semaines :** aucune notion n'est en retard. Les 7 notions sont dans le récit déployé (`f74d4be`) et les issues #11 à #17 sont fermées.
 
