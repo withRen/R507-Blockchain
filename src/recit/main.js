@@ -17,7 +17,7 @@ import { createDirector, buildScore } from './director.js';
 import { createSourcesPopup } from './sources-popup.js';
 import { portrait } from './portraits.js';
 import { createMusic } from './music.js';
-import { sfx, installSfx } from './sfx.js';
+import { sfx, installSfx, setSfxMuted, unlockSfx } from './sfx.js';
 
 // Les personnages apparaissent deux fois : en silhouettes 3D dans les decors, et en portraits 2D
 // dans la boite de dialogue. Passer a false pour ne garder que les portraits.
@@ -26,6 +26,7 @@ import { hashBlock } from '../lib/blockchain.js';
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const params = new URLSearchParams(location.search);
+const forcedFromUrl = params.has('seq') || params.has('t') ? true : null;
 const unaccent = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 Promise.race([
@@ -97,7 +98,7 @@ async function init() {
   const elWho = elLine.querySelector('b');
   const elText = elLine.querySelector('span');
   const elFace = $('#face');
-  const music = createMusic($('#sound'));
+  const music = createMusic($('#sound'), (on) => setSfxMuted(!on));
   installSfx();
   const elTerm = $('#term');
   const elTermLabel = elTerm.querySelector('small');
@@ -135,6 +136,7 @@ async function init() {
     if (te !== curTerm) {
       curTerm = te;
       if (te) {
+        sfx('appear', 250);
         elTermLabel.textContent = te.label;
         elTermTitle.textContent = te.title;
         elTermDef.textContent = te.def;
@@ -386,6 +388,12 @@ async function init() {
     });
   });
   const allGroups = new Set(sequences.flatMap((s) => s.groups));
+  // Apparitions dans la scene 3D (couches du bloc, blocs de la chaine) : un petit son a chaque fois
+  sequences[1].APPEAR = [0.24, 0.395, 0.465, 0.54]; // donnees, parent, nonce, hash
+  sequences[2].APPEAR = [0.08, 0.13, 0.18, 0.23, 0.28]; // les cinq blocs de la passerelle
+  sequences[3].APPEAR = [0.14]; // la chaine et ses copies
+  sequences[5].APPEAR = [0.26, 0.42]; // le bloc candidat, puis les essais des mineurs
+  sequences.forEach((s) => setupCue(s.panelEl));
 
   // Tous les shaders sont compiles avant le debut : plus de saccade en changeant de decor
   allGroups.forEach((g) => { g.visible = true; });
@@ -408,6 +416,51 @@ async function init() {
   warmed.forEach(([o, visible, culled]) => { o.visible = visible; o.frustumCulled = culled; });
   allGroups.forEach((g) => { g.visible = false; });
   document.querySelector('#loading')?.classList.add('off');
+
+  // Ecran d'entree : le clic du visiteur autorise le navigateur a lancer la musique tout de suite.
+  // Le mode ?seq= ou ?t= (captures, tests) le saute.
+  const enter = $('#enter');
+  if (forcedFromUrl === null) {
+    const root = document.documentElement;
+    root.style.overflow = 'hidden';
+    enter.hidden = false;
+    requestAnimationFrame(() => enter.classList.add('on'));
+    const go = (withSound) => {
+      if (withSound) unlockSfx();
+      music.enable(withSound);
+      root.style.overflow = '';
+      enter.classList.remove('on');
+      setTimeout(() => { enter.hidden = true; }, 450);
+    };
+    $('#enter-sound').addEventListener('click', () => go(true));
+    $('#enter-mute').addEventListener('click', () => go(false));
+    $('#enter-sound').focus();
+  }
+
+  // Indicateur d'interaction : tant que le visiteur n'a pas touche au panneau, le premier
+  // element a manipuler pulse et porte une etiquette « Clique ici », « Écris ici » ou « Fais glisser ».
+  function setupCue(panel) {
+    if (!panel || panel.classList.contains('steps-panel')) return;
+    const tag = document.createElement('span');
+    tag.className = 'cue-tag';
+    tag.setAttribute('aria-hidden', 'true');
+    tag.hidden = true;
+    panel.append(tag);
+    const touched = () => panel.classList.add('touched');
+    ['pointerdown', 'input', 'keydown'].forEach((ev) => panel.addEventListener(ev, touched));
+    panel.placeCue = () => {
+      panel.querySelectorAll('.cue').forEach((el) => el.classList.remove('cue'));
+      // Le bouton d'action principal d'abord, sinon le premier champ
+      const el = panel.classList.contains('touched') ? null
+        : panel.querySelector('button:not(.ghost):not(:disabled)') ?? panel.querySelector('input');
+      tag.hidden = !el;
+      if (!el) return;
+      el.classList.add('cue');
+      tag.textContent = el.type === 'text' ? '✎ Écris ici' : el.type === 'range' ? '⇆ Fais glisser' : '➜ Clique ici';
+      tag.style.top = `${el.offsetTop - 13}px`;
+      tag.style.right = `${Math.max(8, panel.clientWidth - (el.offsetLeft + el.offsetWidth) + 10)}px`;
+    };
+  }
 
   // Navigation : une mini-chaine, un bloc par sequence
   const nav = $('#chain-nav');
@@ -544,6 +597,8 @@ async function init() {
 
   // ---------- Boucle ----------
   let mark = 0;
+  let lastSeq = null;
+  let lastT = 0;
   let frames = 0;
   let lowerSince = 0;
   function step() {
@@ -568,9 +623,17 @@ async function init() {
     placeCamera(seq, t, time);
     poseActors(seq.actors, seq.LINES, t, time);
     if (seq.LAB) {
+      const was = !!seq.labOpen;
       seq.labOpen = t >= seq.LAB.from && t <= seq.LAB.to;
       seq.panelEl?.classList.toggle('on', seq.labOpen);
+      if (seq.labOpen && !was) { sfx('appear', 250); seq.panelEl?.placeCue?.(); }
     }
+    // Un son discret quand un element apparait, seulement en avancant normalement dans le film
+    if (seq === lastSeq && t > lastT && t - lastT < 0.05) {
+      seq.APPEAR?.forEach((x) => { if (lastT < x && x <= t) sfx('appear', 120); });
+    }
+    lastSeq = seq;
+    lastT = t;
     seq.update?.(t, time, dt);
     room.tick(dt, time);
     if (cityGroup.visible) {

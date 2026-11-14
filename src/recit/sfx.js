@@ -4,7 +4,13 @@ const MASTER = 0.2;
 
 let ac = null;
 let out = null;
+let muted = false;
 const last = new Map();
+
+// Le bouton Son coupe la musique et les bruitages ensemble
+export function setSfxMuted(m) { muted = m; }
+// A appeler pendant un geste du visiteur : le navigateur autorise alors le son
+export function unlockSfx() { context(); }
 
 function context() {
   if (!ac) {
@@ -66,6 +72,11 @@ const SOUNDS = {
   found: () => {
     [523, 659, 784, 1047].forEach((f, i) => tone({ f, at: i * 0.07, dur: 0.25, vol: 0.32 }));
   },
+  // Apparition d'un panneau, d'une fiche ou d'une carte de donnees : un souffle doux et bas
+  appear: () => {
+    tone({ f: 740, dur: 0.18, vol: 0.09, attack: 0.03 });
+    tone({ f: 1110, at: 0.06, dur: 0.22, vol: 0.06, attack: 0.03 });
+  },
   // Simulation lancee (consensus)
   whoosh: () => tone({ f: 200, to: 1200, dur: 0.28, vol: 0.18, type: 'triangle', attack: 0.05 })
 };
@@ -73,7 +84,7 @@ const SOUNDS = {
 // Joue un son ; `gap` evite qu'un meme son se repete trop vite (frappe, curseur, pings)
 export function sfx(name, gap = 0) {
   const play = SOUNDS[name];
-  if (!play || !context()) return;
+  if (!play || muted || !context()) return;
   const now = performance.now();
   if (gap && now - (last.get(name) ?? -1e9) < gap) return;
   last.set(name, now);

@@ -1,6 +1,6 @@
 // Musique de fond : chaque sequence joue une piste de public/audio/ (voir LISEZMOI.md).
 // Deux sequences qui partagent la meme piste la laissent continuer ; sinon, fondu enchaine.
-// Le son est coupe au depart : un navigateur ne joue rien avant un clic du visiteur.
+// Le son est coupe au depart : l'ecran d'entree le lance, pendant le clic du visiteur.
 // Musiques de Feldup (credits dans sources.html et docs/ASSETS.md).
 const NAMES = [
   'investigation-discovery', // prologue
@@ -17,7 +17,7 @@ const TRACKS = [...new Set(NAMES)];
 const FADE = 1.5; // duree du fondu, en secondes
 const VOLUME = 0.4; // musique de fond : volume bas pour laisser la place aux dialogues
 
-export function createMusic(button) {
+export function createMusic(button, onChange = () => {}) {
   const players = new Map();
   const missing = new Set();
   let on = false;
@@ -44,10 +44,12 @@ export function createMusic(button) {
     cancelAnimationFrame(a.raf);
     let last = performance.now();
     const run = (now) => {
-      const d = ((now - last) / 1000 / FADE) * VOLUME;
+      // L'horodatage d'une image peut preceder performance.now() : jamais de pas negatif,
+      // sinon le volume sort de [0, 1], le navigateur leve une erreur et le fondu s'arrete muet
+      const d = Math.max(0, ((now - last) / 1000 / FADE) * VOLUME);
       last = now;
       const v = to > a.volume ? Math.min(to, a.volume + d) : Math.max(to, a.volume - d);
-      a.volume = v;
+      a.volume = Math.min(1, Math.max(0, v));
       if (v !== to) a.raf = requestAnimationFrame(run);
       else if (to === 0) a.pause();
     };
@@ -63,9 +65,13 @@ export function createMusic(button) {
     paint();
   };
 
-  button.addEventListener('click', () => { on = !on; apply(); });
+  const set = (v) => { on = v; onChange(on); apply(); };
+  button.addEventListener('click', () => set(!on));
   paint();
+  onChange(on);
   return {
+    // Appele pendant le clic de l'ecran d'entree : le navigateur laisse alors jouer la musique
+    enable(v) { set(v); },
     setSequence(i) {
       if (i === current) return;
       current = i;
