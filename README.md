@@ -32,7 +32,11 @@ Chaque notion est associée à une animation ou une interaction visible, pas seu
 
 **Concept :** un récit 3D à faire défiler (`index.html`), en 9 séquences : un prologue, une séquence par notion, un épilogue. Chaque séquence s'ouvre sur une question affichée à l'écran, propose un exercice « À toi de jouer » avec de vrais calculs, et se ferme sur une phrase « À retenir » suivie de son revers. Un premier exercice arrive dès le prologue. Un bouton « Passer » reste toujours visible, et la lecture automatique est un choix. Les sources de la séquence en cours s'ouvrent dans une fenêtre, sans quitter le récit ; la liste complète est sur [`sources.html`](sources.html).
 
-Charte : une ville de nuit, mate et sombre, construite entièrement en code (aucune texture ni modèle externe, voir [`docs/ASSETS.md`](docs/ASSETS.md)). Seuls les objets techniques brillent : des blocs de verre au gabarit unique, qui affichent leurs vraies valeurs. Une couleur n'a qu'un sens, rappelé par une légende permanente : bleu = information, vert = valide, rouge = falsifié ou attaque, orange = minage, turquoise = enjeu, violet = autorité. Les personnages apparaissent en silhouettes 3D dans les décors et en portraits 2D dans la boîte de dialogue. Dialogues en Roboto, données en IBM Plex Mono. Navigation par une mini-chaîne de 9 blocs. Une musique par séquence peut être activée (pistes à déposer dans `public/audio/`).
+Charte : une ville de nuit, mate et sombre, construite entièrement en code (aucune texture ni modèle externe, voir [`docs/ASSETS.md`](docs/ASSETS.md)). Seuls les objets techniques brillent : des blocs de verre au gabarit unique, qui affichent leurs vraies valeurs. Une couleur n'a qu'un sens, rappelé par une légende permanente : bleu = information, vert = valide, rouge = falsifié ou attaque, orange = minage, turquoise = enjeu, violet = autorité. Les personnages apparaissent en silhouettes 3D dans les décors et en portraits 2D dans la boîte de dialogue. Dialogues en Roboto, données en IBM Plex Mono. Navigation par une mini-chaîne de 9 blocs.
+
+Interface : un style télé à tube (écran CRT avec lignes de balayage, vignette et cadre arrondi, titres en VT323) et des boîtes de dialogue façon vieux jeu vidéo, avec un bandeau de question, une console d'exercice sur le côté et une platine de commandes en bas. Les blocs 3D sont restylés en écrans, et un effet « BIEN JOUÉ » salue chaque exercice réussi (commit `2428bf3`). Les panneaux, boutons et champs sont agrandis et arrondis. Tant que le visiteur n'a rien touché, l'élément à manipuler pulse avec une étiquette « Clique ici », « Écris ici » ou « Fais glisser » (commit `f37260b`).
+
+Son : un écran d'entrée propose « Commencer avec le son » ou « Commencer sans le son », ce qui autorise la musique dès le départ. Deux musiques de Feldup, déposées dans `public/audio/`, sont jouées en fond au volume 0,4 : `investigation-discovery.mp3` pour le prologue et les séquences 1 à 4, `unraveled.mp3` pour les séquences 5 à 7 et l'épilogue. Les bruitages des interactions sont synthétisés en direct avec Web Audio (`src/recit/sfx.js`, aucun fichier). Le bouton Son coupe la musique et les bruitages. Crédits dans [`docs/ASSETS.md`](docs/ASSETS.md) et [`sources.html`](sources.html).
 
 Le projet a connu trois versions. La v1 (« Grand Registre », 1 800 cubes sur une interface de livre de comptes) reste dans l'historique Git et est documentée comme alternative écartée. La v2 a introduit le récit « Le Registre ». La v3 garde cette histoire et la réécrit à partir de la revue de l'enseignant et d'un test utilisateur : les retours et les décisions sont dans [`docs/TESTS-UTILISATEURS.md`](docs/TESTS-UTILISATEURS.md).
 
@@ -71,10 +75,12 @@ R507-Blockchain/
 │       ├── SEMAINE-01.md
 │       ├── SEMAINE-02.md
 │       ├── SEMAINE-03.md
-│       └── SEMAINE-04.md
+│       ├── SEMAINE-04.md
+│       ├── SEMAINE-05.md
+│       └── SEMAINE-06.md
 │   ├── SCENARIO-V3.md                                     # scénario de la v3
 │   └── TESTS-UTILISATEURS.md                              # retours reçus et décisions
-├── public/audio/                                          # musiques par séquence (à déposer)
+├── public/audio/                                          # deux musiques de Feldup (voir docs/ASSETS.md)
 ├── src/                                                   # récit Three.js (src/recit) et calculs réels (src/lib)
 ├── index.html                                             # le récit en 9 séquences
 ├── sources.html                                           # page dédiée aux sources par notion
