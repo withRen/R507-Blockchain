@@ -15,7 +15,7 @@ const NAMES = [
 ];
 const TRACKS = [...new Set(NAMES)];
 const FADE = 1.5; // duree du fondu, en secondes
-const VOLUME = 0.25; // musique de fond : volume bas pour laisser la place aux dialogues
+const VOLUME = 0.4; // musique de fond : volume bas pour laisser la place aux dialogues
 
 export function createMusic(button) {
   const players = new Map();

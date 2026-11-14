@@ -11,7 +11,7 @@ Aucun. Les personnages 3D, les portraits 2D, la ville, les décors et les blocs 
 
 Le récit joue une musique de fond par séquence (`src/recit/music.js`), à partir des fichiers de `public/audio/` (voir `public/audio/LISEZMOI.md`).
 
-Les musiques sont jouées en fond, au volume 0,25 (sur 1), pour ne pas couvrir les dialogues.
+Les musiques sont jouées en fond, au volume 0,4 (sur 1), pour ne pas couvrir les dialogues.
 
 | Fichier | Titre | Auteur | Séquences | Source |
 |---|---|---|---|---|

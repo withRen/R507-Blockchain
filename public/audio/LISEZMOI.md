@@ -1,6 +1,6 @@
 # Musiques du récit
 
-Deux pistes de Feldup, jouées en fond au volume 0,25 (sur 1). La correspondance entre séquences et pistes est dans `src/recit/music.js` (tableau `NAMES`).
+Deux pistes de Feldup, jouées en fond au volume 0,4 (sur 1). La correspondance entre séquences et pistes est dans `src/recit/music.js` (tableau `NAMES`).
 
 | Fichier | Titre | Séquences |
 |---|---|---|
