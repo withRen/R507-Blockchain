@@ -15,6 +15,7 @@ import { createSequence7 } from './sequence7.js';
 import { createEpilogue } from './epilogue.js';
 import { createDirector, buildScore } from './director.js';
 import { createSourcesPopup } from './sources-popup.js';
+import { createGlossary } from './glossary.js';
 import { portrait } from './portraits.js';
 import { createMusic } from './music.js';
 import { sfx, installSfx, setSfxMuted, setSfxLevel, unlockSfx } from './sfx.js';
@@ -36,12 +37,48 @@ Promise.race([
   new Promise((r) => setTimeout(r, 2000))
 ]).finally(() => init());
 
+// ---------- Qualite graphique ----------
+// On lit le nom de la carte graphique avant de creer le rendu : l'antialiasing ne se change
+// plus ensuite. ?q=low|medium|high dans l'adresse force un niveau (tests sur poste de TP).
+function detectQuality() {
+  const forcedQ = params.get('q');
+  let gpu = '';
+  try {
+    const probe = document.createElement('canvas');
+    const gl = probe.getContext('webgl2', { powerPreference: 'high-performance' }) || probe.getContext('webgl');
+    const ext = gl?.getExtension('WEBGL_debug_renderer_info');
+    gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : String(gl?.getParameter(gl.RENDERER) ?? '');
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+  } catch { /* pas de WebGL : le rendu signalera l'erreur */ }
+  // Rendu logiciel : l'acceleration materielle du navigateur est coupee
+  const software = /swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/i.test(gpu);
+  let level = 'high';
+  if (['low', 'medium', 'high'].includes(forcedQ)) level = forcedQ;
+  else if (software) level = 'low';
+  // Puces graphiques integrees (Intel HD/UHD/Iris, AMD Radeon Graphics, mobiles) : niveau moyen
+  else if (/intel|uhd|iris|hd graphics|mali|adreno|powervr|radeon\(tm\) graphics|radeon graphics|vega \d+ graphics/i.test(gpu)) level = 'medium';
+  else if ((navigator.hardwareConcurrency || 8) <= 4 || matchMedia('(pointer: coarse)').matches) level = 'medium';
+  const PROFILES = {
+    high: { antialias: true, maxRatio: 1.5, minRatio: 0.75, filter: true, cheap: false },
+    medium: { antialias: true, maxRatio: 1, minRatio: 0.65, filter: false, cheap: false },
+    low: { antialias: false, maxRatio: 0.75, minRatio: 0.55, filter: false, cheap: true }
+  };
+  return { level, gpu, software, forced: !!forcedQ, ...PROFILES[level] };
+}
+
 async function init() {
   const canvas = document.querySelector('#scene');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  const quality = detectQuality();
+  // powerPreference demande la carte graphique dediee quand il y en a deux ; le navigateur
+  // et le systeme gardent le dernier mot (reglage graphique de Windows, economie d'energie)
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: quality.antialias, powerPreference: 'high-performance' });
   renderer.info.autoReset = false;
-  let pixelRatio = Math.min(window.devicePixelRatio, 1.5);
+  let pixelRatio = Math.min(window.devicePixelRatio, quality.maxRatio);
   renderer.setPixelRatio(pixelRatio);
+  // Le filtre CSS du canvas coute une passe de plus a chaque image : seulement sur les machines solides
+  canvas.classList.toggle('nofilter', !quality.filter);
+  document.documentElement.dataset.quality = quality.level;
+  if (quality.software) document.querySelector('#gpu-warn')?.removeAttribute('hidden');
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.92;
 
@@ -50,7 +87,7 @@ async function init() {
   const camera = new THREE.PerspectiveCamera(36, 1, 0.12, 3200);
   const cityGroup = new THREE.Group();
   scene.add(cityGroup);
-  const city = createCity(cityGroup);
+  const city = createCity(cityGroup, { cheap: quality.cheap });
   const office = createOffice(scene);
   const room = createServerRoom(scene);
 
@@ -100,7 +137,18 @@ async function init() {
   const elWho = elLine.querySelector('b');
   const elText = elLine.querySelector('span');
   const elFace = $('#face');
-  const music = createMusic($('#sound'), (on) => setSfxMuted(!on));
+  const music = createMusic($('#sound'), (on) => setSfxMuted(!on), $('#volume input'));
+  // Le curseur de volume se range a gauche du bouton Son (au-dessus sur telephone)
+  const placeVolume = () => {
+    const snd = $('#sound');
+    const vol = $('#volume');
+    if (window.innerWidth <= 700) { vol.style.right = ''; return; }
+    const parent = vol.offsetParent?.getBoundingClientRect();
+    if (parent) vol.style.right = `${parent.right - snd.getBoundingClientRect().left + 10}px`;
+  };
+  window.addEventListener('resize', placeVolume);
+  document.fonts.ready.then(placeVolume);
+  new ResizeObserver(placeVolume).observe($('#sound'));
   installSfx();
   const elTerm = $('#term');
   const elTermLabel = elTerm.querySelector('small');
@@ -108,6 +156,8 @@ async function init() {
   const elTermDef = elTerm.querySelector('p');
   const elTitle = $('#title-card');
   const elFade = $('#fade');
+  const elTurn = $('#your-turn');
+  const elTurnTask = $('#your-turn > span > span');
   const bar = $('#progress i');
   let curLine = null;
   let curTerm = null;
@@ -170,7 +220,7 @@ async function init() {
       if (!cls.includes('steps-panel')) {
         const head = document.createElement('header');
         head.className = 'lab-head';
-        head.innerHTML = '<span class="ms" aria-hidden="true">ads_click</span>Épreuve · à toi de jouer';
+        head.innerHTML = '<span class="ms" aria-hidden="true">ads_click</span>Épreuve';
         el.prepend(head);
       }
       stageUI.append(el);
@@ -498,11 +548,6 @@ async function init() {
   // element a manipuler pulse et porte une etiquette « Clique ici », « Écris ici » ou « Fais glisser ».
   function setupCue(panel) {
     if (!panel || panel.classList.contains('steps-panel')) return;
-    const tag = document.createElement('span');
-    tag.className = 'cue-tag';
-    tag.setAttribute('aria-hidden', 'true');
-    tag.hidden = true;
-    panel.append(tag);
     const touched = () => panel.classList.add('touched');
     ['pointerdown', 'input', 'keydown'].forEach((ev) => panel.addEventListener(ev, touched));
     panel.placeCue = () => {
@@ -510,16 +555,12 @@ async function init() {
       // Le bouton d'action principal d'abord, sinon le premier champ
       const el = panel.classList.contains('touched') ? null
         : panel.querySelector('button:not(.ghost):not(:disabled)') ?? panel.querySelector('input');
-      tag.hidden = !el;
+      // L'ancienne etiquette « Clique ici » couvrait le texte : c'est maintenant le bandeau
+      // « A toi de jouer » qui pointe vers l'element, a sa hauteur, et dit quoi faire
+      panel.cueEl = el;
       if (!el) return;
       el.classList.add('cue');
-      const [icon, label] = el.type === 'text' ? ['edit', 'Écris ici'] : el.type === 'range' ? ['swap_horiz', 'Fais glisser'] : ['touch_app', 'Clique ici'];
-      const ic = document.createElement('span');
-      ic.className = 'ms';
-      ic.textContent = icon;
-      tag.replaceChildren(ic, label);
-      tag.style.top = `${el.offsetTop - 13}px`;
-      tag.style.right = `${Math.max(8, panel.clientWidth - (el.offsetLeft + el.offsetWidth) + 10)}px`;
+      panel.cueVerb = el.type === 'text' ? 'Écris ici' : el.type === 'range' ? 'Fais glisser' : 'Clique ici';
     };
   }
 
@@ -547,14 +588,16 @@ async function init() {
   // Sources de la sequence en cours, dans une fenetre ; la lecture auto se met en pause
   const popup = createSourcesPopup({ onOpen: () => director?.pause() });
   $('#src-btn').addEventListener('click', () => popup.open(sequences.indexOf(active), active?.name));
+  const glossary = createGlossary({ sequences, onOpen: () => director?.pause(), goTo: (i) => navButtons[i]?.click() });
+  $('#glo-btn').addEventListener('click', () => glossary.open());
   // Les sources de la notion ne s'ouvrent qu'une fois le chapitre termine
   const srcBtn = $('#src-btn');
   document.addEventListener('open-sources', () => popup.open(-1));
-  // Volume : musique et bruitages suivent le meme curseur
-  const vol = $('#vol');
-  const applyVolume = () => { const v = Number(vol.value) / 100; music.setLevel(v); setSfxLevel(v); };
-  vol.addEventListener('input', applyVolume);
-  applyVolume();
+  // Le curseur de volume regle aussi les bruitages : ils suivent la musique
+  const volInput = $('#volume input');
+  const applySfxLevel = () => setSfxLevel(Number(volInput.value) / 100);
+  volInput.addEventListener('input', applySfxLevel);
+  applySfxLevel();
   // Le curseur devient une main au-dessus de ce qui se clique dans la scene 3D
   canvas.addEventListener('pointermove', (e) => {
     canvas.style.cursor = active?.labOpen && active.hit?.(e) ? 'pointer' : '';
@@ -671,6 +714,21 @@ async function init() {
   let lastT = 0;
   let frames = 0;
   let lowerSince = 0;
+  let urgent = false;
+  let slowStreak = 0;
+  // Les paliers de qualite, du moins visible au plus visible : le filtre CSS, la resolution,
+  // puis les facades simplifiees. Renvoie false quand il n'y a plus rien a baisser.
+  function degrade() {
+    if (!canvas.classList.contains('nofilter')) { canvas.classList.add('nofilter'); return true; }
+    if (pixelRatio > quality.minRatio + 0.01) {
+      pixelRatio = Math.max(quality.minRatio, pixelRatio - 0.2);
+      renderer.setPixelRatio(pixelRatio);
+      resize();
+      return true;
+    }
+    return city.setCheap();
+  }
+  let canDegrade = true;
   function step() {
     const dt = Math.min(clock.getDelta(), 0.06);
     const time = clock.elapsedTime;
@@ -696,7 +754,13 @@ async function init() {
       const was = !!seq.labOpen;
       seq.labOpen = t >= seq.LAB.from && t <= seq.LAB.to;
       seq.panelEl?.classList.toggle('on', seq.labOpen);
-      if (seq.labOpen && !was) { sfx('appear', 250); seq.panelEl?.placeCue?.(); }
+      if (seq.labOpen && !was) {
+        sfx('appear', 250);
+        seq.panelEl?.placeCue?.();
+        // Le bandeau « A toi de jouer » reprend la consigne de la console
+        const task = seq.panelEl?.querySelector('h2')?.textContent ?? '';
+        elTurnTask.textContent = seq.panelEl?.cueVerb ? `${seq.panelEl.cueVerb} · ${task}` : task;
+      }
     }
     // Un son discret quand un element apparait, seulement en avancant normalement dans le film
     if (seq === lastSeq && t > lastT && t - lastT < 0.05) {
@@ -713,17 +777,26 @@ async function init() {
       city.update(time, camera, level, seq.linkLevel ?? (seq.cityLit ? 0.34 : 0), inside);
     }
     hud(seq, t, seq.override?.());
+    // Le bandeau se cale a la hauteur de l'element a utiliser (sur ordinateur)
+    const cueEl = seq.labOpen && !seq.panelEl?.classList.contains('touched') ? seq.panelEl?.cueEl : null;
+    if (cueEl && window.innerWidth > 700) {
+      const r = cueEl.getBoundingClientRect();
+      const half = elTurn.offsetHeight / 2;
+      const y = Math.min(Math.max(r.top + r.height / 2, 110 + half), window.innerHeight - 90 - half);
+      elTurn.style.top = `${y.toFixed(0)}px`;
+    } else if (elTurn.style.top) elTurn.style.top = '';
 
     const fade = seq.fade
       ? seq.fade(t)
       : Math.max(1 - smooth(t / 0.022), idx < COUNT - 1 ? smooth((t - 0.986) / 0.014) : 0);
     elFade.style.opacity = fade.toFixed(3);
-    // Changer la resolution fige une image : on attend un passage au noir, ou 6 s au plus
-    if (lowerSince && (fade > 0.5 || performance.now() - lowerSince > 6000)) {
+    // Changer la resolution fige une image : on attend un passage au noir, ou 4 s au plus.
+    // Si l'image saccade deja franchement (moins de 24 i/s), on n'attend pas.
+    if (lowerSince && (fade > 0.5 || urgent || performance.now() - lowerSince > 4000)) {
       lowerSince = 0;
-      pixelRatio = Math.max(0.8, pixelRatio - 0.2);
-      renderer.setPixelRatio(pixelRatio);
-      resize();
+      urgent = false;
+      canDegrade = degrade();
+      window.__recitQuality = { level: quality.level, dpr: pixelRatio, filter: !canvas.classList.contains('nofilter') };
     }
     bar.style.transform = `scaleX(${shown.toFixed(4)})`;
 
@@ -745,7 +818,7 @@ async function init() {
     }
 
     renderer.render(scene, camera);
-    window.__recitStats = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs.length };
+    if (params.has('bench')) window.__recitStats = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs.length };
 
     frames++;
     const now = performance.now();
@@ -753,9 +826,14 @@ async function init() {
     if (now - mark > 1500) {
       const fps = (frames * 1000) / (now - mark);
       window.__recitFps = fps;
-      // Sous 45 images par seconde, la qualite baisse d'elle-meme, par paliers
-      if (document.visibilityState === 'visible' && fps > 5 && fps < 45 && forced === null) {
-        if (pixelRatio > 0.8 && !lowerSince) lowerSince = now;
+      // Sous 40 images par seconde (deux mesures de suite), la qualite baisse d'elle-meme, par paliers.
+      // Le sujet demande 30 i/s au moins : on garde une marge.
+      const slow = document.visibilityState === 'visible' && fps > 5 && fps < 40 && forced === null && !quality.forced;
+      slowStreak = slow ? slowStreak + 1 : 0;
+      if (slowStreak >= 2 && canDegrade && !lowerSince) {
+        lowerSince = now;
+        urgent = fps < 24;
+        slowStreak = 0;
       }
       mark = now;
       frames = 0;
@@ -779,7 +857,7 @@ async function init() {
       return { ms: +((performance.now() - t0) / n).toFixed(1), dpr: pixelRatio, w: window.innerWidth, h: window.innerHeight, ...window.__recitStats };
     };
   }
-  window.__recit = { renderer, scene, camera };
+  window.__recit = { renderer, scene, camera, quality, city, degrade: () => degrade() };
   document.body.classList.add('ready');
   frame();
 }

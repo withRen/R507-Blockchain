@@ -32,7 +32,11 @@ Chaque notion est associée à une animation ou une interaction visible, pas seu
 
 **Concept :** un récit 3D à faire défiler (`index.html`), en 9 séquences : un prologue, une séquence par notion, un épilogue. Chaque séquence s'ouvre sur une question affichée à l'écran, propose un exercice « À toi de jouer » avec de vrais calculs, et se ferme sur une phrase « À retenir » suivie de son revers. Un premier exercice arrive dès le prologue. Un bouton « Passer » reste toujours visible, et la lecture automatique est un choix. Les sources de la séquence en cours s'ouvrent dans une fenêtre, sans quitter le récit ; la liste complète est sur [`sources.html`](sources.html).
 
-Charte : une ville de nuit, mate et sombre, construite entièrement en code (aucune texture ni modèle externe, voir [`docs/ASSETS.md`](docs/ASSETS.md)). Seuls les objets techniques brillent : des blocs de verre au gabarit unique, qui affichent leurs vraies valeurs. Une couleur n'a qu'un sens, rappelé par une légende permanente : bleu = information, vert = valide, rouge = falsifié ou attaque, orange = minage, turquoise = enjeu, violet = autorité. Les personnages apparaissent en silhouettes 3D dans les décors et en portraits 2D dans la boîte de dialogue. Dialogues en Roboto, données en IBM Plex Mono. Navigation par une mini-chaîne de 9 blocs. Une musique par séquence peut être activée (pistes à déposer dans `public/audio/`).
+Charte : une ville de nuit, mate et sombre, construite entièrement en code (aucune texture ni modèle externe, voir [`docs/ASSETS.md`](docs/ASSETS.md)). Seuls les objets techniques brillent : des blocs de verre au gabarit unique, qui affichent leurs vraies valeurs. Une couleur n'a qu'un sens, rappelé par une légende permanente : bleu = information, vert = valide, rouge = falsifié ou attaque, orange = minage, turquoise = enjeu, violet = autorité. Les personnages apparaissent en silhouettes 3D dans les décors et en portraits 2D dans la boîte de dialogue. Dialogues en Roboto, données en IBM Plex Mono. Navigation par une mini-chaîne de 9 blocs.
+
+Interface : un style télé à tube (écran CRT avec lignes de balayage, vignette et cadre arrondi, titres en VT323) et des boîtes de dialogue façon vieux jeu vidéo, avec un bandeau de question, une console d'exercice sur le côté et une platine de commandes en bas. Les blocs 3D sont restylés en écrans, et un effet « BIEN JOUÉ » salue chaque exercice réussi (commit `2428bf3`). Les panneaux, boutons et champs sont agrandis et arrondis. Tant que le visiteur n'a rien touché, l'élément à manipuler pulse avec une étiquette « Clique ici », « Écris ici » ou « Fais glisser » (commit `f37260b`).
+
+Son : un écran d'entrée propose « Commencer avec le son » ou « Commencer sans le son », ce qui autorise la musique dès le départ. Deux musiques de Feldup, déposées dans `public/audio/`, sont jouées en fond au volume 0,4 : `investigation-discovery.mp3` pour le prologue et les séquences 1 à 4, `unraveled.mp3` pour les séquences 5 à 7 et l'épilogue. Les bruitages des interactions sont synthétisés en direct avec Web Audio (`src/recit/sfx.js`, aucun fichier). Le bouton Son coupe la musique et les bruitages. Crédits dans [`docs/ASSETS.md`](docs/ASSETS.md) et [`sources.html`](sources.html).
 
 Le projet a connu trois versions. La v1 (« Grand Registre », 1 800 cubes sur une interface de livre de comptes) reste dans l'historique Git et est documentée comme alternative écartée. La v2 a introduit le récit « Le Registre ». La v3 garde cette histoire et la réécrit à partir de la revue de l'enseignant et d'un test utilisateur : les retours et les décisions sont dans [`docs/TESTS-UTILISATEURS.md`](docs/TESTS-UTILISATEURS.md).
 
@@ -71,10 +75,12 @@ R507-Blockchain/
 │       ├── SEMAINE-01.md
 │       ├── SEMAINE-02.md
 │       ├── SEMAINE-03.md
-│       └── SEMAINE-04.md
+│       ├── SEMAINE-04.md
+│       ├── SEMAINE-05.md
+│       └── SEMAINE-06.md
 │   ├── SCENARIO-V3.md                                     # scénario de la v3
 │   └── TESTS-UTILISATEURS.md                              # retours reçus et décisions
-├── public/audio/                                          # musiques par séquence (à déposer)
+├── public/audio/                                          # deux musiques de Feldup (voir docs/ASSETS.md)
 ├── src/                                                   # récit Three.js (src/recit) et calculs réels (src/lib)
 ├── index.html                                             # le récit en 9 séquences
 ├── sources.html                                           # page dédiée aux sources par notion
@@ -102,6 +108,11 @@ Le suivi se fait dans **GitHub Projects**, avec les colonnes :
 ## Critères de qualité
 
 - Parcours principal à **30 FPS ou plus** sur un poste de TP standard (ville découpée en quartiers non dessinés hors champ, chargement à la demande, fenêtres calculées dans un shader, aucune texture externe).
+  - **Trois niveaux de qualité**, choisis au lancement d'après la carte graphique : élevé (cartes dédiées et puces Apple), moyen (puces intégrées Intel ou AMD, téléphones), bas (rendu logiciel). Le niveau fixe la résolution maximale, l'antialiasing, le filtre d'image et la version des façades (sans les pièces simulées derrière les vitres au niveau bas).
+  - **Baisse automatique** : sous 40 images par seconde sur deux mesures de suite, le récit retire d'abord le filtre d'image, puis baisse la résolution par paliers, puis simplifie les façades. Le changement attend un fondu au noir, sauf si l'image saccade déjà (moins de 24 images par seconde).
+  - `?q=low`, `?q=medium` ou `?q=high` dans l'adresse force un niveau (tests sur poste de TP) ; `?bench` expose `__bench()` dans la console pour mesurer le temps d'une image.
+  - Le rendu demande la **carte graphique dédiée** (`powerPreference: 'high-performance'`). Le navigateur et le système gardent le dernier mot : sur un portable Windows à deux cartes, choisir « Hautes performances » pour le navigateur dans *Paramètres > Système > Écran > Graphiques*. Si l'accélération matérielle du navigateur est coupée, l'écran d'accueil le signale.
+- **Glossaire** consultable à tout moment (bouton « Glossaire », touches `G` ou `/`) : on tape un mot-clé (« nonce », « pow », « nœud »…) et sa définition s'affiche, avec un lien pour revoir la séquence concernée. Les cinq termes du glossaire commun du sujet gardent leur définition mot pour mot.
 - **Tests utilisateurs** avec au moins 2 personnes extérieures au groupe. Leurs retours sont notés et transformés en issues si besoin.
   Questionnaire à leur faire remplir : [formulaire de retours testeurs](https://docs.google.com/forms/d/e/1FAIpQLSdWOe5Z6wL2r4mvUCPZjamTJZX2sr3akOwpV4yEK9PuOTuHjA/viewform).
 - Textes lisibles, légendes, retours visuels et navigation claire.
@@ -118,6 +129,7 @@ Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code géné
 | Claude (Claude Code) | Branche `test-alternate` : scénario « Le Registre » et récit 3D en 9 séquences (`src/recit/`), décors construits en code, sans asset externe |
 | Antigravity | Rédaction des livrables (`CHOIX-MODELISATION.md`, `GRILLE-AUTOEVAL.md`, fiches de suivi hebdomadaire `SEMAINE-02` à `SEMAINE-04`) et synchronisation avec la fiche de recherche |
 | Claude (Claude Code) | Version 3 : comparaison des deux premières versions avec les retours de l'enseignant et d'une testeuse, réécriture des dialogues, gabarit de bloc unique, portraits 2D, fenêtre des sources, lecteur de musique, mise à jour des livrables |
+| Claude (Claude Code) | Optimisation du rendu (niveaux de qualité selon la carte graphique, baisse automatique, façades simplifiées) et glossaire consultable par mot-clé, après le retour d'un testeur |
 
 ## Sources
 

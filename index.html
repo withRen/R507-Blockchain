@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&icon_names=add,ads_click,check,close,edit,fast_forward,menu_book,mouse,pause,play_arrow,play_circle,remove,space_bar,star,swap_horiz,touch_app,volume_off,volume_up&display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&icon_names=add,ads_click,arrow_back,arrow_downward,check,close,dictionary,edit,fast_forward,menu_book,mouse,pause,play_arrow,play_circle,remove,space_bar,star,swap_horiz,touch_app,volume_off,volume_up&display=block" rel="stylesheet">
   <link rel="stylesheet" href="/src/recit/recit.css">
 </head>
 <body>
@@ -19,10 +19,11 @@
     <p id="loading">Chargement de la ville…</p>
     <p id="slug" aria-live="polite"><b></b><span></span></p>
     <p id="ask" aria-live="polite"></p>
+    <p id="your-turn" aria-live="polite"><span><b>À toi de jouer</b><span></span></span></p>
     <aside id="term" aria-live="polite"><small></small><strong></strong><p></p></aside>
     <div id="line" aria-live="polite"><div id="face" aria-hidden="true"></div><p><b></b><span></span></p></div>
     <section id="lab" class="lab" aria-label="Retrouve la transaction">
-      <header class="lab-head"><span class="ms" aria-hidden="true">ads_click</span>Épreuve · à toi de jouer</header>
+      <header class="lab-head"><span class="ms" aria-hidden="true">ads_click</span>Épreuve</header>
       <h2>Retrouve la transaction</h2>
       <p class="lab-hint">Une seule de ces transactions donne l’empreinte cible : clique pour essayer. Tu peux aussi cliquer une couche du bloc pour savoir à quoi elle sert.</p>
       <div id="lab-chips" class="chips" role="group" aria-label="Transactions candidates"></div>
@@ -47,8 +48,11 @@
     <button id="continue" type="button">Passer ▸</button>
     <button id="auto" type="button" aria-pressed="false">Lecture auto ▶</button>
     <button id="sound" type="button" aria-pressed="false">Son coupé</button>
-    <label id="vol-wrap" for="vol"><span>Vol</span><input id="vol" type="range" min="0" max="100" value="70" aria-label="Volume du son"></label>
-    <button id="src-btn" type="button">Sources de ce chapitre</button>
+    <label id="volume"><span>Vol.</span><input type="range" min="0" max="100" step="5" aria-label="Volume du son"></label>
+    <div id="tools">
+      <button id="src-btn" type="button"><span>Sources</span><span class="long"> de ce chapitre</span></button>
+      <button id="glo-btn" type="button" aria-label="Glossaire" aria-haspopup="dialog" aria-keyshortcuts="G"><span class="long">Glossaire</span> <kbd>G</kbd></button>
+    </div>
     <nav id="chain-nav" aria-label="Séquences"></nav>
     <div id="progress"><i></i></div>
     <section id="enter" aria-labelledby="enter-title" hidden>
@@ -61,6 +65,7 @@
           <button id="enter-sound" type="button">Avec le son</button>
           <button id="enter-mute" type="button" class="enter-quiet">Sans le son</button>
         </div>
+        <p id="gpu-warn" hidden>Ton navigateur dessine la 3D sans la carte graphique : le récit risque de saccader. Active l’accélération matérielle dans ses réglages, puis recharge la page.</p>
       </div>
       <canvas id="enter-figs" aria-hidden="true"></canvas>
     </section>
@@ -91,7 +96,7 @@
           </li>
           <li>
             <span class="ms" aria-hidden="true">menu_book</span>
-            <b>Sources</b><span>À la fin de chaque chapitre, un bouton ouvre les sources utilisées.</span>
+            <b>Sources et glossaire</b><span>Un bouton Sources apparaît en fin de chapitre. La touche G ouvre le glossaire à tout moment.</span>
           </li>
         </ul>
         <button id="controls-go" type="button">Commencer</button>
@@ -104,6 +109,19 @@
     <p class="sources-foot">
       <button class="sources-all" type="button">Toutes les sources du parcours</button>
       <button class="sources-close" type="button">Fermer</button>
+    </p>
+  </dialog>
+  <dialog id="glossary" aria-labelledby="glossary-title">
+    <h2 id="glossary-title">Glossaire</h2>
+    <label class="glo-search">
+      <span>Tape un mot-clé</span>
+      <input type="search" placeholder="nonce, hash, consensus, PoW…" autocomplete="off" spellcheck="false" aria-describedby="glo-count">
+    </label>
+    <p class="glo-count" id="glo-count" aria-live="polite"></p>
+    <ul class="glo-list"></ul>
+    <p class="sources-foot">
+      <small>G ou / ouvre ce glossaire à tout moment · Échap pour fermer</small>
+      <button class="glo-close sources-close" type="button">Fermer</button>
     </p>
   </dialog>
   <div id="track" aria-hidden="true"></div>

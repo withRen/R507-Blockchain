@@ -7,6 +7,8 @@
 À remplir en groupe puis individuellement avant la soutenance, dans le dépôt. Elle sert à repérer les lacunes et préparer la soutenance ; elle n'est pas notée en elle-même. Toute note cochée doit être justifiée par une phrase ou une preuve.
 
 > Mise à jour du 12 novembre 2026 : la grille décrit désormais la v3 du récit « Le Registre ». Les justifications ont été mises à jour ; **les scores sont ceux du 6 novembre et restent à revoir par le groupe** une fois la v3 testée et mesurée.
+>
+> Mise à jour du 14 novembre 2026 : la v3 est fusionnée dans `main` avec la refonte de l'interface en style télé à tube et le son (musiques et bruitages). Les issues #29, #30 et #31 sont fermées. Seul le score 4.6 change, parce que la démo en ligne est à jour.
 
 ## Échelle
 
@@ -36,8 +38,8 @@
 |:---|:---|:---:|:---|
 | 2.1 | `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` est complet et couvre les 7 notions. | 3 | Document passé en v3.0 : nouvelle section 2.6 (un retour, une décision), rubriques f complétées avec les retours reçus. Les numéros d'issues de ces lignes restent à créer. |
 | 2.2 | Formes et échelles sont justifiées. | 4 | Un lieu par notion, objets techniques à hauteur de personnage, tours du quartier utilisées comme nœuds ; justifié fiche par fiche. |
-| 2.3 | Couleurs et codes sont cohérents et accessibles. | 4 | Palette sémantique unique (`COLORS` dans `src/recit/stage.js`), une couleur par sens, légende affichée en permanence. L'état d'un bloc se lit sur ses arêtes. |
-| 2.4 | Animations et interactions servent la compréhension. | 3 | Animations fidèles au réel (sauts en base 16 en séquence 5, délai par saut en séquence 4, formule exacte en séquence 7). Limite : l'interaction arrive après l'explication au lieu de la précéder. |
+| 2.3 | Couleurs et codes sont cohérents et accessibles. | 4 | Palette sémantique unique (`COLORS` dans `src/recit/stage.js`), une couleur par sens, légende affichée en permanence. L'état d'un bloc se lit sur ses arêtes. Depuis la refonte en style télé à tube (`2428bf3`), l'interface ne vit que de crème, de gris et d'une LED : les couleurs d'état restent réservées à leur sens. |
+| 2.4 | Animations et interactions servent la compréhension. | 3 | Animations fidèles au réel (sauts en base 16 en séquence 5, délai par saut en séquence 4, formule exacte en séquence 7). Retours immédiats : effet « BIEN JOUÉ » à chaque exercice réussi (`2428bf3`) et bruitages Web Audio à chaque interaction (`7c1b163`). Limite : l'interaction arrive après l'explication au lieu de la précéder. |
 | 2.5 | Une alternative écartée est documentée par notion. | 4 | Une alternative par fiche, et la v1 « Grand Registre » documentée comme métaphore écartée avec les raisons du changement (section 2.4). |
 | 2.6 | Les risques de mauvaise interprétation sont traités. | 4 | Rubriques b) et g) remplies pour chaque notion, appuyées sur `FICHE-RECHERCHE.md`, et reprises dans les dialogues (« Donc c'est chiffré ? Non. », « On m'avait dit infalsifiable. Faux. »). |
 | 2.7 | Les décisions s'appuient sur les tests utilisateurs. | 2 | Chaque changement de la v3 est rattaché à un retour précis (section 2.6 du livrable). Aucune décision n'est encore issue d'un test de la v3. |
@@ -47,13 +49,13 @@
 | # | Critère | Score 0-4 | Justification / preuve |
 |:---|:---|:---:|:---|
 | 3.1 | Le board existe depuis la semaine 1 et utilise les 5 colonnes communes. | 4 | GitHub Project #3 créé en semaine 1 avec `Backlog`, `À faire`, `En cours`, `À vérifier`, `Terminé`. |
-| 3.2 | Issues granulaires et assignées. | 4 | 28 issues détaillées et assignées entre Rahim (`@withRen`) et Nicolas (`@hextravagance`). |
+| 3.2 | Issues granulaires et assignées. | 4 | 31 issues détaillées et assignées entre Rahim (`@withRen`) et Nicolas (`@hextravagance`). |
 | 3.3 | Labels cohérents. | 4 | Labels `cadrage`, `doc`, `recherche`, `dev`, `notion`, `ux`, `test` utilisés sur toutes les issues. |
 | 3.4 | Milestones obligatoires correspondant au calendrier. | 4 | 4 milestones créés dès la semaine 1 (`Cadrage`, `Livraison du projet`, `Répétition finale`, `Soutenance`). |
 | 3.5 | Commits réguliers et liés aux issues. | 3 | Commits explicites en français sur `main` puis sur les branches `semaine-2026-10-26-recit-3d` et `test-alternate`. |
-| 3.6 | Le board reflète l'état réel. | 3 | À vérifier : le changement de direction vers le récit doit apparaître dans des issues dédiées (décision, séquences, tests du récit). |
+| 3.6 | Le board reflète l'état réel. | 3 | Board remis à jour le 14 novembre : 29 issues en `Terminé`, #19 et #22 en `En cours`. À vérifier : le changement de direction vers le récit doit apparaître dans des issues dédiées (décision, séquences, tests du récit). |
 | 3.7 | Répartition visible et expliquée. | 4 | Répartition 50/50 documentée dans le README et les fiches hebdomadaires. |
-| 3.8 | Retours transformés en issues puis traités. | 3 | Suivi via les issues #18 (UX / accessibilité) et #19 (tests utilisateurs). |
+| 3.8 | Retours transformés en issues puis traités. | 3 | Suivi via les issues #18 (UX / accessibilité) et #19 (tests utilisateurs). Les retours sur la v2 ont donné #29 (interface), #30 (musique et son) et #31 (histoire trop longue), fermées avec les commits qui les corrigent. Ces trois issues ont été créées après coup, le 14 novembre. |
 | 3.9 | Usage de l'IA déclaré. | 4 | Déclaration dans `README.md`, `CHOIX-MODELISATION.md` (section 6) et `FICHE-RECHERCHE.md`. |
 | 3.10 | README complet. | 4 | Équipe, public, 7 notions, lancement, structure, jalons, IA, sources. À vérifier : qu'il décrive bien le récit comme version principale. |
 
@@ -61,12 +63,12 @@
 
 | # | Critère | Score 0-4 | Justification / preuve |
 |:---|:---|:---:|:---|
-| 4.1 | Navigation intuitive et éléments identifiables. | 4 | Mini-chaîne de 9 blocs avec « Notion n/7 », bouton « Passer » toujours visible, lecture automatique sur demande, question de la séquence affichée, exercices annoncés, légende des couleurs, sources en fenêtre. |
-| 4.2 | Textes lisibles et contrastés. | 3 | Dialogues en bas d'écran avec nom du locuteur et mention « voix off », définitions dans un encart séparé, `Roboto` et `IBM Plex Mono`. À vérifier sur petit écran et vidéoprojecteur. |
-| 4.3 | Rythme des animations compréhensible. | 3 | Progression liée au défilement, donc au rythme de l'utilisateur ; respect de `prefers-reduced-motion`. Les séquences longues (7) restent denses. |
+| 4.1 | Navigation intuitive et éléments identifiables. | 4 | Mini-chaîne de 9 blocs avec « Notion n/7 », bouton « Passer » toujours visible, lecture automatique sur demande, question de la séquence affichée, exercices annoncés, légende des couleurs, sources en fenêtre. Écran d'entrée, interface en style télé à tube, et étiquette « Clique ici », « Écris ici » ou « Fais glisser » sur l'élément à manipuler tant que le visiteur n'a rien touché (`2428bf3`, `f37260b`, #29). |
+| 4.2 | Textes lisibles et contrastés. | 3 | Dialogues en bas d'écran avec nom du locuteur et mention « voix off », définitions dans un encart séparé, `Roboto` et `IBM Plex Mono`, titres en `VT323`. Panneaux, boutons et champs agrandis (`f37260b`). À vérifier sur petit écran et vidéoprojecteur. |
+| 4.3 | Rythme des animations compréhensible. | 3 | Progression liée au défilement, donc au rythme de l'utilisateur ; respect de `prefers-reduced-motion`, y compris pour l'effet « BIEN JOUÉ ». Deux musiques de fond de Feldup marquent l'enquête puis le dénouement, avec un fondu au changement de piste (#30). Les séquences longues (7) restent denses. |
 | 4.4 | Au moins 30 FPS sur ordinateur standard type poste de TP. | 2 | Optimisations de la v2 conservées. Mesure sur un poste de TP encore à faire pour la v3 (elle ajoute les 14 copies en séquences 3 et 7). |
-| 4.5 | Aucun bug bloquant le parcours principal. | 3 | Parcours complet jouable en local. À revérifier après fusion dans `main` et build de production. |
-| 4.6 | Déploiement en ligne réalisé. | 3 | La v2 est en ligne depuis `main`. La v3 est sur sa propre branche : à fusionner dans `main`, puis vérifier la démo en ligne. |
+| 4.5 | Aucun bug bloquant le parcours principal. | 3 | Parcours complet jouable en local. Fusion dans `main` faite le 14 novembre et `npm run build` sans erreur. Reste à rejouer le parcours complet sur la démo en ligne. |
+| 4.6 | Déploiement en ligne réalisé. | 4 | La v3, avec la refonte en style télé à tube et le son, est fusionnée dans `main`. Le déploiement GitHub Pages du 14 novembre a réussi : https://withren.github.io/R507-Blockchain/ |
 
 ## Partie 5 — Soutenance (15 %)
 
@@ -81,23 +83,23 @@
 
 ## Estimation de votre note
 
-Additionnez les scores obtenus dans chaque partie : `P1 = 22 / 28`, `P2 = 24 / 28`, `P3 = 37 / 40`, `P4 = 18 / 24`, `P5 = 21 / 24`. La note sur 20 est :
+Additionnez les scores obtenus dans chaque partie : `P1 = 22 / 28`, `P2 = 24 / 28`, `P3 = 37 / 40`, `P4 = 19 / 24`, `P5 = 21 / 24`. La note sur 20 est :
 
-`Note / 20 = (22/28 × 5) + (24/28 × 5) + (37/40 × 4) + (18/24 × 3) + (21/24 × 3)`
+`Note / 20 = (22/28 × 5) + (24/28 × 5) + (37/40 × 4) + (19/24 × 3) + (21/24 × 3)`
 
-`Note = 16,79 / 20`
+`Note = 16,91 / 20`
 
-Les points perdus viennent surtout des tests de la v2 (1.3, 1.7, 2.7), de la mesure des FPS (4.4) et de la fusion dans `main` (4.6) : ce sont aussi les plus rapides à regagner.
+Les points perdus viennent surtout des tests de la v2 (1.3, 1.7, 2.7), et de la mesure des FPS (4.4) : ce sont aussi les plus rapides à regagner. Le point de la fusion dans `main` (4.6) est regagné.
 
 ## Bilan individuel et actions
 
 | Nom / prénom | Contribution, apprentissages, usage de l'IA, difficulté pour la soutenance |
 |:---|:---|
-| Rahim Tamhaev | v1 : mise en place du dépôt et du GitHub Project, recherche documentaire primaire (`FICHE-RECHERCHE.md`), implémentation cryptographique (SHA-256, formule de Nakamoto), rédaction de `CHOIX-MODELISATION.md`, tests de performance et formulaire testeurs. v2 : à compléter. |
-| Nicolas Rapuzzi | v1 : récit 3D à défiler (`formations.js`, `logo.js`, `main.js`), direction artistique « Livre de comptes », vulgarisation des 7 chapitres et des sections « Le revers », création de `sources.html`. v2 : à compléter. |
+| Rahim Tamhaev | v1 : mise en place du dépôt et du GitHub Project, recherche documentaire primaire (`FICHE-RECHERCHE.md`), implémentation cryptographique (SHA-256, formule de Nakamoto), rédaction de `CHOIX-MODELISATION.md`, tests de performance et formulaire testeurs. v2 et v3 : UI/UX en binôme avec Nicolas, recherche et intégration des musiques et des bruitages, mise en place du questionnaire de retours. |
+| Nicolas Rapuzzi | v1 : récit 3D à défiler (`formations.js`, `logo.js`, `main.js`), direction artistique « Livre de comptes », vulgarisation des 7 chapitres et des sections « Le revers », création de `sources.html`. v2 et v3 : rédaction de l'histoire (v2 et réécriture v3), UI/UX en binôme avec Rahim, refonte de l'interface en style télé à tube (`2428bf3`). |
 
 | Les 3 actions prioritaires | Responsable | Échéance |
 |:---|:---|:---|
-| 1. Relire la v3 de bout en bout, la fusionner dans `main` et vérifier la démo en ligne | Rahim et Nicolas | Avant le 15 novembre 2026 |
-| 2. Faire tester la v3 par une seconde personne non initiée, créer les issues des décisions et les lier aux commits | Nicolas et Rahim | Avant le 15 novembre 2026 |
-| 3. Mesurer les FPS sur un poste de TP, déposer les musiques et les déclarer dans `docs/ASSETS.md`, rédiger les fiches de suivi manquantes (le sujet en demande 8) | Rahim et Nicolas | Avant le 15 novembre 2026 |
+| 1. Rejouer la v3 de bout en bout sur la démo en ligne (la fusion dans `main` est faite) | Rahim et Nicolas | Avant le 15 novembre 2026 |
+| 2. Faire tester la v3 par une seconde personne non initiée et consigner le retour (#19) | Nicolas et Rahim | Avant la soutenance |
+| 3. Mesurer les FPS sur un poste de TP, préparer le support pour la répétition du 19 novembre (#22), rédiger les fiches de suivi 7 et 8. Les musiques sont déposées et déclarées dans `docs/ASSETS.md` | Rahim et Nicolas | Avant le 19 novembre 2026 |

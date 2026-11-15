@@ -15,15 +15,21 @@ const NAMES = [
 ];
 const TRACKS = [...new Set(NAMES)];
 const FADE = 1.5; // duree du fondu, en secondes
-const VOLUME = 0.4; // musique de fond : volume bas pour laisser la place aux dialogues
+const MAX = 0.6; // volume de la musique quand le curseur est au maximum
+// Le curseur de volume (0 a 100) est memorise d'une visite a l'autre ; 50 par defaut,
+// assez bas pour laisser la place aux dialogues
+const KEY = 'recit-volume';
+const readLevel = () => {
+  try { const v = Number(localStorage.getItem(KEY)); return Number.isFinite(v) && localStorage.getItem(KEY) !== null ? Math.min(100, Math.max(0, v)) : 50; } catch { return 50; }
+};
 
-export function createMusic(button, onChange = () => {}) {
+export function createMusic(button, onChange = () => {}, slider = null) {
+  let level = readLevel();
+  const volume = () => MAX * (level / 100) ** 2; // courbe douce : l'oreille entend en logarithme
   const players = new Map();
   const missing = new Set();
   let on = false;
   let current = -1;
-  let level = 1; // curseur de volume du visiteur, de 0 a 1
-  const vol = () => VOLUME * level;
 
   const paint = () => {
     button.setAttribute('aria-pressed', String(on));
@@ -48,7 +54,7 @@ export function createMusic(button, onChange = () => {}) {
     const run = (now) => {
       // L'horodatage d'une image peut preceder performance.now() : jamais de pas negatif,
       // sinon le volume sort de [0, 1], le navigateur leve une erreur et le fondu s'arrete muet
-      const d = Math.max(0, ((now - last) / 1000 / FADE) * Math.max(vol(), 0.05));
+      const d = Math.max(0, ((now - last) / 1000 / FADE) * MAX * 0.6);
       last = now;
       const v = to > a.volume ? Math.min(to, a.volume + d) : Math.max(to, a.volume - d);
       a.volume = Math.min(1, Math.max(0, v));
@@ -60,7 +66,7 @@ export function createMusic(button, onChange = () => {}) {
   const apply = () => {
     if (on && track() >= 0) player(track());
     players.forEach((a, i) => {
-      const target = on && i === track() ? vol() : 0;
+      const target = on && i === track() ? volume() : 0;
       if (target > 0) a.play().catch(() => {});
       fade(a, target);
     });
@@ -69,18 +75,29 @@ export function createMusic(button, onChange = () => {}) {
 
   const set = (v) => { on = v; onChange(on); apply(); };
   button.addEventListener('click', () => set(!on));
+  if (slider) {
+    slider.value = String(level);
+    const show = () => {
+      slider.setAttribute('aria-valuetext', `${level} %`);
+      slider.style.setProperty('--fill', `${level}%`);
+    };
+    show();
+    slider.addEventListener('input', () => {
+      level = Number(slider.value);
+      show();
+      try { localStorage.setItem(KEY, String(level)); } catch { /* navigation privee */ }
+      // Le volume suit le curseur tout de suite, sans fondu
+      const a = on && track() >= 0 ? players.get(track()) : null;
+      if (a && !missing.has(track())) { cancelAnimationFrame(a.raf); a.volume = Math.min(1, volume()); }
+    });
+    // Monter le curseur alors que le son est coupe le remet en marche
+    slider.addEventListener('change', () => { if (!on && level > 0) set(true); });
+  }
   paint();
   onChange(on);
   return {
     // Appele pendant le clic de l'ecran d'entree : le navigateur laisse alors jouer la musique
     enable(v) { set(v); },
-    // Le curseur de volume agit tout de suite sur la piste qui joue
-    setLevel(l) {
-      level = Math.min(1, Math.max(0, l));
-      players.forEach((a, i) => {
-        if (on && i === track()) { cancelAnimationFrame(a.raf); a.volume = vol(); }
-      });
-    },
     setSequence(i) {
       if (i === current) return;
       current = i;
