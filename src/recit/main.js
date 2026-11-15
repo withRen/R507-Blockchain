@@ -15,6 +15,7 @@ import { createSequence7 } from './sequence7.js';
 import { createEpilogue } from './epilogue.js';
 import { createDirector, buildScore } from './director.js';
 import { createSourcesPopup } from './sources-popup.js';
+import { createGlossary } from './glossary.js';
 import { portrait } from './portraits.js';
 import { createMusic } from './music.js';
 import { sfx, installSfx, setSfxMuted, unlockSfx } from './sfx.js';
@@ -35,12 +36,48 @@ Promise.race([
   new Promise((r) => setTimeout(r, 2000))
 ]).finally(() => init());
 
+// ---------- Qualite graphique ----------
+// On lit le nom de la carte graphique avant de creer le rendu : l'antialiasing ne se change
+// plus ensuite. ?q=low|medium|high dans l'adresse force un niveau (tests sur poste de TP).
+function detectQuality() {
+  const forcedQ = params.get('q');
+  let gpu = '';
+  try {
+    const probe = document.createElement('canvas');
+    const gl = probe.getContext('webgl2', { powerPreference: 'high-performance' }) || probe.getContext('webgl');
+    const ext = gl?.getExtension('WEBGL_debug_renderer_info');
+    gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : String(gl?.getParameter(gl.RENDERER) ?? '');
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+  } catch { /* pas de WebGL : le rendu signalera l'erreur */ }
+  // Rendu logiciel : l'acceleration materielle du navigateur est coupee
+  const software = /swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/i.test(gpu);
+  let level = 'high';
+  if (['low', 'medium', 'high'].includes(forcedQ)) level = forcedQ;
+  else if (software) level = 'low';
+  // Puces graphiques integrees (Intel HD/UHD/Iris, AMD Radeon Graphics, mobiles) : niveau moyen
+  else if (/intel|uhd|iris|hd graphics|mali|adreno|powervr|radeon\(tm\) graphics|radeon graphics|vega \d+ graphics/i.test(gpu)) level = 'medium';
+  else if ((navigator.hardwareConcurrency || 8) <= 4 || matchMedia('(pointer: coarse)').matches) level = 'medium';
+  const PROFILES = {
+    high: { antialias: true, maxRatio: 1.5, minRatio: 0.75, filter: true, cheap: false },
+    medium: { antialias: true, maxRatio: 1, minRatio: 0.65, filter: false, cheap: false },
+    low: { antialias: false, maxRatio: 0.75, minRatio: 0.55, filter: false, cheap: true }
+  };
+  return { level, gpu, software, forced: !!forcedQ, ...PROFILES[level] };
+}
+
 async function init() {
   const canvas = document.querySelector('#scene');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  const quality = detectQuality();
+  // powerPreference demande la carte graphique dediee quand il y en a deux ; le navigateur
+  // et le systeme gardent le dernier mot (reglage graphique de Windows, economie d'energie)
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: quality.antialias, powerPreference: 'high-performance' });
   renderer.info.autoReset = false;
-  let pixelRatio = Math.min(window.devicePixelRatio, 1.5);
+  let pixelRatio = Math.min(window.devicePixelRatio, quality.maxRatio);
   renderer.setPixelRatio(pixelRatio);
+  // Le filtre CSS du canvas coute une passe de plus a chaque image : seulement sur les machines solides
+  canvas.classList.toggle('nofilter', !quality.filter);
+  document.documentElement.dataset.quality = quality.level;
+  if (quality.software) document.querySelector('#gpu-warn')?.removeAttribute('hidden');
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.92;
 
@@ -49,7 +86,7 @@ async function init() {
   const camera = new THREE.PerspectiveCamera(36, 1, 0.12, 3200);
   const cityGroup = new THREE.Group();
   scene.add(cityGroup);
-  const city = createCity(cityGroup);
+  const city = createCity(cityGroup, { cheap: quality.cheap });
   const office = createOffice(scene);
   const room = createServerRoom(scene);
 
@@ -508,6 +545,14 @@ async function init() {
   // Sources de la sequence en cours, dans une fenetre ; la lecture auto se met en pause
   const popup = createSourcesPopup({ onOpen: () => director?.pause() });
   $('#src-btn').addEventListener('click', () => popup.open(sequences.indexOf(active), active?.name));
+  const glossary = createGlossary({ sequences, onOpen: () => director?.pause(), goTo: (i) => navButtons[i]?.click() });
+  $('#glo-btn').addEventListener('click', () => glossary.open());
+  // Le bouton se range juste a droite de « Sources », quelle que soit la largeur de ce dernier
+  const srcBtn = $('#src-btn');
+  const placeGlo = () => { $('#glo-btn').style.left = `${srcBtn.offsetLeft + srcBtn.offsetWidth + 10}px`; };
+  window.addEventListener('resize', placeGlo);
+  document.fonts.ready.then(placeGlo);
+  placeGlo();
   // Sur petit ecran, la legende demarre repliee
   if (window.innerWidth < 900 || window.innerHeight < 620) $('#legend').open = false;
   // Le curseur devient une main au-dessus de ce qui se clique dans la scene 3D
@@ -626,6 +671,21 @@ async function init() {
   let lastT = 0;
   let frames = 0;
   let lowerSince = 0;
+  let urgent = false;
+  let slowStreak = 0;
+  // Les paliers de qualite, du moins visible au plus visible : le filtre CSS, la resolution,
+  // puis les facades simplifiees. Renvoie false quand il n'y a plus rien a baisser.
+  function degrade() {
+    if (!canvas.classList.contains('nofilter')) { canvas.classList.add('nofilter'); return true; }
+    if (pixelRatio > quality.minRatio + 0.01) {
+      pixelRatio = Math.max(quality.minRatio, pixelRatio - 0.2);
+      renderer.setPixelRatio(pixelRatio);
+      resize();
+      return true;
+    }
+    return city.setCheap();
+  }
+  let canDegrade = true;
   function step() {
     const dt = Math.min(clock.getDelta(), 0.06);
     const time = clock.elapsedTime;
@@ -672,12 +732,13 @@ async function init() {
       ? seq.fade(t)
       : Math.max(1 - smooth(t / 0.022), idx < COUNT - 1 ? smooth((t - 0.986) / 0.014) : 0);
     elFade.style.opacity = fade.toFixed(3);
-    // Changer la resolution fige une image : on attend un passage au noir, ou 6 s au plus
-    if (lowerSince && (fade > 0.5 || performance.now() - lowerSince > 6000)) {
+    // Changer la resolution fige une image : on attend un passage au noir, ou 4 s au plus.
+    // Si l'image saccade deja franchement (moins de 24 i/s), on n'attend pas.
+    if (lowerSince && (fade > 0.5 || urgent || performance.now() - lowerSince > 4000)) {
       lowerSince = 0;
-      pixelRatio = Math.max(0.8, pixelRatio - 0.2);
-      renderer.setPixelRatio(pixelRatio);
-      resize();
+      urgent = false;
+      canDegrade = degrade();
+      window.__recitQuality = { level: quality.level, dpr: pixelRatio, filter: !canvas.classList.contains('nofilter') };
     }
     bar.style.transform = `scaleX(${shown.toFixed(4)})`;
 
@@ -699,7 +760,7 @@ async function init() {
     }
 
     renderer.render(scene, camera);
-    window.__recitStats = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs.length };
+    if (params.has('bench')) window.__recitStats = { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, programs: renderer.info.programs.length };
 
     frames++;
     const now = performance.now();
@@ -707,9 +768,14 @@ async function init() {
     if (now - mark > 1500) {
       const fps = (frames * 1000) / (now - mark);
       window.__recitFps = fps;
-      // Sous 45 images par seconde, la qualite baisse d'elle-meme, par paliers
-      if (document.visibilityState === 'visible' && fps > 5 && fps < 45 && forced === null) {
-        if (pixelRatio > 0.8 && !lowerSince) lowerSince = now;
+      // Sous 40 images par seconde (deux mesures de suite), la qualite baisse d'elle-meme, par paliers.
+      // Le sujet demande 30 i/s au moins : on garde une marge.
+      const slow = document.visibilityState === 'visible' && fps > 5 && fps < 40 && forced === null && !quality.forced;
+      slowStreak = slow ? slowStreak + 1 : 0;
+      if (slowStreak >= 2 && canDegrade && !lowerSince) {
+        lowerSince = now;
+        urgent = fps < 24;
+        slowStreak = 0;
       }
       mark = now;
       frames = 0;
@@ -733,7 +799,7 @@ async function init() {
       return { ms: +((performance.now() - t0) / n).toFixed(1), dpr: pixelRatio, w: window.innerWidth, h: window.innerHeight, ...window.__recitStats };
     };
   }
-  window.__recit = { renderer, scene, camera };
+  window.__recit = { renderer, scene, camera, quality, city, degrade: () => degrade() };
   document.body.classList.add('ready');
   frame();
 }

@@ -31,7 +31,12 @@ const towerFragment = /* glsl */`
     vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
     return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
   }
+  // Qualite reduite (cartes graphiques modestes) : une seule octave de bruit au lieu de trois
+  #ifdef CHEAP
+  float fbm(vec2 p) { return noise(p); }
+  #else
   float fbm(vec2 p) { return 0.55 * noise(p) + 0.3 * noise(p * 2.3) + 0.15 * noise(p * 5.1); }
+  #endif
   void main() {
     vec3 n = normalize(vN);
     vec3 col;
@@ -87,6 +92,10 @@ const towerFragment = /* glsl */`
       col *= 1.0 - 0.6 * reveal;
       col += vec3(0.014, 0.015, 0.019) * ledge;
       col += vec3(0.008, 0.009, 0.012) * mullion;
+      #ifdef CHEAP
+      // Sans la piece simulee derriere la vitre : une lumiere plate, beaucoup moins de calcul
+      if (lit > 0.5 && pane > 0.01) col = mix(col, win * brightness * 0.62 + sky * fresnel * 0.5, pane);
+      #else
       if (lit > 0.5 && pane > 0.01) {
         // Une vraie piece derriere la vitre : le regard entre, et touche un mur, le sol ou le plafond
         vec3 rd = -V;
@@ -113,6 +122,7 @@ const towerFragment = /* glsl */`
         }
         col = mix(col, room * brightness + sky * fresnel * 0.5, pane);
       }
+      #endif
       // Au loin les fenetres se fondent en une valeur moyenne, sans scintillement
       float aa = clamp(fwidth(p.x) * 1.4 + fwidth(p.y) * 1.4, 0.0, 1.0);
       vec3 average = mix(concrete, glass, 0.6) + win * density * 0.14 * (1.0 + vGlow);
@@ -149,7 +159,7 @@ function sky(fog) {
   return new THREE.Mesh(new THREE.SphereGeometry(1500, 32, 16), mat);
 }
 
-export function createCity(scene) {
+export function createCity(scene, { cheap = false } = {}) {
   const fog = new THREE.Color(0.012, 0.021, 0.044);
   scene.background = fog.clone();
   const skyMesh = sky(fog);
@@ -231,7 +241,8 @@ export function createCity(scene) {
   const towerMaterial = new THREE.ShaderMaterial({
     vertexShader: towerVertex,
     fragmentShader: towerFragment,
-    uniforms: { uFog: { value: fog }, uFar: { value: 1050 } }
+    uniforms: { uFog: { value: fog }, uFar: { value: 1050 } },
+    defines: cheap ? { CHEAP: 1 } : {}
   });
   const CHUNK = 230;
   const chunks = new Map();
@@ -529,6 +540,13 @@ export function createCity(scene) {
     update,
     pickHero,
     setNetwork(state) { net = state; },
+    // Passe les facades en qualite reduite : un seul shader a recompiler
+    setCheap() {
+      if (towerMaterial.defines.CHEAP) return false;
+      towerMaterial.defines.CHEAP = 1;
+      towerMaterial.needsUpdate = true;
+      return true;
+    },
     graph: () => ({ count: heroes.length, edges })
   };
 }

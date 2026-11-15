@@ -108,6 +108,11 @@ Le suivi se fait dans **GitHub Projects**, avec les colonnes :
 ## Critères de qualité
 
 - Parcours principal à **30 FPS ou plus** sur un poste de TP standard (ville découpée en quartiers non dessinés hors champ, chargement à la demande, fenêtres calculées dans un shader, aucune texture externe).
+  - **Trois niveaux de qualité**, choisis au lancement d'après la carte graphique : élevé (cartes dédiées et puces Apple), moyen (puces intégrées Intel ou AMD, téléphones), bas (rendu logiciel). Le niveau fixe la résolution maximale, l'antialiasing, le filtre d'image et la version des façades (sans les pièces simulées derrière les vitres au niveau bas).
+  - **Baisse automatique** : sous 40 images par seconde sur deux mesures de suite, le récit retire d'abord le filtre d'image, puis baisse la résolution par paliers, puis simplifie les façades. Le changement attend un fondu au noir, sauf si l'image saccade déjà (moins de 24 images par seconde).
+  - `?q=low`, `?q=medium` ou `?q=high` dans l'adresse force un niveau (tests sur poste de TP) ; `?bench` expose `__bench()` dans la console pour mesurer le temps d'une image.
+  - Le rendu demande la **carte graphique dédiée** (`powerPreference: 'high-performance'`). Le navigateur et le système gardent le dernier mot : sur un portable Windows à deux cartes, choisir « Hautes performances » pour le navigateur dans *Paramètres > Système > Écran > Graphiques*. Si l'accélération matérielle du navigateur est coupée, l'écran d'accueil le signale.
+- **Glossaire** consultable à tout moment (bouton « Glossaire », touches `G` ou `/`) : on tape un mot-clé (« nonce », « pow », « nœud »…) et sa définition s'affiche, avec un lien pour revoir la séquence concernée. Les cinq termes du glossaire commun du sujet gardent leur définition mot pour mot.
 - **Tests utilisateurs** avec au moins 2 personnes extérieures au groupe. Leurs retours sont notés et transformés en issues si besoin.
   Questionnaire à leur faire remplir : [formulaire de retours testeurs](https://docs.google.com/forms/d/e/1FAIpQLSdWOe5Z6wL2r4mvUCPZjamTJZX2sr3akOwpV4yEK9PuOTuHjA/viewform).
 - Textes lisibles, légendes, retours visuels et navigation claire.
@@ -124,6 +129,7 @@ Nous déclarons ici les outils d'IA utilisés et à quelle fin. Tout code géné
 | Claude (Claude Code) | Branche `test-alternate` : scénario « Le Registre » et récit 3D en 9 séquences (`src/recit/`), décors construits en code, sans asset externe |
 | Antigravity | Rédaction des livrables (`CHOIX-MODELISATION.md`, `GRILLE-AUTOEVAL.md`, fiches de suivi hebdomadaire `SEMAINE-02` à `SEMAINE-04`) et synchronisation avec la fiche de recherche |
 | Claude (Claude Code) | Version 3 : comparaison des deux premières versions avec les retours de l'enseignant et d'une testeuse, réécriture des dialogues, gabarit de bloc unique, portraits 2D, fenêtre des sources, lecteur de musique, mise à jour des livrables |
+| Claude (Claude Code) | Optimisation du rendu (niveaux de qualité selon la carte graphique, baisse automatique, façades simplifiées) et glossaire consultable par mot-clé, après le retour d'un testeur |
 
 ## Sources
 

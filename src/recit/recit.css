@@ -39,6 +39,7 @@ body { color: var(--ph); overflow-x: hidden; }
 ::selection { background: var(--ph); color: var(--ink); }
 
 #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; filter: saturate(0.9) contrast(1.06); }
+#scene.nofilter { filter: none; }
 #track { height: 6300vh; }
 
 #stage-ui { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
@@ -317,17 +318,20 @@ body::after {
 #hint.off { opacity: 0; }
 
 /* Touches matérielles : métal sombre, relief, voyant */
-#continue, #src-btn, #auto, #sound {
+#continue, #src-btn, #glo-btn, #auto, #sound {
   position: absolute; bottom: var(--pad); display: flex; align-items: center; gap: 9px; padding: 9px 15px; cursor: pointer; pointer-events: auto;
   font: 600 11.5px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ph);
   background: linear-gradient(#2b2620, #14110d); border: 1px solid #000; border-radius: 3px;
   box-shadow: inset 0 1px 0 rgba(255, 233, 184, 0.22), inset 0 -2px 0 rgba(0, 0, 0, 0.6), 0 3px 0 #000, 0 5px 10px rgba(0, 0, 0, 0.6);
   transition: transform 0.08s, box-shadow 0.08s, color 0.15s;
 }
-#src-btn:hover, #auto:hover, #sound:hover, #continue:hover { color: #fff; }
-#src-btn:active, #auto:active, #sound:active, #continue:active { transform: translateY(3px); box-shadow: inset 0 1px 0 rgba(255, 233, 184, 0.1), 0 0 0 #000; }
+#src-btn:hover, #glo-btn:hover, #auto:hover, #sound:hover, #continue:hover { color: #fff; }
+#src-btn:active, #glo-btn:active, #auto:active, #sound:active, #continue:active { transform: translateY(3px); box-shadow: inset 0 1px 0 rgba(255, 233, 184, 0.1), 0 0 0 #000; }
 #src-btn { left: var(--pad); }
 #src-btn::before { content: '≡'; font-size: 15px; line-height: 1; }
+#glo-btn { left: calc(var(--pad) + 290px); }
+#glo-btn::before { content: '?'; font: 400 18px / 1 var(--display); }
+#glo-btn kbd { padding: 0 5px; font: 600 10px / 1.3 var(--mono); letter-spacing: 0; color: var(--ph-3); border: 1px solid var(--ph-3); border-radius: 2px; }
 #auto { right: var(--pad); }
 #sound { right: calc(var(--pad) + 186px); }
 
@@ -346,7 +350,7 @@ body::after {
 #continue.on:hover { color: #000; }
 #continue.on:active { transform: translate(-50%, 3px); }
 #continue, #continue * { text-shadow: none; }
-#continue:focus-visible, #auto:focus-visible, #sound:focus-visible, #src-btn:focus-visible { outline: 2px solid var(--ph); outline-offset: 3px; }
+#continue:focus-visible, #auto:focus-visible, #sound:focus-visible, #src-btn:focus-visible, #glo-btn:focus-visible { outline: 2px solid var(--ph); outline-offset: 3px; }
 
 /* Compteur de bande : segments, comme une barre de progression de magnétoscope */
 #progress { position: absolute; left: var(--pad); right: var(--pad); bottom: calc(var(--pad) - 14px); height: 5px; background: repeating-linear-gradient(90deg, rgba(255, 233, 184, 0.16) 0 6px, transparent 6px 8px); }
@@ -375,6 +379,36 @@ body::after {
 .sources-foot a:hover { color: #fff; }
 .sources-close { padding: 10px 20px; cursor: pointer; font: 600 12px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); background: var(--ph); border: 2px solid var(--ph); box-shadow: 3px 3px 0 var(--ph-3); }
 .sources-close:active { transform: translate(3px, 3px); box-shadow: none; }
+
+/* ---------- Glossaire : on tape un mot, sa définition s'affiche ---------- */
+#glossary {
+  width: min(620px, calc(100vw - 32px)); max-height: 84vh; margin: auto; padding: 0 26px 22px; overflow: hidden;
+  display: none; flex-direction: column;
+  color: var(--ph); background: #070502; border: 2px solid var(--ph); border-radius: 0;
+  box-shadow: 0 0 30px rgba(255, 214, 140, 0.2), 0 30px 80px rgba(0, 0, 0, 0.8);
+}
+#glossary[open] { display: flex; }
+#glossary::backdrop { background: rgba(3, 2, 1, 0.8); }
+#glossary h2 { margin: 0 -26px 16px; padding: 6px 26px; font: 600 12px var(--mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); background: var(--ph); }
+#glossary h2::before { content: '▮ '; }
+.glo-search span { display: block; margin-bottom: 6px; font: 600 10px var(--mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ph-3); }
+.glo-search input {
+  box-sizing: border-box; width: 100%; padding: 10px 12px; font: 400 26px var(--display); letter-spacing: 0.04em; color: var(--ph);
+  background: #000; border: 1px solid var(--edge); border-radius: 0; box-shadow: inset 0 0 14px rgba(255, 214, 140, 0.07);
+}
+.glo-search input::placeholder { color: var(--ph-3); opacity: 0.7; }
+.glo-search input:focus { outline: none; border-color: var(--ph); box-shadow: inset 0 0 14px rgba(255, 214, 140, 0.15), 0 0 10px var(--glow); }
+.glo-count { margin: 8px 0 4px; min-height: 1.4em; font: 400 11.5px var(--mono); color: var(--ph-3); }
+.glo-list { flex: 1; min-height: 0; margin: 0; padding: 0; list-style: none; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--ph-3) transparent; }
+.glo-list li { padding: 12px 0; border-top: 1px dashed var(--edge-soft); }
+.glo-list li.best { margin: 4px 0; padding: 12px 14px; border: 1px solid var(--ph); background: rgba(255, 233, 184, 0.06); }
+.glo-list h3 { margin: 0 0 4px; font: 400 26px / 1.1 var(--display); letter-spacing: 0.03em; color: var(--ph); }
+.glo-list h3 span { margin-left: 10px; padding: 1px 6px; vertical-align: middle; font: 600 9.5px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); background: var(--ph-2); }
+.glo-list p { margin: 4px 0 0; font: 400 13.5px / 1.6 var(--mono); color: var(--ph-2); }
+.glo-list button { margin-top: 8px; padding: 0; cursor: pointer; font: 500 11.5px var(--mono); letter-spacing: 0.06em; color: var(--ph-3); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; }
+.glo-list button:hover, .glo-list button:focus-visible { color: #fff; }
+#glossary .sources-foot small { font: 400 11px var(--mono); color: var(--ph-3); }
+#gpu-warn { margin: 18px auto 0; padding: 10px 14px; max-width: 440px; font: 500 12px / 1.6 var(--mono); color: var(--ink); background: var(--warn); }
 
 /* ---------- Écran d'entrée : mire de réglage ---------- */
 #enter {
@@ -475,7 +509,7 @@ body::after {
 
 /* Platine : tout est aligné dans la barre du bas */
 #hint { bottom: calc(var(--deck) + 14px); }
-#src-btn, #auto, #sound, #continue { bottom: calc((var(--deck) - 40px) / 2); }
+#src-btn, #glo-btn, #auto, #sound, #continue { bottom: calc((var(--deck) - 40px) / 2); }
 #src-btn { left: var(--gap); }
 #auto { right: var(--gap); }
 #sound { right: calc(var(--gap) + 186px); }
@@ -543,8 +577,13 @@ body::after {
   #face { width: 66px; }
   #line p { padding: 10px 14px 12px; }
   #line span { font-size: 22px; }
-  #src-btn, #auto, #sound { bottom: 62px; padding: 7px 10px; font-size: 10px; }
-  #src-btn { left: var(--gap); } #auto { right: var(--gap); } #sound { right: calc(var(--gap) + 128px); }
+  #src-btn, #glo-btn, #auto, #sound { bottom: 62px; gap: 6px; padding: 7px 9px; font-size: 10px; letter-spacing: 0.06em; }
+  #src-btn { left: var(--gap); } #auto { right: var(--gap); } #sound { right: calc(var(--gap) + 134px); }
+  /* Pas de place en bas sur un telephone : le glossaire monte dans la barre du haut */
+  /* Pas de place en bas sur un telephone : le glossaire devient un bouton « ? » dans la barre du haut,
+     et « Sources » perd sa fin pour ne plus chevaucher le bouton Son */
+  #glo-btn { top: 9px; bottom: auto !important; left: auto !important; right: calc(var(--gap) + 132px); padding: 7px 12px; }
+  #glo-btn .long, #glo-btn kbd, #src-btn .long { display: none; }
   #continue { bottom: 14px; }
   #hint { bottom: calc(var(--deck) + 8px); font-size: 18px; }
 }

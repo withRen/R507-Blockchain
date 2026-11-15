@@ -45,7 +45,8 @@
     <button id="continue" type="button">Passer ▸</button>
     <button id="auto" type="button" aria-pressed="false">Lecture auto ▶</button>
     <button id="sound" type="button" aria-pressed="false">Son coupé</button>
-    <button id="src-btn" type="button">Sources de cette séquence</button>
+    <button id="src-btn" type="button">Sources<span class="long">&nbsp;de cette séquence</span></button>
+    <button id="glo-btn" type="button" aria-label="Glossaire" aria-haspopup="dialog" aria-keyshortcuts="G"><span class="long">Glossaire</span> <kbd>G</kbd></button>
     <nav id="chain-nav" aria-label="Séquences"></nav>
     <details id="legend">
       <summary>Légende des couleurs</summary>
@@ -66,7 +67,8 @@
         <p>Une nuit dans un quartier d’affaires pour comprendre la blockchain. Musique et bruitages accompagnent le récit : monte un peu le son.</p>
         <button id="enter-sound" type="button">Commencer avec le son ♪</button>
         <button id="enter-mute" type="button" class="enter-quiet">Commencer sans le son</button>
-        <small>Fais défiler pour avancer · Espace pour passer à la suite · le bouton Son reste en bas à droite</small>
+        <small>Fais défiler pour avancer · Espace pour passer à la suite · G ouvre le glossaire · le bouton Son reste en bas à droite</small>
+        <p id="gpu-warn" hidden>Ton navigateur dessine la 3D sans la carte graphique : le récit risque de saccader. Active l’accélération matérielle dans ses réglages, puis recharge la page.</p>
       </div>
     </section>
   </div>
@@ -76,6 +78,19 @@
     <p class="sources-foot">
       <a href="./sources.html" target="_blank" rel="noopener">Toutes les sources ↗</a>
       <button class="sources-close" type="button">Fermer</button>
+    </p>
+  </dialog>
+  <dialog id="glossary" aria-labelledby="glossary-title">
+    <h2 id="glossary-title">Glossaire</h2>
+    <label class="glo-search">
+      <span>Tape un mot-clé</span>
+      <input type="search" placeholder="nonce, hash, consensus, PoW…" autocomplete="off" spellcheck="false" aria-describedby="glo-count">
+    </label>
+    <p class="glo-count" id="glo-count" aria-live="polite"></p>
+    <ul class="glo-list"></ul>
+    <p class="sources-foot">
+      <small>G ou / ouvre ce glossaire à tout moment · Échap pour fermer</small>
+      <button class="glo-close sources-close" type="button">Fermer</button>
     </p>
   </dialog>
   <div id="track" aria-hidden="true"></div>
