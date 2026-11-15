@@ -155,6 +155,7 @@ async function init() {
   const elTermDef = elTerm.querySelector('p');
   const elTitle = $('#title-card');
   const elFade = $('#fade');
+  const elTurn = $('#your-turn');
   const elTurnTask = $('#your-turn > span > span');
   const bar = $('#progress i');
   let curLine = null;
@@ -512,11 +513,6 @@ async function init() {
   // element a manipuler pulse et porte une etiquette « Clique ici », « Écris ici » ou « Fais glisser ».
   function setupCue(panel) {
     if (!panel || panel.classList.contains('steps-panel')) return;
-    const tag = document.createElement('span');
-    tag.className = 'cue-tag';
-    tag.setAttribute('aria-hidden', 'true');
-    tag.hidden = true;
-    panel.append(tag);
     const touched = () => panel.classList.add('touched');
     ['pointerdown', 'input', 'keydown'].forEach((ev) => panel.addEventListener(ev, touched));
     panel.placeCue = () => {
@@ -524,12 +520,12 @@ async function init() {
       // Le bouton d'action principal d'abord, sinon le premier champ
       const el = panel.classList.contains('touched') ? null
         : panel.querySelector('button:not(.ghost):not(:disabled)') ?? panel.querySelector('input');
-      tag.hidden = !el;
+      // L'ancienne etiquette « Clique ici » couvrait le texte : c'est maintenant le bandeau
+      // « A toi de jouer » qui pointe vers l'element, a sa hauteur, et dit quoi faire
+      panel.cueEl = el;
       if (!el) return;
       el.classList.add('cue');
-      tag.textContent = el.type === 'text' ? '✎ Écris ici' : el.type === 'range' ? '⇆ Fais glisser' : '➜ Clique ici';
-      tag.style.top = `${el.offsetTop - 13}px`;
-      tag.style.right = `${Math.max(8, panel.clientWidth - (el.offsetLeft + el.offsetWidth) + 10)}px`;
+      panel.cueVerb = el.type === 'text' ? 'Écris ici' : el.type === 'range' ? 'Fais glisser' : 'Clique ici';
     };
   }
 
@@ -727,7 +723,8 @@ async function init() {
         sfx('appear', 250);
         seq.panelEl?.placeCue?.();
         // Le bandeau « A toi de jouer » reprend la consigne de la console
-        elTurnTask.textContent = seq.panelEl?.querySelector('h2')?.textContent ?? '';
+        const task = seq.panelEl?.querySelector('h2')?.textContent ?? '';
+        elTurnTask.textContent = seq.panelEl?.cueVerb ? `${seq.panelEl.cueVerb} · ${task}` : task;
       }
     }
     // Un son discret quand un element apparait, seulement en avancant normalement dans le film
@@ -744,6 +741,14 @@ async function init() {
       city.update(time, camera, level, seq.linkLevel ?? (seq.cityLit ? 0.34 : 0), inside);
     }
     hud(seq, t, seq.override?.());
+    // Le bandeau se cale a la hauteur de l'element a utiliser (sur ordinateur)
+    const cueEl = seq.labOpen && !seq.panelEl?.classList.contains('touched') ? seq.panelEl?.cueEl : null;
+    if (cueEl && window.innerWidth > 700) {
+      const r = cueEl.getBoundingClientRect();
+      const half = elTurn.offsetHeight / 2;
+      const y = Math.min(Math.max(r.top + r.height / 2, 110 + half), window.innerHeight - 90 - half);
+      elTurn.style.top = `${y.toFixed(0)}px`;
+    } else if (elTurn.style.top) elTurn.style.top = '';
 
     const fade = seq.fade
       ? seq.fade(t)

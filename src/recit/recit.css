@@ -530,14 +530,14 @@ body::after {
 #term.on { transform: none; }
 #stage-ui:has(.lab.on:not(.steps-panel)) #term { left: calc(var(--console) + var(--gap)); }
 
-/* Sous-titre : un « lower third » aligné à gauche */
+/* Sous-titre : centre dans la zone libre de l'image */
 #line {
-  left: var(--gap); bottom: calc(var(--deck) + 20px); width: min(780px, calc(100vw - 2 * var(--gap)));
-  transform: translateY(8px);
+  left: 50%; bottom: calc(var(--deck) + 20px); width: min(780px, calc(100vw - 2 * var(--gap)));
+  transform: translate(-50%, 8px);
 }
-#line.on { transform: none; }
-#stage-ui:has(.lab.on:not(.steps-panel)) #line { left: calc(var(--console) + var(--gap)); width: min(720px, calc(100vw - var(--console) - 2 * var(--gap))); }
-#stage-ui:has(.steps-panel.on) #line { width: min(640px, calc(100vw - 440px - 2 * var(--gap))); }
+#line.on { transform: translate(-50%, 0); }
+#stage-ui:has(.lab.on:not(.steps-panel)) #line { left: calc(var(--console) + (100vw - var(--console)) / 2); width: min(720px, calc(100vw - var(--console) - 2 * var(--gap))); }
+#stage-ui:has(.steps-panel.on) #line { left: calc((100vw - 440px) / 2); width: min(640px, calc(100vw - 440px - 2 * var(--gap))); }
 
 /* Platine : tout est aligné dans la barre du bas */
 #hint { bottom: calc(var(--deck) + 14px); }
@@ -604,7 +604,8 @@ body::after {
   .lab h2 { font-size: 28px; }
   #term, #stage-ui:has(.lab.on) #term { left: var(--gap); right: var(--gap); width: auto; top: calc(var(--bar) + 50px); }
   #stage-ui:has(.lab.on) #term { display: none; }
-  #line, #stage-ui:has(.lab.on:not(.steps-panel)) #line, #stage-ui:has(.steps-panel.on) #line { left: var(--gap); right: var(--gap); width: auto; bottom: calc(var(--deck) + 12px); }
+  #line, #stage-ui:has(.lab.on:not(.steps-panel)) #line, #stage-ui:has(.steps-panel.on) #line { left: var(--gap); right: var(--gap); width: auto; bottom: calc(var(--deck) + 12px); transform: translateY(8px); }
+  #line.on { transform: none; }
   #stage-ui:has(.lab.on) #line { display: none; }
   #face { width: 66px; }
   #line p { padding: 10px 14px 12px; }
