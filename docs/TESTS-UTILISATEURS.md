@@ -2,7 +2,7 @@
 
 Ce fichier consigne les observations faites sur le projet par des personnes extérieures au groupe, et ce que nous en avons fait. Les décisions sont détaillées dans `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` (section 2.6 et rubriques f de chaque notion).
 
-Le sujet demande des tests avec au moins 2 personnes extérieures, non initiées. À ce jour, la v2 a été testée par **une** personne non initiée. Un second test, sur la v3, reste à faire avant la soutenance.
+Le sujet demande des tests avec au moins 2 personnes extérieures, non initiées. La v2 a été testée par une personne non initiée. La v3 a été testée par trois personnes extérieures, dont deux non initiées, via le questionnaire en ligne (section 4) ; leurs retours ont été corrigés dans la version finale.
 
 ## 1. Revue de l'enseignant, 12 novembre 2026
 
@@ -53,8 +53,20 @@ Retour écrit après un parcours complet, sans explication préalable.
 
 Voir le [formulaire de retours](https://docs.google.com/forms/d/e/1FAIpQLSdWOe5Z6wL2r4mvUCPZjamTJZX2sr3akOwpV4yEK9PuOTuHjA/viewform) et les lignes « (Test v1) » des rubriques f du livrable de modélisation.
 
-## 4. Reste à faire
+## 4. Questionnaire de test de la v3, 15 novembre 2026
 
-- Un second test de la v3 par une personne non initiée.
+Trois testeurs extérieurs au groupe (deux non initiés, un qui connaissait le principe) ont rempli le questionnaire Google après avoir parcouru la v3. Le détail des réponses (notes, quiz, avis par séquence, remarques) est dans [`TESTS-V3-QUESTIONNAIRE.md`](TESTS-V3-QUESTIONNAIRE.md).
+
+| Observation | Décision dans la version finale |
+|---|---|
+| Récit lent sur un PC modeste (fluidité notée 1 / 5, « Lent sur mon pc ») ; envie d'un glossaire à consulter par mot-clé. | Qualité adaptée à la carte graphique, baisse automatique sous 40 i/s ; glossaire consultable (bouton, touches G et /). Issue #32, commit `c9b2b0f`. |
+| Musique activée « mais elle gêne ». | Curseur de volume, volume par défaut plus bas. Issue #33, commit `749ec70`. |
+| Vignette trop forte et moment d'agir peu visible. | Vignette allégée, grand bandeau « À toi de jouer » avec la consigne, qui pointe l'élément à utiliser. Issue #34, commit `1b68025`. |
+| Dialogue à recentrer ; l'étiquette « Clique ici » cache le texte. | Boîte de dialogue centrée, étiquette retirée au profit du bandeau. Issue #35, commit `02ca600`. |
+
+Ces retours ont été corrigés ; aucun nouveau test de la v3 n'est prévu.
+
+## 5. Reste à faire
+
 - Créer une issue par décision de ce fichier, et la lier au commit correspondant.
-- Mesurer les images par seconde de la v3 sur un poste de TP.
+- Mesurer les images par seconde de la version finale sur un poste de TP.
