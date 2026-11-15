@@ -74,7 +74,7 @@ export function createDirector({ score, scrollMax, reduceMotion, count }) {
   const paintUI = () => {
     btnAuto.classList.toggle('on', started);
     btnAuto.setAttribute('aria-pressed', String(on));
-    btnAuto.textContent = on ? 'Lecture auto ❚❚' : 'Lecture auto ▶';
+    btnAuto.textContent = on ? 'Lecture auto : pause' : 'Lecture auto';
     hint.textContent = touch ? 'Fais défiler pour commencer' : 'Fais défiler, ou appuie sur Espace pour passer à la suite';
     hint.classList.toggle('off', started);
   };
@@ -223,7 +223,7 @@ export function createDirector({ score, scrollMax, reduceMotion, count }) {
       const hasNext = !!nextMark(y / max());
       // Le bouton reste toujours visible tant qu'il y a une suite : plus besoin de deviner
       btnNext.classList.toggle('on', hasNext);
-      const label = labOpen || phase === 'wait' ? 'Continuer ▸' : 'Passer ▸';
+      const label = labOpen || phase === 'wait' ? 'Continuer' : 'Passer';
       if (label !== nextLabel) { nextLabel = label; btnNext.textContent = label; }
       return driving ? p : null;
     }

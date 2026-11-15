@@ -15,11 +15,11 @@ function build() {
     <div class="bravo-flash"></div>
     <div class="bravo-confetti" aria-hidden="true"></div>
     <div class="bravo-card">
-      <p class="bravo-kicker">★ Épreuve réussie ★</p>
+      <p class="bravo-kicker"><span class="ms" aria-hidden="true">star</span>Épreuve réussie<span class="ms" aria-hidden="true">star</span></p>
       <h2 class="bravo-title" data-text="BIEN JOUÉ">BIEN JOUÉ</h2>
       <p class="bravo-what"></p>
       <p class="bravo-why"></p>
-      <button type="button" class="bravo-ok">Continuer</button>
+      <button type="button" class="bravo-ok"><span class="ms" aria-hidden="true">check</span>Continuer</button>
     </div>`;
   document.querySelector('#stage-ui').append(el);
   el.querySelector('.bravo-ok').addEventListener('click', hide);

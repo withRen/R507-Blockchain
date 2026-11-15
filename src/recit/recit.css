@@ -630,9 +630,69 @@ body::before { background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0)
 .lab:not(.steps-panel) { bottom: 0; }
 .lab.steps-panel { bottom: 0; }
 #stage-ui:has(.lab.on:not(.steps-panel)) #src-btn { left: calc(var(--console) + var(--gap)); }
+/* ============================================================
+   ICÔNES : Material Symbols partout à la place des glyphes unicode
+   ============================================================ */
+.ms, .lab button:not(.ghost)::before, .lab-link::before, #src-btn::before, #auto::before, #sound::before, #continue::after,
+.enter-box button::before, #controls-go::before, .bravo-ok::before, #sources h2::before, .sources-close::before {
+  display: inline-block; flex: none; width: 1em; height: 1em; overflow: hidden; vertical-align: -0.22em;
+  font: 400 20px / 1 'Material Symbols Outlined'; font-style: normal; letter-spacing: normal; text-transform: none; white-space: nowrap;
+  font-feature-settings: 'liga'; -webkit-font-smoothing: antialiased; text-shadow: none; text-decoration: none;
+}
+.ms { margin: 0; }
+/* Les pastilles, jeux de pions et signataires n'ont pas d'icône devant */
+.lab .chips button::before, .lab .signers button::before, .lab .ledger-rows button::before, .lab .stepper button::before { content: none; display: none; }
+.lab .stepper button .ms { font-size: 24px; }
+
+/* Bandeau d'épreuve */
+.lab:not(.steps-panel)::before { content: none; display: none; }
+.lab-head {
+  position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 10px; height: 36px; margin: 0 -24px 20px; padding: 0 24px;
+  font: 600 12.5px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); background: var(--ph); text-shadow: none;
+}
+.lab-head .ms { font-size: 20px; }
+.lab.on:not(.touched) .lab-head .ms { animation: icon-pulse 1.2s ease-in-out infinite; }
+@keyframes icon-pulse { 50% { transform: scale(1.3); } }
+.cue-tag { display: inline-flex; align-items: center; gap: 6px; }
+.cue-tag .ms { font-size: 16px; }
+
+/* Boutons des panneaux et de l'écran d'entrée */
+.lab button:not(.ghost)::before, .lab-link::before { content: 'play_arrow'; margin-right: 8px; font-size: 22px; }
+.enter-box button::before, #controls-go::before { margin-right: 12px; font-size: 26px; }
+#enter-sound::before { content: 'volume_up'; }
+#enter-mute::before, .enter-box button.enter-quiet::before { content: 'volume_off'; }
+#controls-go::before { content: 'play_arrow'; }
+.enter-box button, #controls-go { animation: ring-pulse 1.8s ease-in-out infinite; }
+.enter-box button.enter-quiet { animation: none; }
+@keyframes ring-pulse { 0%, 100% { box-shadow: 5px 5px 0 var(--ph-3), 0 0 0 0 rgba(255, 233, 184, 0); } 50% { box-shadow: 5px 5px 0 var(--ph-3), 0 0 0 7px rgba(255, 233, 184, 0.22); } }
+
+/* Platine : lecture, son, passer, sources */
+#auto::before { content: 'play_arrow'; width: 1em; height: 1em; border-radius: 0; background: none; box-shadow: none; font-size: 20px; }
+#auto[aria-pressed="true"]::before { content: 'pause'; background: none; box-shadow: none; color: var(--ph); }
+#sound::before { content: 'volume_off'; width: 1em; height: 1em; border-radius: 0; background: none; box-shadow: none; animation: none; font-size: 20px; color: var(--led-rec); }
+#sound[aria-pressed="false"]::before { background: none; box-shadow: none; animation: none; }
+#sound[aria-pressed="true"]::before { content: 'volume_up'; background: none; box-shadow: none; color: var(--led-on); }
+#sound[aria-pressed="false"] { text-decoration: none; }
+#continue::after { content: 'fast_forward'; letter-spacing: normal; font-size: 22px; }
+#src-btn::before { content: 'menu_book'; font-size: 20px; }
+
+/* Sources, remerciements */
+#sources h2 { display: flex; align-items: center; gap: 10px; }
+#sources h2::before { content: 'menu_book'; font-size: 20px; }
+.sources-close { display: inline-flex; align-items: center; gap: 8px; }
+.sources-close::before { content: 'close'; font-size: 18px; }
+.bravo-kicker { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.bravo-kicker .ms { font-size: 18px; }
+.bravo-ok { display: inline-flex; align-items: center; gap: 8px; }
+.bravo-ok::before { content: none; display: none; }
+.bravo-ok .ms { font-size: 22px; }
+
+/* Page des commandes */
+.controls-grid span.ms { width: 1em; height: 1em; overflow: hidden; font: 300 68px / 1 'Material Symbols Outlined'; letter-spacing: normal; color: var(--ph); text-shadow: 0 0 14px var(--glow); }
+@media (max-width: 700px) { .lab-head { margin: 0 -16px 14px; padding: 0 16px; } }
 @media (prefers-reduced-motion: reduce) {
   .bravo-confetti, #bravo .bravo-flash, #bravo .bravo-title { display: none; }
   #bravo.on .bravo-card { animation: none; transform: none; opacity: 1; }
   * { transition-duration: 0.01s !important; }
-  body::before, #line .mouth, #hint::after, #loading::after, .cue-tag, .lab.on:not(.touched) .cue, .lab.on:not(.touched)::before, .enter-box button, #sound::before { animation: none !important; }
+  body::before, #line .mouth, #hint::after, #loading::after, .cue-tag, .lab.on:not(.touched) .cue, .lab.on:not(.touched)::before, .lab.on:not(.touched) .lab-head .ms, .enter-box button, #controls-go { animation: none !important; }
 }

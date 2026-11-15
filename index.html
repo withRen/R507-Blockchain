@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&icon_names=menu_book&display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&icon_names=add,ads_click,check,close,edit,fast_forward,menu_book,mouse,pause,play_arrow,play_circle,remove,space_bar,star,swap_horiz,touch_app,volume_off,volume_up&display=block" rel="stylesheet">
   <link rel="stylesheet" href="/src/recit/recit.css">
 </head>
 <body>
@@ -22,6 +22,7 @@
     <aside id="term" aria-live="polite"><small></small><strong></strong><p></p></aside>
     <div id="line" aria-live="polite"><div id="face" aria-hidden="true"></div><p><b></b><span></span></p></div>
     <section id="lab" class="lab" aria-label="Retrouve la transaction">
+      <header class="lab-head"><span class="ms" aria-hidden="true">ads_click</span>Épreuve · à toi de jouer</header>
       <h2>Retrouve la transaction</h2>
       <p class="lab-hint">Une seule de ces transactions donne l’empreinte cible : clique pour essayer. Tu peux aussi cliquer une couche du bloc pour savoir à quoi elle sert.</p>
       <div id="lab-chips" class="chips" role="group" aria-label="Transactions candidates"></div>
@@ -32,9 +33,9 @@
       <p id="lab-diff" aria-live="polite"></p>
       <div class="stepper">
         <span id="lab-nonce-label">Nonce</span>
-        <button id="lab-minus" type="button" aria-label="Nonce moins un">−</button>
+        <button id="lab-minus" type="button" aria-label="Nonce moins un"><span class="ms" aria-hidden="true">remove</span></button>
         <output id="lab-nonce" aria-labelledby="lab-nonce-label"></output>
-        <button id="lab-plus" type="button" aria-label="Nonce plus un">+</button>
+        <button id="lab-plus" type="button" aria-label="Nonce plus un"><span class="ms" aria-hidden="true">add</span></button>
       </div>
       <p id="lab-note" aria-live="polite">Essaie : ça ne coûte rien.</p>
     </section>
@@ -57,7 +58,7 @@
         <h1 id="enter-title">23 h 47</h1>
         <p class="enter-lead">Quarante millions ont disparu d’un registre central, sans laisser de trace. Une nuit pour comprendre pourquoi la blockchain existe. Musique et bruitages accompagnent le récit : monte un peu le son.</p>
         <div class="enter-actions">
-          <button id="enter-sound" type="button">Avec le son ♪</button>
+          <button id="enter-sound" type="button">Avec le son</button>
           <button id="enter-mute" type="button" class="enter-quiet">Sans le son</button>
         </div>
       </div>
@@ -69,27 +70,27 @@
         <h2 id="controls-title">Les commandes</h2>
         <ul class="controls-grid">
           <li>
-            <svg viewBox="0 0 48 64" aria-hidden="true"><rect x="9" y="4" width="30" height="48" rx="15"/><line x1="24" y1="4" x2="24" y2="22"/><rect class="fill" x="21" y="12" width="6" height="12" rx="3"/><path class="arrow" d="M24 58v4M20 60l4 4 4-4"/></svg>
+            <span class="ms" aria-hidden="true">mouse</span>
             <b>Fais défiler</b><span>Molette ou trackpad : le récit avance et recule avec toi.</span>
           </li>
           <li>
-            <svg viewBox="0 0 96 64" aria-hidden="true"><rect x="4" y="14" width="88" height="38" rx="6"/><text x="48" y="40" text-anchor="middle">ESPACE</text></svg>
+            <span class="ms" aria-hidden="true">space_bar</span>
             <b>Passe à la suite</b><span>La barre d’espace saute à la prochaine réplique ou épreuve.</span>
           </li>
           <li>
-            <svg viewBox="0 0 48 64" aria-hidden="true"><path d="M12 6v44l12-10 8 18 8-4-8-18h16z"/></svg>
+            <span class="ms" aria-hidden="true">touch_app</span>
             <b>Clique pour jouer</b><span>Dans les épreuves, clique, écris ou fais glisser. Ça ne coûte rien d’essayer.</span>
           </li>
           <li>
-            <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 24h12l14-12v40L20 40H8z"/><path class="arrow" d="M42 22q8 10 0 20M48 14q14 18 0 36"/></svg>
+            <span class="ms" aria-hidden="true">volume_up</span>
             <b>Règle le son</b><span>En bas à droite : coupe le son ou ajuste le volume à tout moment.</span>
           </li>
           <li>
-            <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24"/><path class="fill" d="M26 20l18 12-18 12z"/></svg>
+            <span class="ms" aria-hidden="true">play_circle</span>
             <b>Lecture auto</b><span>Laisse le récit défiler seul, et mets-le en pause quand tu veux.</span>
           </li>
           <li>
-            <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="8" width="40" height="48" rx="3"/><path d="M20 22h24M20 32h24M20 42h14"/></svg>
+            <span class="ms" aria-hidden="true">menu_book</span>
             <b>Sources</b><span>À la fin de chaque chapitre, un bouton ouvre les sources utilisées.</span>
           </li>
         </ul>

@@ -166,6 +166,13 @@ async function init() {
       const el = document.createElement('section');
       el.className = cls;
       el.innerHTML = html;
+      // Bandeau d'epreuve (icone Material), sauf pour les panneaux d'information seule
+      if (!cls.includes('steps-panel')) {
+        const head = document.createElement('header');
+        head.className = 'lab-head';
+        head.innerHTML = '<span class="ms" aria-hidden="true">ads_click</span>Épreuve · à toi de jouer';
+        el.prepend(head);
+      }
       stageUI.append(el);
       return el;
     }
@@ -506,7 +513,11 @@ async function init() {
       tag.hidden = !el;
       if (!el) return;
       el.classList.add('cue');
-      tag.textContent = el.type === 'text' ? '✎ Écris ici' : el.type === 'range' ? '⇆ Fais glisser' : '➜ Clique ici';
+      const [icon, label] = el.type === 'text' ? ['edit', 'Écris ici'] : el.type === 'range' ? ['swap_horiz', 'Fais glisser'] : ['touch_app', 'Clique ici'];
+      const ic = document.createElement('span');
+      ic.className = 'ms';
+      ic.textContent = icon;
+      tag.replaceChildren(ic, label);
       tag.style.top = `${el.offsetTop - 13}px`;
       tag.style.right = `${Math.max(8, panel.clientWidth - (el.offsetLeft + el.offsetWidth) + 10)}px`;
     };
