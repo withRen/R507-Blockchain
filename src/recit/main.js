@@ -155,6 +155,7 @@ async function init() {
   const elTermDef = elTerm.querySelector('p');
   const elTitle = $('#title-card');
   const elFade = $('#fade');
+  const elTurnTask = $('#your-turn > span > span');
   const bar = $('#progress i');
   let curLine = null;
   let curTerm = null;
@@ -722,7 +723,12 @@ async function init() {
       const was = !!seq.labOpen;
       seq.labOpen = t >= seq.LAB.from && t <= seq.LAB.to;
       seq.panelEl?.classList.toggle('on', seq.labOpen);
-      if (seq.labOpen && !was) { sfx('appear', 250); seq.panelEl?.placeCue?.(); }
+      if (seq.labOpen && !was) {
+        sfx('appear', 250);
+        seq.panelEl?.placeCue?.();
+        // Le bandeau « A toi de jouer » reprend la consigne de la console
+        elTurnTask.textContent = seq.panelEl?.querySelector('h2')?.textContent ?? '';
+      }
     }
     // Un son discret quand un element apparait, seulement en avancant normalement dans le film
     if (seq === lastSeq && t > lastT && t - lastT < 0.05) {
