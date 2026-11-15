@@ -136,7 +136,18 @@ async function init() {
   const elWho = elLine.querySelector('b');
   const elText = elLine.querySelector('span');
   const elFace = $('#face');
-  const music = createMusic($('#sound'), (on) => setSfxMuted(!on));
+  const music = createMusic($('#sound'), (on) => setSfxMuted(!on), $('#volume input'));
+  // Le curseur de volume se range a gauche du bouton Son (au-dessus sur telephone)
+  const placeVolume = () => {
+    const snd = $('#sound');
+    const vol = $('#volume');
+    if (window.innerWidth <= 700) { vol.style.right = ''; return; }
+    const parent = vol.offsetParent?.getBoundingClientRect();
+    if (parent) vol.style.right = `${parent.right - snd.getBoundingClientRect().left + 10}px`;
+  };
+  window.addEventListener('resize', placeVolume);
+  document.fonts.ready.then(placeVolume);
+  new ResizeObserver(placeVolume).observe($('#sound'));
   installSfx();
   const elTerm = $('#term');
   const elTermLabel = elTerm.querySelector('small');
