@@ -13,7 +13,7 @@ const NODES = 14;
 
 export function createSequence3(ctx) {
   const holo = new THREE.Group();
-  holo.position.set(-2.4, 2.05, 8.15);
+  holo.position.set(-2.4, 1.9, 8.15); // un peu plus bas : la bande lumineuse du plafond ne masque plus le texte
   holo.scale.setScalar(0.27);
   holo.visible = false;
   ctx.office.group.add(holo);

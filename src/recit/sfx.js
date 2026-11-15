@@ -9,6 +9,12 @@ const last = new Map();
 
 // Le bouton Son coupe la musique et les bruitages ensemble
 export function setSfxMuted(m) { muted = m; }
+// Curseur de volume : 0 a 1, applique a tous les bruitages
+let level = 1;
+export function setSfxLevel(l) {
+  level = l;
+  if (out) out.gain.value = MASTER * level;
+}
 // A appeler pendant un geste du visiteur : le navigateur autorise alors le son
 export function unlockSfx() { context(); }
 
@@ -18,7 +24,7 @@ function context() {
     if (!AC) return null;
     ac = new AC();
     out = ac.createGain();
-    out.gain.value = MASTER;
+    out.gain.value = MASTER * level;
     out.connect(ac.destination);
   }
   if (ac.state === 'suspended') ac.resume();

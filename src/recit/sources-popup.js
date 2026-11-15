@@ -5,6 +5,7 @@ export function createSourcesPopup({ onOpen } = {}) {
   const body = dialog.querySelector('.sources-body');
   const title = dialog.querySelector('h2');
   let page = null;
+  let allBtn = null;
   const load = () => {
     page ??= fetch('./sources.html')
       .then((r) => r.text())
@@ -16,7 +17,10 @@ export function createSourcesPopup({ onOpen } = {}) {
     onOpen?.();
     const one = idx >= 1 && idx <= 7; // une notion : seulement ses sources
     title.textContent = one ? `Sources · ${name}` : 'Sources du parcours';
+    allBtn.hidden = !one;
     body.textContent = 'Chargement…';
+    body.scrollTop = 0;
+    dialog.scrollTop = 0;
     dialog.showModal();
     try {
       const doc = await load();
@@ -25,15 +29,17 @@ export function createSourcesPopup({ onOpen } = {}) {
         const copy = document.importNode(s, true);
         copy.removeAttribute('id');
         if (one) copy.querySelector('h2')?.remove();
-        else copy.querySelector('h2')?.replaceWith(Object.assign(document.createElement('h3'), { textContent: s.querySelector('h2').textContent }));
+        else copy.querySelector('h2')?.replaceWith(Object.assign(document.createElement('h3'), { innerHTML: s.querySelector('h2').innerHTML }));
         return copy;
       });
       body.replaceChildren(...nodes);
     } catch {
-      body.textContent = 'Impossible de charger les sources ici. La page complète reste accessible ci-dessous.';
+      body.textContent = 'Impossible de charger les sources pour le moment.';
     }
   }
 
+  allBtn = dialog.querySelector('.sources-all');
+  allBtn.addEventListener('click', () => open(-1));
   dialog.querySelector('.sources-close').addEventListener('click', () => dialog.close());
   // Un clic sur le fond sombre ferme la fenetre
   dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });

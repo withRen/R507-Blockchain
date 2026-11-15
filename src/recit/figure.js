@@ -314,18 +314,14 @@ export const CAST = {
     seed: 0.53, height: 1.0, shoulders: 1.1, skin: 0xb98a68, hair: 0x2a1f19, eyes: 0x4a3520, jacket: 0x2e2b28, trousers: 0x201e1d, shirt: 0x8a837a, belt: 0x5c3412, buckle: 0xc99b49,
     style: {
       torso(k, { hipY, torsoH, sw, leather, metal }) {
-        // Tablier d'atelier en vrai materiau cuir (et non laine)
-        leather.add(
-          new THREE.CylinderGeometry(sw * 0.73, sw * 1.04, torsoH * 1.48, 22, 1, false, -1.08, 2.16),
-          0xa85f1c,
-          { p: [0, hipY + torsoH * 0.18, 0.012], s: [1.05, 1, 0.77] }
-        );
-        // Poche pectorale en cuir et bretelles
-        leather.box(0.11, 0.095, 0.018, 0x8a4b12, { p: [0, hipY + torsoH * 0.55, sw * 0.62] });
-        leather.box(0.026, 0.18, 0.014, 0x6e3a0c, { p: [0.058, hipY + torsoH * 0.82, sw * 0.56], r: [-0.25, 0, -0.1] });
-        leather.box(0.026, 0.18, 0.014, 0x6e3a0c, { p: [-0.058, hipY + torsoH * 0.82, sw * 0.56], r: [-0.25, 0, 0.1] });
-        metal.box(0.016, 0.016, 0.012, 0xd4a24c, { p: [0.054, hipY + torsoH * 0.72, sw * 0.61] });
-        metal.box(0.016, 0.016, 0.012, 0xd4a24c, { p: [-0.054, hipY + torsoH * 0.72, sw * 0.61] });
+        // Tablier d'atelier : un panneau plein devant (l'ancien demi-cylindre ouvert se croisait avec
+        // le buste et scintillait de profil), avec une poche et des bretelles posees dessus
+        leather.box(sw * 1.5, torsoH * 1.4, 0.02, 0xa85f1c, { p: [0, hipY + torsoH * 0.16, sw * 0.6] });
+        leather.box(0.11, 0.095, 0.014, 0x8a4b12, { p: [0, hipY + torsoH * 0.55, sw * 0.6 + 0.017] });
+        leather.box(0.026, 0.2, 0.012, 0x6e3a0c, { p: [0.058, hipY + torsoH * 0.86, sw * 0.6 + 0.016] });
+        leather.box(0.026, 0.2, 0.012, 0x6e3a0c, { p: [-0.058, hipY + torsoH * 0.86, sw * 0.6 + 0.016] });
+        metal.box(0.016, 0.016, 0.012, 0xd4a24c, { p: [0.054, hipY + torsoH * 0.74, sw * 0.6 + 0.026] });
+        metal.box(0.016, 0.016, 0.012, 0xd4a24c, { p: [-0.054, hipY + torsoH * 0.74, sw * 0.6 + 0.026] });
       },
       head(k, { hair }) {
         k.add(sphere, hair, { p: [0, 0.206, -0.014], s: [0.098, 0.096, 0.104] });

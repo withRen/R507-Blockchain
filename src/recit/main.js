@@ -17,8 +17,9 @@ import { createDirector, buildScore } from './director.js';
 import { createSourcesPopup } from './sources-popup.js';
 import { portrait } from './portraits.js';
 import { createMusic } from './music.js';
-import { sfx, installSfx, setSfxMuted, unlockSfx } from './sfx.js';
+import { sfx, installSfx, setSfxMuted, setSfxLevel, unlockSfx } from './sfx.js';
 import { bravo, hide as hideBravo } from './success.js';
+import { createHero } from './hero.js';
 
 // Les personnages apparaissent deux fois : en silhouettes 3D dans les decors, et en portraits 2D
 // dans la boite de dialogue. Passer a false pour ne garder que les portraits.
@@ -140,7 +141,20 @@ async function init() {
         sfx('appear', 250);
         elTermLabel.textContent = te.label;
         elTermTitle.textContent = te.title;
-        elTermDef.textContent = te.def;
+        // « Avantage : … Limite : … » : chaque volet sur sa propre ligne, bien separe de l'introduction
+        elTermDef.replaceChildren(...te.def.split(/\s+(?=(?:Avantage|Limite|Inconvénient)s?\s*:)/).map((part, i) => {
+          const m = part.match(/^(Avantage|Limite|Inconvénient)s?\s*:\s*/);
+          const row = document.createElement('span');
+          row.className = m ? (m[1] === 'Avantage' ? 't-pro' : 't-con') : 't-intro';
+          if (m) {
+            const tag = document.createElement('b');
+            tag.textContent = m[1] === 'Avantage' ? '+ Avantage' : '− Limite';
+            row.append(tag, part.slice(m[0].length));
+          } else {
+            row.textContent = part;
+          }
+          return row;
+        }));
       }
       elTerm.classList.toggle('on', !!te);
     }
@@ -447,15 +461,29 @@ async function init() {
     root.style.overflow = 'hidden';
     enter.hidden = false;
     requestAnimationFrame(() => enter.classList.add('on'));
-    const go = (withSound) => {
+    // Deux ecrans : le titre (choix du son), puis les commandes. « Commencer » lance le recit.
+    const controls = $('#controls');
+    const hero = createHero($('#enter-figs'));
+    hero.start();
+    let withSound = true;
+    const show = (el) => { el.hidden = false; requestAnimationFrame(() => el.classList.add('on')); };
+    const hide = (el) => { el.classList.remove('on'); setTimeout(() => { el.hidden = true; }, 450); };
+    const toControls = (sound) => {
+      withSound = sound;
+      if (sound) unlockSfx();
+      hide(enter);
+      setTimeout(() => hero.stop(), 500);
+      show(controls);
+      $('#controls-go').focus();
+    };
+    $('#enter-sound').addEventListener('click', () => toControls(true));
+    $('#enter-mute').addEventListener('click', () => toControls(false));
+    $('#controls-go').addEventListener('click', () => {
       if (withSound) unlockSfx();
       music.enable(withSound);
       root.style.overflow = '';
-      enter.classList.remove('on');
-      setTimeout(() => { enter.hidden = true; }, 450);
-    };
-    $('#enter-sound').addEventListener('click', () => go(true));
-    $('#enter-mute').addEventListener('click', () => go(false));
+      hide(controls);
+    });
     $('#enter-sound').focus();
   }
 
@@ -508,8 +536,14 @@ async function init() {
   // Sources de la sequence en cours, dans une fenetre ; la lecture auto se met en pause
   const popup = createSourcesPopup({ onOpen: () => director?.pause() });
   $('#src-btn').addEventListener('click', () => popup.open(sequences.indexOf(active), active?.name));
-  // Sur petit ecran, la legende demarre repliee
-  if (window.innerWidth < 900 || window.innerHeight < 620) $('#legend').open = false;
+  // Les sources de la notion ne s'ouvrent qu'une fois le chapitre termine
+  const srcBtn = $('#src-btn');
+  document.addEventListener('open-sources', () => popup.open(-1));
+  // Volume : musique et bruitages suivent le meme curseur
+  const vol = $('#vol');
+  const applyVolume = () => { const v = Number(vol.value) / 100; music.setLevel(v); setSfxLevel(v); };
+  vol.addEventListener('input', applyVolume);
+  applyVolume();
   // Le curseur devient une main au-dessus de ce qui se clique dans la scene 3D
   canvas.addEventListener('pointermove', (e) => {
     canvas.style.cursor = active?.labOpen && active.hit?.(e) ? 'pointer' : '';
@@ -660,6 +694,7 @@ async function init() {
     lastSeq = seq;
     lastT = t;
     seq.update?.(t, time, dt);
+    srcBtn.classList.toggle('on', t > 0.9);
     room.tick(dt, time);
     if (cityGroup.visible) {
       const level = seq.heroLevel ?? (() => 0.9);

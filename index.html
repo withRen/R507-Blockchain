@@ -45,28 +45,54 @@
     <button id="continue" type="button">Passer ▸</button>
     <button id="auto" type="button" aria-pressed="false">Lecture auto ▶</button>
     <button id="sound" type="button" aria-pressed="false">Son coupé</button>
-    <button id="src-btn" type="button">Sources de cette séquence</button>
+    <label id="vol-wrap" for="vol"><span>Vol</span><input id="vol" type="range" min="0" max="100" value="70" aria-label="Volume du son"></label>
+    <button id="src-btn" type="button">Sources de ce chapitre</button>
     <nav id="chain-nav" aria-label="Séquences"></nav>
-    <details id="legend">
-      <summary>Légende des couleurs</summary>
-      <ul>
-        <li style="--c:#5b74ff">Information</li>
-        <li style="--c:#35c98a">Valide</li>
-        <li style="--c:#ff4f45">Falsifié ou attaque</li>
-        <li style="--c:#e89a2c">Minage (travail)</li>
-        <li style="--c:#1fb4ba">Enjeu</li>
-        <li style="--c:#8f73ee">Autorité</li>
-      </ul>
-    </details>
     <div id="progress"><i></i></div>
     <section id="enter" aria-labelledby="enter-title" hidden>
+      <div class="bars-test" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="enter-box">
-        <div class="bars-test" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <h1 id="enter-title">Le Registre</h1>
-        <p>Une nuit dans un quartier d’affaires pour comprendre la blockchain. Musique et bruitages accompagnent le récit : monte un peu le son.</p>
-        <button id="enter-sound" type="button">Commencer avec le son ♪</button>
-        <button id="enter-mute" type="button" class="enter-quiet">Commencer sans le son</button>
-        <small>Fais défiler pour avancer · Espace pour passer à la suite · le bouton Son reste en bas à droite</small>
+        <p class="enter-kicker">Enquête interactive · blockchain</p>
+        <h1 id="enter-title">23 h 47</h1>
+        <p class="enter-lead">Quarante millions ont disparu d’un registre central, sans laisser de trace. Une nuit pour comprendre pourquoi la blockchain existe. Musique et bruitages accompagnent le récit : monte un peu le son.</p>
+        <div class="enter-actions">
+          <button id="enter-sound" type="button">Avec le son ♪</button>
+          <button id="enter-mute" type="button" class="enter-quiet">Sans le son</button>
+        </div>
+      </div>
+      <canvas id="enter-figs" aria-hidden="true"></canvas>
+    </section>
+    <section id="controls" aria-labelledby="controls-title" hidden>
+      <div class="controls-box">
+        <p class="enter-kicker">Avant de commencer</p>
+        <h2 id="controls-title">Les commandes</h2>
+        <ul class="controls-grid">
+          <li>
+            <svg viewBox="0 0 48 64" aria-hidden="true"><rect x="9" y="4" width="30" height="48" rx="15"/><line x1="24" y1="4" x2="24" y2="22"/><rect class="fill" x="21" y="12" width="6" height="12" rx="3"/><path class="arrow" d="M24 58v4M20 60l4 4 4-4"/></svg>
+            <b>Fais défiler</b><span>Molette ou trackpad : le récit avance et recule avec toi.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 96 64" aria-hidden="true"><rect x="4" y="14" width="88" height="38" rx="6"/><text x="48" y="40" text-anchor="middle">ESPACE</text></svg>
+            <b>Passe à la suite</b><span>La barre d’espace saute à la prochaine réplique ou épreuve.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 48 64" aria-hidden="true"><path d="M12 6v44l12-10 8 18 8-4-8-18h16z"/></svg>
+            <b>Clique pour jouer</b><span>Dans les épreuves, clique, écris ou fais glisser. Ça ne coûte rien d’essayer.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 24h12l14-12v40L20 40H8z"/><path class="arrow" d="M42 22q8 10 0 20M48 14q14 18 0 36"/></svg>
+            <b>Règle le son</b><span>En bas à droite : coupe le son ou ajuste le volume à tout moment.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="24"/><path class="fill" d="M26 20l18 12-18 12z"/></svg>
+            <b>Lecture auto</b><span>Laisse le récit défiler seul, et mets-le en pause quand tu veux.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="8" width="40" height="48" rx="3"/><path d="M20 22h24M20 32h24M20 42h14"/></svg>
+            <b>Sources</b><span>À la fin de chaque chapitre, un bouton ouvre les sources utilisées.</span>
+          </li>
+        </ul>
+        <button id="controls-go" type="button">Commencer</button>
       </div>
     </section>
   </div>
@@ -74,7 +100,7 @@
     <h2 id="sources-title">Sources</h2>
     <div class="sources-body"></div>
     <p class="sources-foot">
-      <a href="./sources.html" target="_blank" rel="noopener">Toutes les sources ↗</a>
+      <button class="sources-all" type="button">Toutes les sources du parcours</button>
       <button class="sources-close" type="button">Fermer</button>
     </p>
   </dialog>

@@ -81,8 +81,9 @@ export function createEpilogue(ctx) {
       <li><b>Consensus</b> : PoW, PoS et PoA ont chacun leurs avantages et leurs limites.</li>
       <li><b>Transaction</b> : elle devient sûre peu à peu, au fil des confirmations.</li>
     </ol>
-    <a class="lab-link" href="./sources.html">Sources et simplifications</a>
+    <button id="e-src" type="button">Sources et simplifications</button>
     <button id="e-top" type="button" class="ghost">Revoir depuis le début</button>`);
+  panel.querySelector('#e-src').addEventListener('click', () => document.dispatchEvent(new CustomEvent('open-sources')));
   panel.querySelector('#e-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'auto' }));
 
   const seq = {

@@ -59,22 +59,14 @@ const DISPLAY = '"VT323", "IBM Plex Mono", monospace';
 export function crtBackdrop(ctx, W, H, accent = PHOSPHOR) {
   ctx.fillStyle = '#080603';
   ctx.fillRect(0, 0, W, H);
-  const v = ctx.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 0.85);
-  v.addColorStop(0, 'rgba(255, 214, 140, 0.05)');
-  v.addColorStop(1, 'rgba(0, 0, 0, 0.55)');
-  ctx.fillStyle = v;
-  ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  // Fond uni, lignes de balayage fines et un simple filet : ni vignette, ni cercle, ni coins
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
   for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1.5);
   ctx.strokeStyle = accent;
-  ctx.lineWidth = 4;
-  const L = 34;
-  const m = 14;
-  [[m, m, 1, 1], [W - m, m, -1, 1], [m, H - m, 1, -1], [W - m, H - m, -1, -1]].forEach(([x, y, sx, sy]) => {
-    ctx.beginPath();
-    ctx.moveTo(x, y + sy * L); ctx.lineTo(x, y); ctx.lineTo(x + sx * L, y);
-    ctx.stroke();
-  });
+  ctx.globalAlpha = 0.45;
+  ctx.lineWidth = 3;
+  ctx.strokeRect(8, 8, W - 16, H - 16);
+  ctx.globalAlpha = 1;
 }
 
 export function drawChainFace(block, b, i, { parentOk = true, editedData = false } = {}) {

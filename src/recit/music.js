@@ -22,6 +22,8 @@ export function createMusic(button, onChange = () => {}) {
   const missing = new Set();
   let on = false;
   let current = -1;
+  let level = 1; // curseur de volume du visiteur, de 0 a 1
+  const vol = () => VOLUME * level;
 
   const paint = () => {
     button.setAttribute('aria-pressed', String(on));
@@ -46,7 +48,7 @@ export function createMusic(button, onChange = () => {}) {
     const run = (now) => {
       // L'horodatage d'une image peut preceder performance.now() : jamais de pas negatif,
       // sinon le volume sort de [0, 1], le navigateur leve une erreur et le fondu s'arrete muet
-      const d = Math.max(0, ((now - last) / 1000 / FADE) * VOLUME);
+      const d = Math.max(0, ((now - last) / 1000 / FADE) * Math.max(vol(), 0.05));
       last = now;
       const v = to > a.volume ? Math.min(to, a.volume + d) : Math.max(to, a.volume - d);
       a.volume = Math.min(1, Math.max(0, v));
@@ -58,7 +60,7 @@ export function createMusic(button, onChange = () => {}) {
   const apply = () => {
     if (on && track() >= 0) player(track());
     players.forEach((a, i) => {
-      const target = on && i === track() ? VOLUME : 0;
+      const target = on && i === track() ? vol() : 0;
       if (target > 0) a.play().catch(() => {});
       fade(a, target);
     });
@@ -72,6 +74,13 @@ export function createMusic(button, onChange = () => {}) {
   return {
     // Appele pendant le clic de l'ecran d'entree : le navigateur laisse alors jouer la musique
     enable(v) { set(v); },
+    // Le curseur de volume agit tout de suite sur la piste qui joue
+    setLevel(l) {
+      level = Math.min(1, Math.max(0, l));
+      players.forEach((a, i) => {
+        if (on && i === track()) { cancelAnimationFrame(a.raf); a.volume = vol(); }
+      });
+    },
     setSequence(i) {
       if (i === current) return;
       current = i;
