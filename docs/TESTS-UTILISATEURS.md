@@ -2,7 +2,7 @@
 
 Ce fichier consigne les observations faites sur le projet par des personnes extérieures au groupe, et ce que nous en avons fait. Les décisions sont détaillées dans `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` (section 2.6 et rubriques f de chaque notion).
 
-Le sujet demande des tests avec au moins 2 personnes extérieures, non initiées. La v2 a été testée par une personne non initiée. La v3 a été testée par trois personnes extérieures, dont deux non initiées, via le questionnaire en ligne (section 4) ; leurs retours ont été corrigés dans la version finale.
+Le sujet demande des tests avec au moins 2 personnes extérieures, non initiées. La v2 a été testée par une personne non initiée. La v3 a été testée par quatre personnes extérieures, dont trois non initiées, via le questionnaire en ligne (section 4) ; leurs retours ont été corrigés dans la version finale.
 
 ## 1. Revue de l'enseignant, 12 novembre 2026
 
@@ -55,7 +55,7 @@ Voir le [formulaire de retours](https://docs.google.com/forms/d/e/1FAIpQLSdWOe5Z
 
 ## 4. Questionnaire de test de la v3, 15 novembre 2026
 
-Trois testeurs extérieurs au groupe (deux non initiés, un qui connaissait le principe) ont rempli le questionnaire Google après avoir parcouru la v3. Le détail des réponses (notes, quiz, avis par séquence, remarques) est dans [`TESTS-V3-QUESTIONNAIRE.md`](TESTS-V3-QUESTIONNAIRE.md).
+Quatre testeurs extérieurs au groupe (trois non initiés, un qui connaissait le principe) ont rempli le questionnaire Google après avoir parcouru la v3. Le détail des réponses (notes, quiz, avis par séquence, remarques) est dans [`TESTS-V3-QUESTIONNAIRE.md`](TESTS-V3-QUESTIONNAIRE.md).
 
 | Observation | Décision dans la version finale |
 |---|---|
